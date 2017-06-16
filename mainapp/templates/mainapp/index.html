@@ -1,0 +1,162 @@
+{% extends "mainapp/layout.html" %}
+{% block pagename %}Homepage{% endblock %}
+{% block headadditions %}
+<style>
+	.col-md-4.col-sm-6 .panel-body div:first-of-type {
+		text-align: center;
+		margin-bottom: 10px;
+	}
+
+	.col-md-4.col-sm-6 img {
+		width: 100%;
+		max-height: 256px;
+		object-fit: cover;
+	}
+
+	.row.flex {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.col-md-4 .panel-body > p {
+		line-height: 1.5em;
+	}
+</style>
+{% endblock %}
+{% block body %}
+<div class="container">
+	<div class="row">
+		<h1>3D Model Repository</h1>
+		<p>This is a repository for storing models for use in OSM 3D visualizers. Login using OSM OAuth on the top right.</p>
+	</div>
+	<hr>
+	<div class="row flex">
+		<div class="col-md-4 col-sm-6">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><a href="model.html">Eiffel Tower</a></h3>
+				</div>
+				<div>
+					<a href="model.html"><img src="http://placehold.it/384x256" alt="Eiffel Tower"></a>
+				</div>
+				<div class="panel-body">
+					<p>Categories:
+						<a href="results.html"><span class="label label-default">Monuments</span></a>
+					</p>
+					<p>Tags:
+						<a href="results.html"><span class="label label-default">shape=pyramidal</span></a>
+						<a href="results.html"><span class="label label-default">building=yes</span></a>
+						<a href="results.html"><span class="label label-default">tourism=attraction</span></a>
+					</p>
+					<p>Uploaded by <a href="user.html"><span class="label label-default">n42k</span></a> on 2017-03-28</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4 col-sm-6">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><a href="model.html">Eiffel Tower</a></h3>
+				</div>
+				<div>
+					<a href="model.html"><img src="http://placehold.it/256x384" alt="Eiffel Tower"></a>
+				</div>
+				<div class="panel-body">
+					<p>Categories:
+						<a href="results.html"><span class="label label-default">Monuments</span></a>
+					</p>
+					<p>Tags:
+						<a href="results.html"><span class="label label-default">shape=pyramidal</span></a>
+						<a href="results.html"><span class="label label-default">building=yes</span></a>
+						<a href="results.html"><span class="label label-default">tourism=attraction</span></a>
+					</p>
+					<p>Uploaded by <a href="user.html"><span class="label label-default">n42k</span></a> on 2017-03-28</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4 col-sm-6">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><a href="model.html">Eiffel Tower</a></h3>
+				</div>
+				<div>
+					<a href="model.html"><img src="http://placehold.it/256x256" alt="Eiffel Tower"></a>
+				</div>
+				<div class="panel-body">
+					<p>Categories:
+						<a href="results.html"><span class="label label-default">Monuments</span></a>
+					</p>
+					<p>Tags:
+						<a href="results.html"><span class="label label-default">shape=pyramidal</span></a>
+						<a href="results.html"><span class="label label-default">building=yes</span></a>
+						<a href="results.html"><span class="label label-default">tourism=attraction</span></a>
+					</p>
+					<p>Uploaded by <a href="user.html"><span class="label label-default">n42k</span></a> on 2017-03-28</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4 col-sm-6">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><a href="model.html">Eiffel Tower</a></h3>
+				</div>
+				<div>
+					<a href="model.html"><img src="http://placehold.it/256x384" alt="Eiffel Tower"></a>
+				</div>
+				<div class="panel-body">
+					<p>Categories:
+						<a href="results.html"><span class="label label-default">Monuments</span></a>
+					</p>
+					<p>Tags:
+						<a href="results.html"><span class="label label-default">shape=pyramidal</span></a>
+						<a href="results.html"><span class="label label-default">building=yes</span></a>
+						<a href="results.html"><span class="label label-default">tourism=attraction</span></a>
+					</p>
+					<p>Uploaded by <a href="user.html"><span class="label label-default">n42k</span></a> on 2017-03-28</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4 col-sm-6">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><a href="model.html">Eiffel Tower</a></h3>
+				</div>
+				<div>
+					<a href="model.html"><img src="http://placehold.it/256x256" alt="Eiffel Tower"></a>
+				</div>
+				<div class="panel-body">
+					<p>Categories:
+						<a href="results.html"><span class="label label-default">Monuments</span></a>
+					</p>
+					<p>Tags:
+						<a href="results.html"><span class="label label-default">shape=pyramidal</span></a>
+						<a href="results.html"><span class="label label-default">building=yes</span></a>
+						<a href="results.html"><span class="label label-default">tourism=attraction</span></a>
+					</p>
+					<p>Uploaded by <a href="user.html"><span class="label label-default">n42k</span></a> on 2017-03-28</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4 col-sm-6">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><a href="model.html">Eiffel Tower</a></h3>
+				</div>
+				<div>
+					<a href="model.html"><img src="http://placehold.it/384x256" alt="Eiffel Tower"></a>
+				</div>
+				<div class="panel-body">
+					<p>Categories:
+						<a href="results.html"><span class="label label-default">Monuments</span></a>
+					</p>
+					<p>Tags:
+						<a href="results.html"><span class="label label-default">shape=pyramidal</span></a>
+						<a href="results.html"><span class="label label-default">building=yes</span></a>
+						<a href="results.html"><span class="label label-default">tourism=attraction</span></a>
+					</p>
+					<p>Uploaded by <a href="user.html"><span class="label label-default">n42k</span></a> on 2017-03-28</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
