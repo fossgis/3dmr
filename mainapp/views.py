@@ -9,3 +9,6 @@ def docs(request):
 
 def downloads(request):
 	return render(request, 'mainapp/downloads.html')
+
+def model(request):
+	return render(request, 'mainapp/model.html')
