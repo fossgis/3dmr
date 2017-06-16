@@ -10,6 +10,26 @@
 	.col-md-4 > table {
 		width: 100%;
 	}
+
+	.col-md-4.col-sm-6 .panel-body div:first-of-type {
+		text-align: center;
+		margin-bottom: 10px;
+	}
+
+	.col-md-4.col-sm-6 img {
+		width: 100%;
+		max-height: 256px;
+		object-fit: cover;
+	}
+
+	.row.flex {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.col-md-4 .panel-body > p {
+		line-height: 1.5em;
+	}
 </style>
 {% endblock %}
 {% block body %}
@@ -23,26 +43,8 @@
 				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tincidunt venenatis nunc, et vehicula dui eleifend ac. Maecenas finibus eget est sit amet ultricies. Fusce arcu neque, volutpat accumsan est vel, ultrices faucibus nibh. Sed posuere, nibh at fringilla congue, magna odio congue arcu, consectetur pulvinar erat quam ac lacus. Vestibulum et condimentum tellus. Curabitur sem ipsum, hendrerit id accumsan sed, pretium in sapien. Vivamus imperdiet tortor sit amet rhoncus vehicula. Quisque ullamcorper feugiat nulla, a lobortis nulla vestibulum sit amet.</p>
 				<p>Praesent viverra vulputate congue. Integer consectetur libero a aliquet convallis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam felis ante, consectetur eget dignissim ut, aliquet id metus. Quisque eu eros tristique, malesuada leo sit amet, porta ex. Nulla elit augue, interdum sed auctor sed, maximus imperdiet justo. Integer vitae leo nec turpis elementum viverra in in lorem. Mauris et lacinia turpis. Etiam at nibh in lectus lobortis consequat. Pellentesque vitae nibh a leo auctor commodo. Cras iaculis mauris urna, in ornare nibh auctor et. Proin aliquam semper porta.</p>
 				<h2>n42k's models</h2><br>
-				<div class="col-md-4 col-sm-6">
-					<div class="thumbnail">
-						<img src="http://placehold.it/256x256" alt="Eiffel Tower">
-						<div class="caption">
-							<h3><a href="model.html">Eiffel Tower 2</a></h3>
-							<p>Categories: <a href="#">Monuments</a></p>
-							<p>Tags: <a href="#">shape=pyramidal</a>, <a href="#">building=yes</a>, <a href="#">tourism=attraction</a></p>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-4 col-sm-6">
-					<div class="thumbnail">
-						<img src="http://placehold.it/256x256" alt="Eiffel Tower">
-						<div class="caption">
-							<h3><a href="model.html">Eiffel Tower</a></h3>
-							<p>Categories: <a href="#">Monuments</a></p>
-							<p>Tags: <a href="#">shape=pyramidal</a>, <a href="#">building=yes</a>, <a href="#">tourism=attraction</a></p>
-						</div>
-					</div>
-				</div>
+				{% include "mainapp/modelpanel.html" %}
+				{% include "mainapp/modelpanel.html" %}
 			</div>
 			<div class="row" style="margin-bottom:30px;text-align:center;">
 				<div class="btn-group" role="group" aria-label="...">

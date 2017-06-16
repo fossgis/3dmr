@@ -1,44 +1,38 @@
 {% extends "mainapp/layout.html" %}
 {% block pagename %}Search Results{% endblock %}
+{% block headadditions %}
+<style>
+	.col-md-4.col-sm-6 .panel-body div:first-of-type {
+		text-align: center;
+		margin-bottom: 10px;
+	}
+
+	.col-md-4.col-sm-6 img {
+		width: 100%;
+		max-height: 256px;
+		object-fit: cover;
+	}
+
+	.row.flex {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.col-md-4 .panel-body > p {
+		line-height: 1.5em;
+	}
+</style>
+{% endblock %}
 {% block body %}
 <div class="container">
 	<div class="row">
 		<div class="page-header">
 			<h1>Search Results <small>'eiffel'</small></h1>
 		</div>
-		<div class="col-md-4 col-sm-6">
-			<div class="thumbnail">
-				<img src="http://placehold.it/256x256" alt="Eiffel Tower">
-				<div class="caption">
-					<h3><a href="model.html">Eiffel Tower</a></h3>
-					<p>Categories: <a href="#">Monuments</a></p>
-					<p>Tags: <a href="#">shape=pyramidal</a>, <a href="#">building=yes</a>, <a href="#">tourism=attraction</a></p>
-					<p>Uploaded by <a href="#">n42k</a> on 2017-03-28</p>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-4 col-sm-6">
-			<div class="thumbnail">
-				<img src="http://placehold.it/256x256" alt="Eiffel Tower">
-				<div class="caption">
-					<h3><a href="model.html">Eiffel Tower</a></h3>
-					<p>Categories: <a href="#">Monuments</a></p>
-					<p>Tags: <a href="#">shape=pyramidal</a>, <a href="#">building=yes</a>, <a href="#">tourism=attraction</a></p>
-					<p>Uploaded by <a href="#">n42k</a> on 2017-03-28</p>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-4 col-sm-6">
-			<div class="thumbnail">
-				<img src="http://placehold.it/256x256" alt="Eiffel Tower">
-				<div class="caption">
-					<h3><a href="model.html">Eiffel Tower</a></h3>
-					<p>Categories: <a href="#">Monuments</a></p>
-					<p>Tags: <a href="#">shape=pyramidal</a>, <a href="#">building=yes</a>, <a href="#">tourism=attraction</a></p>
-					<p>Uploaded by <a href="#">n42k</a> on 2017-03-28</p>
-				</div>
-			</div>
-		</div>
+		{% include "mainapp/modelpanel.html" %}
+		{% include "mainapp/modelpanel.html" %}
+		{% include "mainapp/modelpanel.html" %}
+		{% include "mainapp/modelpanel.html" %}
 	</div>
 	<div class="row" style="margin-bottom:30px;text-align:center;">
 		<div class="btn-group" role="group" aria-label="...">
