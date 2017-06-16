@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^model$', views.model, name='model'),
     url(r'^search$', views.search, name='search'),
     url(r'^upload$', views.upload, name='upload'),
+    url(r'^user$', views.user, name='user'),
 ]

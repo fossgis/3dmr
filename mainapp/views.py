@@ -18,3 +18,6 @@ def search(request):
 
 def upload(request):
 	return render(request, 'mainapp/upload.html')
+
+def user(request):
+	return render(request, 'mainapp/user.html')
