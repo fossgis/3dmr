@@ -15,3 +15,6 @@ def model(request):
 
 def search(request):
 	return render(request, 'mainapp/search.html')
+
+def upload(request):
+	return render(request, 'mainapp/upload.html')

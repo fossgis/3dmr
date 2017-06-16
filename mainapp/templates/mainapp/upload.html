@@ -1,0 +1,55 @@
+{% extends "mainapp/layout.html" %}
+{% block pagename %}Upload Model{% endblock %}
+{% block headadditions %}
+<style>
+	body {
+		padding-bottom: 50px;
+	}
+</style>
+{% endblock %}
+{% block body %}
+<div class="container">
+	<div class="row">
+		<h1>Upload Model</h1>
+		<p>Here, you can upload a model to the repository.</p>
+		<p>First, make sure to package your model correctly: make sure it's in the OpenCOLLADA format, rename it to 'model.dae', then zip it up along with the texture it uses.</p>
+		<p>Then, simply fill the fields below and upload your model!</p>
+		<form>
+			<div class="form-group">
+				<label for="name">Name:</label>
+				<input type="text" class="form-control" id="name" placeholder="Eiffel Tower">
+			</div>
+			<div class="form-group">
+				<label for="desc">Description:</label>
+				<textarea cols="80" rows="5" class="form-control" id="desc"></textarea>
+			</div>
+			<div class="form-group">
+				<label for="tags">Tags:</label>
+				<input type="text" class="form-control" id="tags" placeholder="shape=pyramidal, building=yes">
+			</div>
+			<div class="form-group">
+				<label for="categories">Categories:</label>
+				<input type="text" class="form-control" id="categories" placeholder="monuments, tall">
+			</div>
+			<div class="form-group">
+				<label for="location">Location:</label>
+				<p>Possibly use a slippy map for this?</p>
+				<input type="text" class="form-control" id="location" placeholder="2.294481,48.858370">
+			</div>
+			<div class="form-group">
+				<label>License</label>
+				<div class="radio">
+					<label><input type="radio" name="license">License 1</label>
+				</div>
+				<div class="radio">
+					<label><input type="radio" name="license">License 2</label>
+				</div>
+				<div class="radio">
+					<label><input type="radio" name="license">License 3</label>
+				</div>
+			</div>
+			<button type="submit" class="btn btn-default">Upload Model</button>
+		</form>
+	</div>
+</div>
+{% endblock %}
