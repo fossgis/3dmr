@@ -6,3 +6,6 @@ def index(request):
 
 def docs(request):
 	return render(request, 'mainapp/docs.html')
+
+def downloads(request):
+	return render(request, 'mainapp/downloads.html')
