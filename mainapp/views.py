@@ -12,3 +12,6 @@ def downloads(request):
 
 def model(request):
 	return render(request, 'mainapp/model.html')
+
+def search(request):
+	return render(request, 'mainapp/search.html')

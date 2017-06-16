@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^docs$', views.docs, name='docs'),
     url(r'^downloads$', views.downloads, name='downloads'),
     url(r'^model$', views.model, name='model'),
+    url(r'^search$', views.search, name='search'),
 ]
