@@ -3,33 +3,6 @@
 {% block body %}
 <div class="container">
 	<div class="row">
-		<div class="col-md-4">
-			<h3>Eiffel Tower</h3>
-			<p>Model ID: 423</p>
-			<div class="panel panel-default">
-				<div class="panel-body">
-					<p>Categories</p>
-					<p><a href="{% url 'search' %}?category=Monuments">Monuments</a></p>
-				</div>
-			</div>
-			<div class="panel panel-default">
-				<div class="panel-body">
-					<p>Tags</p>
-					<p>
-						<a href="{% url 'search' %}?tag=shape=pyramidal">shape=pyramidal</a>
-						<a href="{% url 'search' %}?tag=building=yes">building=yes</a>
-						<a href="{% url 'search' %}?tag=tourism=attraction">tourism=attraction</a>
-					</p>
-				</div>
-			</div>
-			<div class="panel panel-default">
-				<div class="panel-body">
-					<p>Description</p>
-					<p>A model of the world famous Eiffel Tower.</p>
-				</div>
-			</div>
-			<p>Uploaded by <a href="{% url 'user' user_id=421 %}">n42k</a> on 2017-03-28</p>
-		</div>
 		<div class="col-md-8">
 			<br>
 			<ul class="nav nav-tabs">
@@ -38,10 +11,31 @@
 			</ul>
 			<img src="http://placehold.it/750x480" alt="Eiffel Tower">
 		</div>
+		<div class="col-md-4">
+			<br>
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">Eiffel Tower</h3>
+				</div>
+				<div class="panel-body">
+					<p>Categories:
+						<a href="{% url 'search' %}?category=Monuments"><span class="label label-default">Monuments</span></a>
+					</p>
+					<p>Tags:
+						<a href="{% url 'search' %}?tag=shape=pyramidal"><span class="label label-default">shape=pyramidal</span></a>
+						<a href="{% url 'search' %}?tag=building=yes"><span class="label label-default">building=yes</span></a>
+						<a href="{% url 'search' %}?tag=tourism=attraction"><span class="label label-default">tourism=attraction</span></a>
+					</p>
+					<p>Description:</p>
+					<p>A model of the world famous Eiffel Tower.</p>
+					<p>Uploaded by <a href="{% url 'user' user_id=421 %}"><span class="label label-default">n42k</span></a> on 2017-03-28</p>
+				</div>
+			</div>
+		</div>
 	</div>
 	<br>
 	<div class="row">
-		<div class="panel panel-default">
+		<div class="panel panel-primary">
 			<div class="panel-heading">
 				<h3 class="panel-title">Comments</h3>
 			</div>
