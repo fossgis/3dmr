@@ -9,13 +9,17 @@
 			<div class="panel panel-default">
 				<div class="panel-body">
 					<p>Categories</p>
-					<p><a href="#">Monuments</a></p>
+					<p><a href="{% url 'search' %}?category=Monuments">Monuments</a></p>
 				</div>
 			</div>
 			<div class="panel panel-default">
 				<div class="panel-body">
 					<p>Tags</p>
-					<p><a href="#">shape=pyramidal</a>, <a href="#">building=yes</a>, <a href="#">tourism=attraction</a></p>
+					<p>
+						<a href="{% url 'search' %}?tag=shape=pyramidal">shape=pyramidal</a>
+						<a href="{% url 'search' %}?tag=building=yes">building=yes</a>
+						<a href="{% url 'search' %}?tag=tourism=attraction">tourism=attraction</a>
+					</p>
 				</div>
 			</div>
 			<div class="panel panel-default">
@@ -24,7 +28,7 @@
 					<p>A model of the world famous Eiffel Tower.</p>
 				</div>
 			</div>
-			<p>Uploaded by <a href="#">n42k</a> on 2017-03-28</p>
+			<p>Uploaded by <a href="{% url 'user' user_id=421 %}">n42k</a> on 2017-03-28</p>
 		</div>
 		<div class="col-md-8">
 			<br>
@@ -47,7 +51,7 @@
 						I've technically been here!
 					</div>
 					<div class="panel-footer">
-						n42k
+						<a href="{% url 'user' user_id=421 %}">n42k</a>
 					</div>
 				</div>
 			</div>
