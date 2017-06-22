@@ -1,14 +1,24 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
-class User(models.Model):
-    osm_id = models.IntegerField()
-    name = models.CharField(max_length=64)
-    description = models.CharField(max_length=2048)
-    rendered_description = models.CharField(max_length=4096)
-    avatar_url = models.CharField(max_length=256)
-    admin = models.BooleanField()
-    banned = models.BooleanField()
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    description = models.CharField(max_length=2048, default='Your description...')
+    rendered_description = models.CharField(max_length=4096, default='<p>Your description...</p>')
+    admin = models.BooleanField(default=False)
+    banned = models.BooleanField(default=False)
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+	if created:
+		Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+	instance.profile.save()
 
 class Category(models.Model):
     name = models.CharField(max_length=256)

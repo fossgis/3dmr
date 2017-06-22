@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from social_django.models import UserSocialAuth
 from django.contrib.auth.models import User
 
@@ -41,10 +41,21 @@ def user(request, username):
 	# query user
 	user = get_object_or_404(User, username=username)
 	oauth_user = get_object_or_404(UserSocialAuth, user=user)
+	print(dir(user.profile))
 
 	context = {'owner': {
 		'username': user.username,
 		'avatar': oauth_user.extra_data['avatar'],
+		'profile': user.profile,
 	}}
 
 	return render(request, 'mainapp/user.html', context)
+
+def editprofile(request):
+	description = request.POST.get('desc')
+
+	request.user.profile.description = description
+	request.user.profile.rendered_description = description
+	request.user.save()
+
+	return redirect(user, username='')
