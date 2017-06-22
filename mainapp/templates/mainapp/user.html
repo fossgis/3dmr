@@ -11,18 +11,41 @@
 		width: 100%;
 	}
 </style>
+<script>
+function enableEdit() {
+	var pieces = [];
+	pieces.push('<form action="#" method="POST">');
+	pieces.push('<textarea rows="8" cols="80">');
+
+	var description = [];
+	description.push('This is my custom description!');
+	description.push('Possibly allow markdown or some other markup language here?');
+	description.push('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tincidunt venenatis nunc, et vehicula dui eleifend ac. Maecenas finibus eget est sit amet ultricies. Fusce arcu neque, volutpat accumsan est vel, ultrices faucibus nibh. Sed posuere, nibh at fringilla congue, magna odio congue arcu, consectetur pulvinar erat quam ac lacus. Vestibulum et condimentum tellus. Curabitur sem ipsum, hendrerit id accumsan sed, pretium in sapien. Vivamus imperdiet tortor sit amet rhoncus vehicula. Quisque ullamcorper feugiat nulla, a lobortis nulla vestibulum sit amet.');
+	description.push('Praesent viverra vulputate congue. Integer consectetur libero a aliquet convallis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam felis ante, consectetur eget dignissim ut, aliquet id metus. Quisque eu eros tristique, malesuada leo sit amet, porta ex. Nulla elit augue, interdum sed auctor sed, maximus imperdiet justo. Integer vitae leo nec turpis elementum viverra in in lorem. Mauris et lacinia turpis. Etiam at nibh in lectus lobortis consequat. Pellentesque vitae nibh a leo auctor commodo. Cras iaculis mauris urna, in ornare nibh auctor et. Proin aliquam semper porta.');
+	pieces.push(description.join('\n\n'));
+	pieces.push('</textarea><br>');
+	pieces.push('<button type="button" class="btn">Submit</button>');
+	pieces.push('</form>');
+	document.getElementById("description").innerHTML = pieces.join("");
+}
+</script>
 {% endblock %}
 {% block body %}
 <div class="container">
 	<div class="row">
-		<h1>{{ user.username }}'s user page</h1>
+		<h1>{{ owner.username }}'s user page</h1>
 		<div class="col-md-8">
 			<div class="row">
-				<p>This is my custom description!</p>
-				<p>Possibly allow markdown or some other markup language here?</p>
-				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tincidunt venenatis nunc, et vehicula dui eleifend ac. Maecenas finibus eget est sit amet ultricies. Fusce arcu neque, volutpat accumsan est vel, ultrices faucibus nibh. Sed posuere, nibh at fringilla congue, magna odio congue arcu, consectetur pulvinar erat quam ac lacus. Vestibulum et condimentum tellus. Curabitur sem ipsum, hendrerit id accumsan sed, pretium in sapien. Vivamus imperdiet tortor sit amet rhoncus vehicula. Quisque ullamcorper feugiat nulla, a lobortis nulla vestibulum sit amet.</p>
-				<p>Praesent viverra vulputate congue. Integer consectetur libero a aliquet convallis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam felis ante, consectetur eget dignissim ut, aliquet id metus. Quisque eu eros tristique, malesuada leo sit amet, porta ex. Nulla elit augue, interdum sed auctor sed, maximus imperdiet justo. Integer vitae leo nec turpis elementum viverra in in lorem. Mauris et lacinia turpis. Etiam at nibh in lectus lobortis consequat. Pellentesque vitae nibh a leo auctor commodo. Cras iaculis mauris urna, in ornare nibh auctor et. Proin aliquam semper porta.</p>
-				<h2>{{ user.username }}'s models</h2><br>
+				<div id="description">
+					<p>This is my custom description!</p>
+					<p>Possibly allow markdown or some other markup language here?</p>
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tincidunt venenatis nunc, et vehicula dui eleifend ac. Maecenas finibus eget est sit amet ultricies. Fusce arcu neque, volutpat accumsan est vel, ultrices faucibus nibh. Sed posuere, nibh at fringilla congue, magna odio congue arcu, consectetur pulvinar erat quam ac lacus. Vestibulum et condimentum tellus. Curabitur sem ipsum, hendrerit id accumsan sed, pretium in sapien. Vivamus imperdiet tortor sit amet rhoncus vehicula. Quisque ullamcorper feugiat nulla, a lobortis nulla vestibulum sit amet.</p>
+					<p>Praesent viverra vulputate congue. Integer consectetur libero a aliquet convallis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam felis ante, consectetur eget dignissim ut, aliquet id metus. Quisque eu eros tristique, malesuada leo sit amet, porta ex. Nulla elit augue, interdum sed auctor sed, maximus imperdiet justo. Integer vitae leo nec turpis elementum viverra in in lorem. Mauris et lacinia turpis. Etiam at nibh in lectus lobortis consequat. Pellentesque vitae nibh a leo auctor commodo. Cras iaculis mauris urna, in ornare nibh auctor et. Proin aliquam semper porta.</p>
+					{% if user.username == owner.username %}
+					<button type="button" class="btn" onclick="enableEdit();">Edit</button>
+					{% endif %}
+				</div>
+				<h2>{{ owner.username }}'s models</h2><br>
 				{% include "mainapp/modelpanel.html" %}
 				{% include "mainapp/modelpanel.html" %}
 			</div>
@@ -37,8 +60,8 @@
 			</div>
 		</div>
 		<div class="col-md-4">
-			{% if user.avatar %}
-			<img src="{{ user.avatar }}" alt="">
+			{% if owner.avatar %}
+			<img src="{{ owner.avatar }}" alt="">
 			{% endif %}
 			<h2>Latest Changes</h2>
 			<table>

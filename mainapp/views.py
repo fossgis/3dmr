@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from social_django.models import UserSocialAuth
 from django.contrib.auth.models import User
 
@@ -31,25 +31,20 @@ def search(request):
 def upload(request):
 	return render(request, 'mainapp/upload.html')
 
-def user(request, user_id=None):
-	if user_id:
-		# we're querying an user
-		user = User.objects.filter(username=user_id)
-		if len(user) != 1:
-			pass # error
-		user = user[0] # there's only a single user in the query at this point
+def user(request, username):
+	if username == '':
+		if request.user:
+			username = request.user.username # show our own userpage
+		else:
+			pass # redirect to index, no user to load
 
-		oauth_user = UserSocialAuth.objects.filter(user=user)
-		if len(oauth_user) != 1:
-			pass # error
-		oauth_user = oauth_user[0] # same as above
+	# query user
+	user = get_object_or_404(User, username=username)
+	oauth_user = get_object_or_404(UserSocialAuth, user=user)
 
-		context = {'user': {
-			'username': user.username,
-			'avatar': oauth_user.extra_data['avatar'],
-		}}
-	else:
-		# returning current user's profile
-		pass # TODO
+	context = {'owner': {
+		'username': user.username,
+		'avatar': oauth_user.extra_data['avatar'],
+	}}
 
 	return render(request, 'mainapp/user.html', context)
