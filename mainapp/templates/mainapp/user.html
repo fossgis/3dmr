@@ -37,7 +37,9 @@
 			</div>
 		</div>
 		<div class="col-md-4">
+			{% if user.avatar %}
 			<img src="{{ user.avatar }}" alt="">
+			{% endif %}
 			<h2>Latest Changes</h2>
 			<table>
 				<tr>
