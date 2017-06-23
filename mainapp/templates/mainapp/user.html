@@ -37,8 +37,9 @@ function enableEdit() {
 					{% endif %}
 				</div>
 				<h2>{{ owner.username }}'s models</h2><br>
+				{% for model in owner.models %}
 				{% include "mainapp/modelpanel.html" %}
-				{% include "mainapp/modelpanel.html" %}
+				{% endfor %}
 			</div>
 			<script>
 				document.getElementById("editForm").style.display = "none";
@@ -67,22 +68,22 @@ function enableEdit() {
 				</tr>
 				<tr>
 					<td>Upload</td>
-					<td><a href="{% url 'model' model_id=423 %}">Eiffel Tower 2</a></td>
+					<td><a href="#">Eiffel Tower 2</a></td>
 					<td>2017-06-13 14:53</td>
 				</tr>
 				<tr>
 					<td>Edit</td>
-					<td><a href="{% url 'model' model_id=423 %}">Eiffel Tower</a></td>
+					<td><a href="#">Eiffel Tower</a></td>
 					<td>2017-06-13 10:32</td>
 				</tr>
 				<tr>
 					<td>Edit</td>
-					<td><a href="{% url 'model' model_id=423 %}">Eiffel Tower</a></td>
+					<td><a href="#">Eiffel Tower</a></td>
 					<td>2017-06-13 09:17</td>
 				</tr>
 				<tr>
 					<td>Upload</td>
-					<td><a href="{% url 'model' model_id=423 %}">Eiffel Tower</a></td>
+					<td><a href="#">Eiffel Tower</a></td>
 					<td>2017-06-13 08:44</td>
 				</tr>
 			</table>

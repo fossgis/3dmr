@@ -50,14 +50,16 @@ def user(request, username):
 		else:
 			pass # redirect to index, no user to load
 
-	# query user
 	user = get_object_or_404(User, username=username)
 	oauth_user = get_object_or_404(UserSocialAuth, user=user)
+
+	models = user.model_set.all()
 
 	context = {'owner': {
 		'username': user.username,
 		'avatar': oauth_user.extra_data['avatar'],
 		'profile': user.profile,
+		'models': models,
 	}}
 
 	return render(request, 'mainapp/user.html', context)
