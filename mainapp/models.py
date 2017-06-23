@@ -24,6 +24,7 @@ class Category(models.Model):
     name = models.CharField(max_length=256)
 
 class Model(models.Model):
+    author = models.OneToOneField(User, on_delete=models.CASCADE)
     model_id = models.IntegerField()
     revision = models.IntegerField()
     description = models.CharField(max_length=512)
