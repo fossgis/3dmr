@@ -32,7 +32,7 @@
 					<li><a href="{% url 'docs' %}">API Docs</a></li>
 					<li><a href="{% url 'downloads' %}">Downloads</a></li>
 					{% if user.is_authenticated %}
-					<li><a href="#">Logged in as {{ user.get_username}}</a></li>
+					<li><a href="#">Logged in as {{ user.get_username }}</a></li>
 					{% else %}
 					<li><a href="{% url 'social:begin' 'openstreetmap' %}">Login</a></li>
 					{% endif %}
