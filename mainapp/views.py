@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from social_django.models import UserSocialAuth
 from django.contrib.auth.models import User
 
+import mistune
+
 # Create your views here.
 def index(request):
 	return render(request, 'mainapp/index.html')
@@ -55,7 +57,7 @@ def editprofile(request):
 	description = request.POST.get('desc')
 
 	request.user.profile.description = description
-	request.user.profile.rendered_description = description
+	request.user.profile.rendered_description = mistune.markdown(description)
 	request.user.save()
 
 	return redirect(user, username='')
