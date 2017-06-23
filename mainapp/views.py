@@ -1,12 +1,18 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from social_django.models import UserSocialAuth
 from django.contrib.auth.models import User
+from .models import Model
 
 import mistune
 
 # Create your views here.
 def index(request):
-	return render(request, 'mainapp/index.html')
+	models = Model.objects.order_by('pk')[:6]
+	context = {
+		'models': models,
+	}
+
+	return render(request, 'mainapp/index.html', context)
 
 def docs(request):
 	return render(request, 'mainapp/docs.html')
@@ -15,7 +21,11 @@ def downloads(request):
 	return render(request, 'mainapp/downloads.html')
 
 def model(request, model_id):
-	return render(request, 'mainapp/model.html')
+	model = Model.objects.filter(model_id=model_id).order_by('revision')[0]
+	context = {
+		'model': model,
+	}
+	return render(request, 'mainapp/model.html', context)
 
 def search(request):
 	query = request.GET.get('query', None)
