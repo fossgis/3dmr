@@ -43,7 +43,6 @@ def user(request, username):
 	# query user
 	user = get_object_or_404(User, username=username)
 	oauth_user = get_object_or_404(UserSocialAuth, user=user)
-	print(dir(user.profile))
 
 	context = {'owner': {
 		'username': user.username,
