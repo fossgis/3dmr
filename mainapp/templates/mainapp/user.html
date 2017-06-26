@@ -37,9 +37,11 @@ function enableEdit() {
 					{% endif %}
 				</div>
 				<h2>{{ owner.username }}'s models</h2><br>
+				{% with hide_user=True %}
 				{% for model in owner.models %}
 				{% include "mainapp/modelpanel.html" %}
 				{% endfor %}
+				{% endwith %}
 			</div>
 			<script>
 				document.getElementById("editForm").style.display = "none";
