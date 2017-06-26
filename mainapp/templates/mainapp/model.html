@@ -15,7 +15,7 @@
 			<br>
 			<div class="panel panel-primary">
 				<div class="panel-heading">
-					<h3 class="panel-title">Eiffel Tower</h3>
+					<h3 class="panel-title">{{ model.title }}</h3>
 				</div>
 				<div class="panel-body">
 					<p>Categories:
@@ -27,8 +27,8 @@
 						<a href="{% url 'search' %}?tag=tourism=attraction"><span class="label label-default">tourism=attraction</span></a>
 					</p>
 					<p>Description:</p>
-					<p>A model of the world famous Eiffel Tower.</p>
-					<p>Uploaded by <a href="{% url 'user' user_id=421 %}"><span class="label label-default">n42k</span></a> on 2017-03-28</p>
+					<p>{{ model.description }}</p>
+					<p>Uploaded by <a href="{% url 'user' model.author.username %}"><span class="label label-default">{{ model.author.username }}</span></a> on 2017-03-28</p>
 				</div>
 			</div>
 		</div>
@@ -45,7 +45,7 @@
 						I've technically been here!
 					</div>
 					<div class="panel-footer">
-						<a href="{% url 'user' user_id=421 %}">n42k</a>
+						<a href="#">n42k</a>
 					</div>
 				</div>
 			</div>

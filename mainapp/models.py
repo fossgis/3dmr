@@ -1,39 +1,59 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
-class User(models.Model):
-    osm_id = models.IntegerField()
-    name = models.CharField(max_length=64)
-    description = models.CharField(max_length=2048)
-    rendered_description = models.CharField(max_length=4096)
-    avatar_url = models.CharField(max_length=256)
-    admin = models.BooleanField()
-    banned = models.BooleanField()
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    description = models.CharField(max_length=2048, default='Your description...')
+    rendered_description = models.CharField(max_length=4096, default='<p>Your description...</p>')
+    is_admin = models.BooleanField(default=False)
+    is_banned = models.BooleanField(default=False)
+    ban_date = models.DateField(default=None, null=True)
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
 
 class Category(models.Model):
     name = models.CharField(max_length=256)
 
 class Model(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     model_id = models.IntegerField()
     revision = models.IntegerField()
+    title = models.CharField(max_length=32)
     description = models.CharField(max_length=512)
-    upload_date = models.DateField()
+    rendered_description = models.CharField(max_length=1024)
+    upload_date = models.DateField(auto_now_add=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     license = models.IntegerField()
     categories = models.ManyToManyField(Category)
+    rotation = models.FloatField(default=0.0)
+    scale = models.FloatField(default=1.0)
+    translation_x = models.FloatField(default=0.0)
+    translation_y = models.FloatField(default=0.0)
+    translation_z = models.FloatField(default=0.0)
 
 class Change(models.Model):
     author = models.ForeignKey(User, models.CASCADE)
     model = models.ForeignKey(Model, models.CASCADE)
     typeof = models.IntegerField()
-    datetime = models.DateTimeField()
+    datetime = models.DateTimeField(auto_now_add=True)
 
 class Comment(models.Model):
     author = models.ForeignKey(User, models.CASCADE)
     model = models.ForeignKey(Model, models.CASCADE)
     comment = models.CharField(max_length=1024)
-    datetime = models.DateTimeField()
+    rendered_comment = models.CharField(max_length=2048)
+    datetime = models.DateTimeField(auto_now_add=True)
 
 class TagKey(models.Model):
     name = models.CharField(max_length=256)

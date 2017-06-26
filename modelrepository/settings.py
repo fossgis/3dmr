@@ -36,8 +36,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mainapp'
+    'mainapp',
+    'social_django',
 ]
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+SOCIAL_AUTH_OPENSTREETMAP_KEY = 'VTwxvHwg0aeX6x30D1U9SK3JaQKcm8THrtJVsY9R'
+SOCIAL_AUTH_OPENSTREETMAP_SECRET = '3QYDebgolnTGAWLn51nZUxynI0D0osmvUaBZsTYh'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -47,6 +52,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.openstreetmap.OpenStreetMapOAuth',
 ]
 
 ROOT_URLCONF = 'modelrepository.urls'
@@ -62,10 +71,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
 ]
+
+LOGIN_REDIRECT_URL = '/'
 
 WSGI_APPLICATION = 'modelrepository.wsgi.application'
 

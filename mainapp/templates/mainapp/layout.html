@@ -31,7 +31,11 @@
 				<ul class="nav navbar-nav navbar-right">
 					<li><a href="{% url 'docs' %}">API Docs</a></li>
 					<li><a href="{% url 'downloads' %}">Downloads</a></li>
-					<li><a href="#">Login</a></li>
+					{% if user.is_authenticated %}
+					<li><a href="#">Logged in as {{ user.get_username }}</a></li>
+					{% else %}
+					<li><a href="{% url 'social:begin' 'openstreetmap' %}">Login</a></li>
+					{% endif %}
 				</ul>
 				<form class="navbar-form navbar-left" action="{% url 'search' %}" method="GET">
 					<input type="text" class="form-control" placeholder="Search..." title="Search" name="query">

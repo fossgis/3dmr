@@ -8,12 +8,9 @@
 	</div>
 	<hr>
 	<div class="row flex">
+		{% for model in models %}
 		{% include "mainapp/modelpanel.html" %}
-		{% include "mainapp/modelpanel.html" %}
-		{% include "mainapp/modelpanel.html" %}
-		{% include "mainapp/modelpanel.html" %}
-		{% include "mainapp/modelpanel.html" %}
-		{% include "mainapp/modelpanel.html" %}
+		{% endfor %}
 	</div>
 </div>
 {% endblock %}
