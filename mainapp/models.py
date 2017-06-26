@@ -8,8 +8,9 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     description = models.CharField(max_length=2048, default='Your description...')
     rendered_description = models.CharField(max_length=4096, default='<p>Your description...</p>')
-    admin = models.BooleanField(default=False)
-    banned = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+    is_banned = models.BooleanField(default=False)
+    ban_date = models.DateField(default=None, null=True)
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -27,24 +28,32 @@ class Model(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     model_id = models.IntegerField()
     revision = models.IntegerField()
+    title = models.CharField(max_length=32)
     description = models.CharField(max_length=512)
-    upload_date = models.DateField()
+    rendered_description = models.CharField(max_length=1024)
+    upload_date = models.DateField(auto_now_add=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     license = models.IntegerField()
     categories = models.ManyToManyField(Category)
+    rotation = models.FloatField(default=0.0)
+    scale = models.FloatField(default=1.0)
+    translation_x = models.FloatField(default=0.0)
+    translation_y = models.FloatField(default=0.0)
+    translation_z = models.FloatField(default=0.0)
 
 class Change(models.Model):
     author = models.ForeignKey(User, models.CASCADE)
     model = models.ForeignKey(Model, models.CASCADE)
     typeof = models.IntegerField()
-    datetime = models.DateTimeField()
+    datetime = models.DateTimeField(auto_now_add=True)
 
 class Comment(models.Model):
     author = models.ForeignKey(User, models.CASCADE)
     model = models.ForeignKey(Model, models.CASCADE)
     comment = models.CharField(max_length=1024)
-    datetime = models.DateTimeField()
+    rendered_comment = models.CharField(max_length=2048)
+    datetime = models.DateTimeField(auto_now_add=True)
 
 class TagKey(models.Model):
     name = models.CharField(max_length=256)
