@@ -7,7 +7,7 @@ import mistune
 
 # Create your views here.
 def index(request):
-    models = Model.objects.order_by('pk')[:6]
+    models = Model.objects.order_by('-pk')[:6]
     context = {
         'models': models,
     }
@@ -53,7 +53,7 @@ def user(request, username):
     user = get_object_or_404(User, username=username)
     oauth_user = get_object_or_404(UserSocialAuth, user=user)
 
-    models = user.model_set.all()
+    models = user.model_set.order_by('-pk')
 
     context = {'owner': {
         'username': user.username,
