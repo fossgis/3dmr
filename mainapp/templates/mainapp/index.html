@@ -1,0 +1,19 @@
+{% extends "mainapp/layout.html" %}
+{% block pagename %}Homepage{% endblock %}
+{% block body %}
+<div class="container">
+	<div class="row">
+		<h1>3D Model Repository</h1>
+		<p>This is a repository for storing models for use in OSM 3D visualizers. Login using OSM OAuth on the top right.</p>
+	</div>
+	<hr>
+	<div class="row flex">
+		{% include "mainapp/modelpanel.html" %}
+		{% include "mainapp/modelpanel.html" %}
+		{% include "mainapp/modelpanel.html" %}
+		{% include "mainapp/modelpanel.html" %}
+		{% include "mainapp/modelpanel.html" %}
+		{% include "mainapp/modelpanel.html" %}
+	</div>
+</div>
+{% endblock %}

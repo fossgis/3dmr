@@ -1,0 +1,73 @@
+{% extends "mainapp/layout.html" %}
+{% block pagename %}Userpage{% endblock %}
+{% block headadditions %}
+<style>
+	.col-md-4 > img {
+		display: block;
+		margin: 0px auto;
+	}
+
+	.col-md-4 > table {
+		width: 100%;
+	}
+</style>
+{% endblock %}
+{% block body %}
+<div class="container">
+	<div class="row">
+		<h1>n42k's user page</h1>
+		<div class="col-md-8">
+			<div class="row">
+				<p>This is my custom description!</p>
+				<p>Possibly allow markdown or some other markup language here?</p>
+				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tincidunt venenatis nunc, et vehicula dui eleifend ac. Maecenas finibus eget est sit amet ultricies. Fusce arcu neque, volutpat accumsan est vel, ultrices faucibus nibh. Sed posuere, nibh at fringilla congue, magna odio congue arcu, consectetur pulvinar erat quam ac lacus. Vestibulum et condimentum tellus. Curabitur sem ipsum, hendrerit id accumsan sed, pretium in sapien. Vivamus imperdiet tortor sit amet rhoncus vehicula. Quisque ullamcorper feugiat nulla, a lobortis nulla vestibulum sit amet.</p>
+				<p>Praesent viverra vulputate congue. Integer consectetur libero a aliquet convallis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam felis ante, consectetur eget dignissim ut, aliquet id metus. Quisque eu eros tristique, malesuada leo sit amet, porta ex. Nulla elit augue, interdum sed auctor sed, maximus imperdiet justo. Integer vitae leo nec turpis elementum viverra in in lorem. Mauris et lacinia turpis. Etiam at nibh in lectus lobortis consequat. Pellentesque vitae nibh a leo auctor commodo. Cras iaculis mauris urna, in ornare nibh auctor et. Proin aliquam semper porta.</p>
+				<h2>n42k's models</h2><br>
+				{% include "mainapp/modelpanel.html" %}
+				{% include "mainapp/modelpanel.html" %}
+			</div>
+			<div class="row" style="margin-bottom:30px;text-align:center;">
+				<div class="btn-group" role="group" aria-label="...">
+					<button type="button" class="btn btn-primary disabled">1</button>
+					<button type="button" class="btn btn-default">2</button>
+					<button type="button" class="btn btn-default">3</button>
+					<button type="button" class="btn btn-default">...</button>
+					<button type="button" class="btn btn-default">10</button>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<img src="http://www.gravatar.com/avatar/2a9ea49caa7d55b66eb996f435d48e55.jpg?s=256&d=http%3A%2F%2Fwww.openstreetmap.org%2Fassets%2Fusers%2Fimages%2Flarge-afe7442b856c223cca92b1a16d96a3266ec0c86cac8031269e90ef93562adb72.png" alt="">
+			<!-- Note: we can retrieve the below URL from http://www.openstreetmap.org/api/0.6/user/<userid>. This id can be retrieved when doing the OAuth authentication. -->
+			<h2>Latest Changes</h2>
+			<table>
+				<tr>
+					<th>Type</th>
+					<th>Model</th>
+					<th>Date</th>
+				</tr>
+				<tr>
+					<td>Upload</td>
+					<td><a href="{% url 'model' model_id=423 %}">Eiffel Tower 2</a></td>
+					<td>2017-06-13 14:53</td>
+				</tr>
+				<tr>
+					<td>Edit</td>
+					<td><a href="{% url 'model' model_id=423 %}">Eiffel Tower</a></td>
+					<td>2017-06-13 10:32</td>
+				</tr>
+				<tr>
+					<td>Edit</td>
+					<td><a href="{% url 'model' model_id=423 %}">Eiffel Tower</a></td>
+					<td>2017-06-13 09:17</td>
+				</tr>
+				<tr>
+					<td>Upload</td>
+					<td><a href="{% url 'model' model_id=423 %}">Eiffel Tower</a></td>
+					<td>2017-06-13 08:44</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+{% endblock %}

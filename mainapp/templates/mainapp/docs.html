@@ -1,0 +1,155 @@
+{% extends "mainapp/layout.html" %}
+{% block pagename %}Documentation{% endblock %}
+{% block headadditions %}
+<style>
+	.response {
+		padding-top: 10px;
+	}
+	.panel:target h3 {
+		text-decoration: underline;
+	}
+</style>
+{% endblock %}
+{% block body %}
+<div class="container">
+	<div class="row">
+		<h1>API Documentation</h1>
+		<div class="col-md-2">
+			<h2>Model</h2>
+			<ul>
+				<li><a href="#info">Info Get</a></li>
+				<li><a href="#model">Model Get</a></li>
+			</ul>
+			<h2>Lookups</h2>
+			<ul>
+				<li><a href="#tag">Tag Lookup</a></li>
+				<li><a href="#category">Category Lookup</a></li>
+			</ul>
+			<h2>Searches</h2>
+			<ul>
+				<li><a href="#latlon">Coordinate Search</a></li>
+				<li><a href="#full">Full Search</a></li>
+			</ul>
+		</div>
+		<div class="col-md-10">
+			<h2>Model</h2>
+			<div class="panel panel-primary" id="info">
+				<div class="panel-heading">
+					<h3 class="panel-title">Info Get</h3>
+				</div>
+				<div class="panel-body">
+					<p>Returns the model information for the specified model id.</p>
+					<span class="label label-success">GET</span>
+					<span class="label label-default">/api/info/&lt;int:modelid&gt;</span>
+					<p class="response">Sample Response:</p>
+<pre><code>{
+"id": 423,
+"title": "Eiffel Tower",
+"lat": 48.8583,
+"lon": 2.2945,
+"desc": "A model of the world famous Eiffel Tower",
+"tags": {
+"shape": "pyramidal",
+"building": "yes",
+"tourism": "attraction",
+}
+"author": "n42k",
+"date": "2017-03-28",
+"categories": ["monuments", "tall"],
+"comments": [
+{
+	"author": "n42k",
+	"body": "I've technically been here!"
+},
+{
+	"author": "n42k",
+	"body": "test comment"
+}
+]
+}</code></pre>
+				</div>
+			</div>
+			<div class="panel panel-primary" id="model">
+				<div class="panel-heading">
+					<h3 class="panel-title">Model Get</h3>
+				</div>
+				<div class="panel-body">
+					<p>Returns a zip with the model of the specified model id.</p>
+					<span class="label label-success">GET</span>
+					<span class="label label-default">/api/model/&lt;int:modelid&gt;</span>
+					<p class="response">Sample Response: a zip file.</p>
+				</div>
+			</div>
+			<h2>Lookups</h2>
+			<div class="panel panel-primary" id="tag">
+				<div class="panel-heading">
+					<h3 class="panel-title">Tag Lookup</h3>
+				</div>
+				<div class="panel-body">
+					<p>Returns model ids that have the specified tag as one of their tags. Specifying the page id is optional.</p>
+					<span class="label label-success">GET</span>
+					<span class="label label-default">/api/tag/&lt;string:tag&gt;/&lt;int:pageid&gt;</span>
+					<p class="response">Sample Response:</p>
+					<pre><code>[3, 5]</code></pre>
+				</div>
+			</div>
+			<div class="panel panel-primary" id="category">
+				<div class="panel-heading">
+					<h3 class="panel-title">Category Lookup</h3>
+				</div>
+				<div class="panel-body">
+					<p>Returns model ids that have the specified category as one of their categories. Specifying the page id is optional.</p>
+					<span class="label label-success">GET</span>
+					<span class="label label-default">/api/category/&lt;string:tag&gt;/&lt;int:pageid&gt;</span>
+					<p class="response">Sample Response:</p>
+					<pre><code>[6, 8]</code></pre>
+				</div>
+			</div>
+			<h2>Searches</h2>
+			<div class="panel panel-primary" id="latlon">
+				<div class="panel-heading">
+					<h3 class="panel-title">Latitude and Longitude Search</h3>
+				</div>
+				<div class="panel-body">
+					<p>Returns model ids that have the specified category as one of their categories. Specifying the page id is optional.</p>
+					<span class="label label-success">GET</span>
+					<span class="label label-default">/api/search/point/&lt;float:lat&gt;/&lt;float:lon&gt;/&lt;float:range&gt;/&lt;int:pageid&gt;</span>
+					<p class="response">Sample Response:</p>
+					<pre><code>[2, 10, 17]</code></pre>
+				</div>
+			</div>
+			<div class="panel panel-primary" id="full">
+				<div class="panel-heading">
+					<h3 class="panel-title">Full Search</h3>
+				</div>
+				<div class="panel-body">
+					<p>Permits combining various criteria to find the exact kinds of models we need. Search query is sent in the request body. If any parameter is not specified, it's ignored and won't be filtered from the results.</p>
+					<p>Note: the "title" attribute does what is described in the "Title Search" endpoint, and the "text" attribute what is described in the "Text Search" endpoint.</p>
+					<span class="label label-success">GET</span>
+					<span class="label label-default">/api/search/full</span>
+					<p class="response">Sample request body:</p>
+<pre><code>{
+"lat": 48.8583,
+"lon": 2.2945,
+"range": 1000,
+"title": "Eiffel",
+"text": "steel",
+"tags": {
+"shape": "pyramidal",
+"building": "yes"
+},
+"categories": [
+"monuments",
+"tall"
+],
+"page": 1,
+"author": "n42k"
+}</code></pre>
+					<p class="response">Sample Response:</p>
+					<pre><code>[6, 8]</code></pre>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

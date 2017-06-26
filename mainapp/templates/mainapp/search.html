@@ -1,0 +1,34 @@
+{% extends "mainapp/layout.html" %}
+{% block pagename %}Search Results{% endblock %}
+{% block body %}
+<div class="container">
+	<div class="row">
+		<div class="page-header">
+			<h1>Search Results
+			{% if query %}
+			<small>'{{ query }}'{% if tag or category %},{% endif %}</small>
+			{% endif %}
+			{% if category %}
+			<small>category '{{ category }}'{% if tag %},{% endif %}</small>
+			{% endif %}
+			{% if tag %}
+			<small>tag '{{ tag }}'</small>
+			{% endif %}
+			</h1>
+		</div>
+		{% include "mainapp/modelpanel.html" %}
+		{% include "mainapp/modelpanel.html" %}
+		{% include "mainapp/modelpanel.html" %}
+		{% include "mainapp/modelpanel.html" %}
+	</div>
+	<div class="row" style="margin-bottom:30px;text-align:center;">
+		<div class="btn-group" role="group" aria-label="...">
+			<button type="button" class="btn btn-primary disabled">1</button>
+			<button type="button" class="btn btn-default">2</button>
+			<button type="button" class="btn btn-default">3</button>
+			<button type="button" class="btn btn-default">...</button>
+			<button type="button" class="btn btn-default">10</button>
+		</div>
+	</div>
+</div>
+{% endblock %}
