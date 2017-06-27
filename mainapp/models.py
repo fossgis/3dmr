@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres import fields
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -36,6 +37,7 @@ class Model(models.Model):
     longitude = models.FloatField()
     license = models.IntegerField()
     categories = models.ManyToManyField(Category)
+    tags = fields.HStoreField(default={})
     rotation = models.FloatField(default=0.0)
     scale = models.FloatField(default=1.0)
     translation_x = models.FloatField(default=0.0)

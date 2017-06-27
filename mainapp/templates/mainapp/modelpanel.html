@@ -13,9 +13,9 @@
 				{% endfor %}
 			</p>
 			<p>Tags:
-				<a href="{% url 'search' %}?tag=shape=pyramidal"><span class="label label-default">shape=pyramidal</span></a>
-				<a href="{% url 'search' %}?tag=building=yes"><span class="label label-default">building=yes</span></a>
-				<a href="{% url 'search' %}?tag=tourism=attraction"><span class="label label-default">tourism=attraction</span></a>
+				{% for k, v in model.tags.items %}
+				<a href="{% url 'search' %}?tag={{ k }}={{ v }}"><span class="label label-default">{{ k }}={{ v }}</span></a>
+				{% endfor %}
 			</p>
 			{% if hide_user %}
 			<p>Upload date: {{ model.upload_date|date:"c" }}</p>
