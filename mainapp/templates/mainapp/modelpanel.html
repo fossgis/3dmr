@@ -8,7 +8,9 @@
 		</div>
 		<div class="panel-body">
 			<p>Categories:
-				<a href="{% url 'search' %}?category=Monuments"><span class="label label-default">Monuments</span></a>
+				{% for category in model.categories.all %}
+				<a href="{% url 'search' %}?category={{ category.name }}"><span class="label label-default">{{ category.name }}</span></a>
+				{% endfor %}
 			</p>
 			<p>Tags:
 				<a href="{% url 'search' %}?tag=shape=pyramidal"><span class="label label-default">shape=pyramidal</span></a>
