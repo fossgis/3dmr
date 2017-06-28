@@ -14,4 +14,6 @@ urlpatterns = [
     url(r'^action/editprofile$', views.editprofile, name='editprofile'),
     url(r'^api/tag/(?P<tag>.*)/(?P<page_id>[0-9]+)$', api.lookup_tag, name='lookup_tag'),
     url(r'^api/tag/(?P<tag>.*)$', api.lookup_tag, name='lookup_tag'),
+    url(r'^api/category/(?P<category>.*)/(?P<page_id>[0-9]+)$', api.lookup_category, name='lookup_category'),
+    url(r'^api/category/(?P<category>.*)$', api.lookup_category, name='lookup_category'),
 ]

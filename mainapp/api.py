@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage
-from .models import Model
+from .models import Model, Category
 
 RESULTS_PER_API_CALL= 20
 
@@ -24,4 +24,8 @@ def api_paginate(models, page_id):
 def lookup_tag(request, tag, page_id=1):
     key, value = tag.split('=', 2)
     models = Model.objects.filter(tags__contains={key: value}).order_by('model_id')
+    return api_paginate(models, page_id)
+
+def lookup_category(request, category, page_id=1):
+    models = Category.objects.get(name=category).model_set.all()
     return api_paginate(models, page_id)
