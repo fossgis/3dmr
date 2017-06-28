@@ -16,4 +16,6 @@ urlpatterns = [
     url(r'^api/tag/(?P<tag>.*)$', api.lookup_tag, name='lookup_tag'),
     url(r'^api/category/(?P<category>.*)/(?P<page_id>[0-9]+)$', api.lookup_category, name='lookup_category'),
     url(r'^api/category/(?P<category>.*)$', api.lookup_category, name='lookup_category'),
+    url(r'^api/author/(?P<username>.*)/(?P<page_id>[0-9]+)$', api.lookup_author, name='lookup_author'),
+    url(r'^api/author/(?P<username>.*)$', api.lookup_author, name='lookup_author'),
 ]

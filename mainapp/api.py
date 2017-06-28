@@ -29,3 +29,7 @@ def lookup_tag(request, tag, page_id=1):
 def lookup_category(request, category, page_id=1):
     models = Category.objects.get(name=category).model_set.all()
     return api_paginate(models, page_id)
+
+def lookup_author(request, username, page_id=1):
+    models = User.objects.get(username=username).model_set.all()
+    return api_paginate(models, page_id)
