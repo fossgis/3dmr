@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage
 from .models import Model, Category
+from django.db.models import Max
 
 RESULTS_PER_API_CALL= 20
 
@@ -21,6 +22,29 @@ def api_paginate(models, page_id):
 
 
 # Create your views here.
+def get_info(request, model_id):
+    max_revision = Model.objects \
+        .filter(model_id=model_id) \
+        .aggregate(Max('revision'))['revision__max']
+
+    model = Model.objects.filter(model_id=model_id, revision=max_revision)[0]
+
+    result = {
+        'id': model.model_id,
+        'title': model.title,
+        'lat': model.latitude,
+        'lon': model.longitude,
+        'desc': model.description,
+        'tags': model.tags,
+        'author': model.author.username,
+        'date': model.upload_date,
+
+        # Note: the [::1] evaluates the query set to a list
+        'categories': model.categories.all().values_list('name', flat=True)[::1],
+        'comments': [],
+    }
+    return JsonResponse(result)
+
 def lookup_tag(request, tag, page_id=1):
     key, value = tag.split('=', 2)
     models = Model.objects.filter(tags__contains={key: value}).order_by('model_id')
