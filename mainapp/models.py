@@ -100,6 +100,21 @@ class LatestModel(pg.MaterializedView):
         db_table = 'mainapp_latestmodel'
         managed = False
 
+# View for the categories field above
+class ModelCategories(pg.View):
+    sql = """
+        SELECT
+            id AS id,
+            model_id AS latestmodel_id,
+            category_id AS category_id
+        FROM mainapp_model_categories
+    """
+
+    class Meta:
+        app_label = 'mainapp'
+        db_table = 'mainapp_latestmodel_categories'
+        managed = False
+
 @receiver(post_save, sender=Model)
 def model_saved(sender, action=None, instance=None, **kwargs):
     LatestModel.refresh(concurrently=True)
