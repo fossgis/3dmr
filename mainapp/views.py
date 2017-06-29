@@ -23,12 +23,12 @@ def downloads(request):
 def model(request, model_id):
     model = get_object_or_404(LatestModel, model_id=model_id)
     comments = Comment.objects.filter(model__model_id=model_id).order_by('-datetime')
-    print(comments)
 
     context = {
         'model': model,
         'comments': comments,
     }
+
     return render(request, 'mainapp/model.html', context)
 
 def search(request):
@@ -76,3 +76,23 @@ def editprofile(request):
     request.user.save()
 
     return redirect(user, username='')
+
+def addcomment(request):
+    comment = request.POST.get('comment')
+    model_id = int(request.POST.get('model_id'))
+    revision = int(request.POST.get('revision'))
+
+    author = request.user
+    rendered_comment = mistune.markdown(comment)
+    model_obj = get_object_or_404(Model, model_id=model_id, revision=revision)
+
+    obj = Comment(
+        author=author,
+        comment=comment,
+        rendered_comment=rendered_comment,
+        model=model_obj,
+    )
+
+    obj.save()
+
+    return redirect(model, model_id)

@@ -42,6 +42,17 @@
 				<h3 class="panel-title">Comments</h3>
 			</div>
 			<div class="panel-body">
+				{% if user.is_authenticated %}
+				<form action="{% url 'addcomment' %}" method="post">
+					{% csrf_token %}
+					<label for="comment">Add your comment:</label><br>
+					<textarea cols="80" rows="6" id="comment" name="comment">{{ owner.profile.description }}</textarea><br>
+					<input type="hidden" name="model_id" value="{{ model.model_id }}">
+					<input type="hidden" name="revision" value="{{ model.revision }}">
+					<button type="submit" class="btn">Submit</button>
+				</form>
+				<br>
+				{% endif %}
 				{% for comment in comments %}
 				<div class="panel panel-default">
 					<div class="panel-body">
