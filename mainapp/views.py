@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from social_django.models import UserSocialAuth
 from django.contrib.auth.models import User
-from .models import Model
+from .models import Model, LatestModel, Comment
 
 import mistune
 
@@ -21,9 +21,13 @@ def downloads(request):
     return render(request, 'mainapp/downloads.html')
 
 def model(request, model_id):
-    model = Model.objects.filter(model_id=model_id).order_by('revision')[0]
+    model = get_object_or_404(LatestModel, model_id=model_id)
+    comments = Comment.objects.filter(model__model_id=model_id).order_by('-datetime')
+    print(comments)
+
     context = {
         'model': model,
+        'comments': comments,
     }
     return render(request, 'mainapp/model.html', context)
 
