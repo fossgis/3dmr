@@ -17,3 +17,9 @@
 .col-md-4 .panel-body > p {
 	line-height: 1.5em;
 }
+
+nav img {
+	max-width: 24px;
+	max-height: 24px;
+	margin-right: 12px;
+}
