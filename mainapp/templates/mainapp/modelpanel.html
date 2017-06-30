@@ -1,10 +1,10 @@
 <div class="col-md-4 col-sm-6">
 	<div class="panel panel-primary">
 		<div class="panel-heading">
-			<h3 class="panel-title"><a href="{% url 'model' model_id=model.model_id %}">{{ model.title }}</a></h3>
+			<h3 class="panel-title"><a href="{% url 'model' model_id=model.model_id revision=model.revision %}">{{ model.title }}</a></h3>
 		</div>
 		<div>
-			<a href="{% url 'model' model_id=model.model_id %}"><img src="http://placehold.it/256x256" alt="Eiffel Tower"></a>
+			<a href="{% url 'model' model_id=model.model_id revision=model.revision %}"><img src="http://placehold.it/256x256" alt="Eiffel Tower"></a>
 		</div>
 		<div class="panel-body">
 			<p>Categories:

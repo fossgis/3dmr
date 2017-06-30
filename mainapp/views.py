@@ -20,8 +20,12 @@ def docs(request):
 def downloads(request):
     return render(request, 'mainapp/downloads.html')
 
-def model(request, model_id):
-    model = get_object_or_404(LatestModel, model_id=model_id)
+def model(request, model_id, revision=None):
+    if revision:
+        model = get_object_or_404(Model, model_id=model_id, revision=revision)
+    else:
+        model = get_object_or_404(LatestModel, model_id=model_id)
+
     comments = Comment.objects.filter(model__model_id=model_id).order_by('-datetime')
 
     context = {
@@ -95,4 +99,4 @@ def addcomment(request):
 
     obj.save()
 
-    return redirect(model, model_id)
+    return redirect(model, model_id, revision)
