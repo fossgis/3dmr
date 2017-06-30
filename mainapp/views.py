@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from social_django.models import UserSocialAuth
 from django.contrib.auth.models import User
+from django.contrib.auth import logout
 from .models import Model
 
 import mistune
@@ -13,6 +14,10 @@ def index(request):
     }
 
     return render(request, 'mainapp/index.html', context)
+
+def logout_user(request):
+    logout(request)
+    return redirect(index)
 
 def docs(request):
     return render(request, 'mainapp/docs.html')

@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^logout$', views.logout_user, name='logout'),
     url(r'^docs$', views.docs, name='docs'),
     url(r'^downloads$', views.downloads, name='downloads'),
     url(r'^model/(?P<model_id>[0-9]+)$', views.model, name='model'),

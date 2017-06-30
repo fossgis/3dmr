@@ -24,6 +24,9 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
+					{% if user.is_authenticated %}
+					<span class="icon-bar"></span>
+					{% endif %}
 				</button>
 				<a class="navbar-brand" href="{% url 'index' %}">3D Model Repository</a>
 			</div>
@@ -32,6 +35,7 @@
 					<li><a href="{% url 'docs' %}">API Docs</a></li>
 					<li><a href="{% url 'downloads' %}">Downloads</a></li>
 					{% if user.is_authenticated %}
+					<li><a href="{% url 'logout' %}">Log out</a></li>
 					<li><a href="{% url 'user' username=''%}"><img src="{{ user.social_auth.first.extra_data.avatar }}" alt=""> {{ user.get_username }}</a></li>
 					{% else %}
 					<li><a href="{% url 'social:begin' 'openstreetmap' %}">Login</a></li>
