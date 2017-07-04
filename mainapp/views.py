@@ -47,10 +47,23 @@ def search(request):
     tag = request.GET.get('tag', None)
     category = request.GET.get('category', None)
 
+    models = Model.objects
+
+    if tag:
+        key, value = tag.split('=', 2)
+        filtered_models = models.filter(tags__contains={key: value})
+    elif category:
+        filtered_models = models.filter(categories__name=category)
+    elif query:
+        filtered_models = \
+            models.filter(title__contains=query) | \
+            models.filter(description__contains=query)
+
     context = {
         'query': query,
         'tag': tag,
-        'category': category
+        'category': category,
+        'models': filtered_models
     }
 
     return render(request, 'mainapp/search.html', context)

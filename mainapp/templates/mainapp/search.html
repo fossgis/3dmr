@@ -16,10 +16,9 @@
 			{% endif %}
 			</h1>
 		</div>
+		{% for model in models %}
 		{% include "mainapp/modelpanel.html" %}
-		{% include "mainapp/modelpanel.html" %}
-		{% include "mainapp/modelpanel.html" %}
-		{% include "mainapp/modelpanel.html" %}
+		{% endfor %}
 	</div>
 	<div class="row" style="margin-bottom:30px;text-align:center;">
 		<div class="btn-group" role="group" aria-label="...">
