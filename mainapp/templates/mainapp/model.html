@@ -1,5 +1,5 @@
 {% extends "mainapp/layout.html" %}
-{% block pagename %}TODO: Model Name{% endblock %}
+{% block pagename %}{{ model.title }}{% endblock %}
 {% block body %}
 <div class="container">
 	<div class="row">
@@ -30,7 +30,7 @@
 					</p>
 					<p>Description:</p>
 					<p>{{ model.description }}</p>
-					<p>Uploaded by <a href="{% url 'user' model.author.username %}"><span class="label label-default">{{ model.author.username }}</span></a> on 2017-03-28</p>
+					<p>Uploaded by <a href="{% url 'user' model.author.username %}"><span class="label label-default">{{ model.author.username }}</span></a> on {{ model.upload_date|date:"c" }}</p>
 				</div>
 			</div>
 		</div>
@@ -42,14 +42,31 @@
 				<h3 class="panel-title">Comments</h3>
 			</div>
 			<div class="panel-body">
+				{% if user.is_authenticated %}
+				<form action="{% url 'addcomment' %}" method="post">
+					{% csrf_token %}
+					<label for="comment">Add your comment:</label><br>
+					<textarea cols="80" rows="6" id="comment" name="comment">{{ owner.profile.description }}</textarea><br>
+					<input type="hidden" name="model_id" value="{{ model.model_id }}">
+					<input type="hidden" name="revision" value="{{ model.revision }}">
+					<button type="submit" class="btn">Submit</button>
+				</form>
+				<br>
+				{% endif %}
+				{% for comment in comments %}
 				<div class="panel panel-default">
 					<div class="panel-body">
-						I've technically been here!
+						{{ comment.rendered_comment|safe }}
 					</div>
 					<div class="panel-footer">
-						<a href="#">n42k</a>
+						{% if model.revision == comment.model.revision %}
+						<p><a href="{% url 'user' comment.author.username %}"><span class="label label-default">{{ comment.author.username }}</span></a> on {{ comment.datetime|date:"c" }}</p>
+						{% else %}
+						<p><a href="{% url 'user' comment.author.username %}"><span class="label label-default">{{ comment.author.username }}</span></a> on {{ comment.datetime|date:"c" }} (revision {{ comment.model.revision }})</p>
+						{% endif %}
 					</div>
 				</div>
+				{% endfor %}
 			</div>
 		</div>
 	</div>

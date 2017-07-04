@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage
-from .models import Model, Category
+from .models import LatestModel
 from django.db.models import Max
 
 RESULTS_PER_API_CALL= 20
@@ -23,11 +23,7 @@ def api_paginate(models, page_id):
 
 # Create your views here.
 def get_info(request, model_id):
-    max_revision = Model.objects \
-        .filter(model_id=model_id) \
-        .aggregate(Max('revision'))['revision__max']
-
-    model = Model.objects.filter(model_id=model_id, revision=max_revision)[0]
+    model = LatestModel.objects.get(model_id=model_id)
 
     result = {
         'id': model.model_id,
@@ -47,13 +43,13 @@ def get_info(request, model_id):
 
 def lookup_tag(request, tag, page_id=1):
     key, value = tag.split('=', 2)
-    models = Model.objects.filter(tags__contains={key: value}).order_by('model_id')
+    models = LatestModel.objects.filter(tags__contains={key: value}).order_by('model_id')
     return api_paginate(models, page_id)
 
 def lookup_category(request, category, page_id=1):
-    models = Category.objects.get(name=category).model_set.all()
+    models = LatestModel.objects.filter(categories__name=category)
     return api_paginate(models, page_id)
 
 def lookup_author(request, username, page_id=1):
-    models = User.objects.get(username=username).model_set.all()
+    models = LatestModel.objects.filter(author__username=username)
     return api_paginate(models, page_id)

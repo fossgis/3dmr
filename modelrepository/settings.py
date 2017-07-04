@@ -36,8 +36,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
     'mainapp',
     'social_django',
+    'django_pgviews',
 ]
 
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
