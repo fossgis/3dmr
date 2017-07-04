@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.core.paginator import Paginator, EmptyPage
 from social_django.models import UserSocialAuth
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
@@ -43,9 +44,21 @@ def model(request, model_id, revision=None):
     return render(request, 'mainapp/model.html', context)
 
 def search(request):
+    RESULTS_PER_PAGE = 1
+
     query = request.GET.get('query', None)
     tag = request.GET.get('tag', None)
     category = request.GET.get('category', None)
+    page_id = int(request.GET.get('page', 1))
+
+    url_params = '?'
+
+    if query:
+        url_params += 'query=' + query
+    if tag:
+        url_params += 'tag=' + tag
+    if category:
+        url_params += 'category=' + category
 
     models = Model.objects
 
@@ -59,11 +72,20 @@ def search(request):
             models.filter(title__contains=query) | \
             models.filter(description__contains=query)
 
+    paginator = Paginator(filtered_models, RESULTS_PER_PAGE)
+    try:
+        results = paginator.page(page_id)
+    except EmptyPage:
+        results = []
+
     context = {
         'query': query,
         'tag': tag,
         'category': category,
-        'models': filtered_models
+        'models': results,
+        'paginator': paginator,
+        'page_id': page_id,
+        'url_params': url_params
     }
 
     return render(request, 'mainapp/search.html', context)
