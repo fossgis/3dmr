@@ -72,7 +72,9 @@ def search(request):
             models.filter(title__contains=query) | \
             models.filter(description__contains=query)
 
-    paginator = Paginator(filtered_models, RESULTS_PER_PAGE)
+    ordered_models = filtered_models.order_by('-pk')
+
+    paginator = Paginator(ordered_models, RESULTS_PER_PAGE)
     try:
         results = paginator.page(page_id)
     except EmptyPage:
