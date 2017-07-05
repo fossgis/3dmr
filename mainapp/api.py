@@ -59,3 +59,7 @@ def lookup_category(request, category, page_id=1):
 def lookup_author(request, username, page_id=1):
     models = LatestModel.objects.filter(author__username=username)
     return api_paginate(models, page_id)
+
+def search_title(request, title, page_id=1):
+    models = LatestModel.objects.filter(title__icontains=title)
+    return api_paginate(models, page_id)
