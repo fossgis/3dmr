@@ -17,7 +17,7 @@ def api_paginate(models, page_id):
     except EmptyPage:
         model_results = []
 
-    results = [model.id for model in model_results]
+    results = [model.model_id for model in model_results]
 
     return JsonResponse(results, safe=False)
 
