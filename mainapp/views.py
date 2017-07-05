@@ -11,7 +11,8 @@ import mistune
 
 # Create your views here.
 def index(request):
-    models = Model.objects.order_by('-pk')[:6]
+    MODELS_IN_INDEX_PAGE = 6
+    models = Model.objects.order_by('-pk')[:MODELS_IN_INDEX_PAGE]
     context = {
         'models': models,
     }
