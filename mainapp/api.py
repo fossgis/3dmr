@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 from django.core.paginator import Paginator, EmptyPage
 from .models import LatestModel, Comment
 from .utils import get_kv
@@ -46,6 +46,17 @@ def get_info(request, model_id):
         'comments': Comment.objects.filter(model_id=model.model_id).values_list('author__username', 'comment', 'datetime')[::1],
     }
     return JsonResponse(result)
+
+def get_model(request, model_id, revision=None):
+    MODEL_DIR = 'mainapp/static/mainapp/models'
+
+    if not revision:
+        revision = LatestModel.objects.get(model_id=model_id).revision
+
+    response = FileResponse(open('{}/{}/{}.zip'.format(MODEL_DIR, model_id, revision), 'rb'))
+    response['Content-Disposition'] = 'attachment; filename={}.zip'.format(revision)
+
+    return response
 
 def lookup_tag(request, tag, page_id=1):
     key, value = get_kv(tag)
