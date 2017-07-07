@@ -59,10 +59,12 @@
 						{{ comment.rendered_comment|safe }}
 					</div>
 					<div class="panel-footer">
-						{% if model.revision == comment.model.revision %}
-						<p><a href="{% url 'user' comment.author.username %}"><span class="label label-default">{{ comment.author.username }}</span></a> on {{ comment.datetime|date:"c" }}</p>
-						{% else %}
-						<p><a href="{% url 'user' comment.author.username %}"><span class="label label-default">{{ comment.author.username }}</span></a> on {{ comment.datetime|date:"c" }} (revision {{ comment.model.revision }})</p>
+						<a href="{% url 'user' comment.author.username %}">
+							<span class="label label-default">{{ comment.author.username }}</span>
+						</a>
+						on {{ comment.datetime|date:"Y-m-d H:i" }}
+						{% if model.revision != comment.model.revision %}
+						(revision {{ comment.model.revision }})
 						{% endif %}
 					</div>
 				</div>
