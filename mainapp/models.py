@@ -88,11 +88,11 @@ class LatestModel(pg.MaterializedView):
             latest.translation_z AS translation_z,
             latest.author_id AS author_id,
             latest.tags AS tags
-        FROM mainapp_model latest
-            LEFT JOIN mainapp_model older
-                ON latest.model_id = older.model_id AND
-                   latest.revision < older.revision
-        WHERE older.revision is NULL
+        FROM mainapp_model model 
+            LEFT JOIN mainapp_model newer 
+                ON model.model_id = newer.model_id AND
+                   model.revision < newer.revision
+        WHERE newer.revision is NULL
     """
 
     class Meta:
