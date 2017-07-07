@@ -131,3 +131,11 @@ class Comment(models.Model):
     comment = models.CharField(max_length=1024)
     rendered_comment = models.CharField(max_length=2048)
     datetime = models.DateTimeField(auto_now_add=True)
+
+class Ban(models.Model):
+    # note: the models.PROTECT means that admin accounts who
+    # have banned other users cannot be removed from the database.
+    admin = models.ForeignKey(User, models.PROTECT, related_name='admin')
+    banned_user = models.ForeignKey(User, models.CASCADE)
+    datetime = models.DateTimeField(auto_now_add=True)
+    reason = models.CharField(max_length=1024)
