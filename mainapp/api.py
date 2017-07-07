@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage
 from .models import LatestModel, Comment
+from .utils import get_kv
 from django.db.models import Max
 
 RESULTS_PER_API_CALL= 20
@@ -47,7 +48,7 @@ def get_info(request, model_id):
     return JsonResponse(result)
 
 def lookup_tag(request, tag, page_id=1):
-    key, value = tag.split('=', 2)
+    key, value = get_kv(tag)
     models = LatestModel.objects.filter(tags__contains={key: value}).order_by('model_id')
     return api_paginate(models, page_id)
 
