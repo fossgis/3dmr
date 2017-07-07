@@ -64,7 +64,7 @@ def search(request):
     models = Model.objects
 
     if tag:
-        key, value = tag.split('=', 2)
+        key, value = get_kv(tag)
         filtered_models = models.filter(tags__contains={key: value})
     elif category:
         filtered_models = models.filter(categories__name=category)
