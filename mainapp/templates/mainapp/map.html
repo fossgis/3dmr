@@ -1,0 +1,37 @@
+{% extends "mainapp/layout.html" %}
+{% block pagename %}Map{% endblock %}
+{% block headadditions %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js" integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg==" crossorigin=""></script>
+<style>
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
+#mapdiv {
+	display: block;
+	position: absolute;
+	height: auto;
+	bottom: 0px;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	margin-top: 50px;
+}
+</style>
+{% endblock %}
+{% block body %}
+<div id="mapdiv"></div>
+<script>
+	var map = L.map('mapdiv').setView([48.858, 2.294], 17);
+	L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+		attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+		minZoom: 8,
+		maxZoom: 18
+	}).addTo(map);
+L.marker([48.858, 2.294]).bindPopup('<a href="{% url 'model' model_id=1 %}">Eiffel Tower</a>').addTo(map);
+</script>
+{% endblock %}

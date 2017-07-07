@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^search$', views.search, name='search'),
     url(r'^upload$', views.upload, name='upload'),
     url(r'^user/(?P<username>.*)$', views.user, name='user'),
+    url(r'^map$', views.map, name='map'),
     url(r'^action/editprofile$', views.editprofile, name='editprofile'),
     url(r'^action/addcomment$', views.addcomment, name='addcomment'),
     

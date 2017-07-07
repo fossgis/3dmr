@@ -79,6 +79,9 @@ def user(request, username):
 
     return render(request, 'mainapp/user.html', context)
 
+def map(request):
+    return render(request, 'mainapp/map.html')
+
 def editprofile(request):
     description = request.POST.get('desc')
 
