@@ -131,15 +131,3 @@ class Comment(models.Model):
     comment = models.CharField(max_length=1024)
     rendered_comment = models.CharField(max_length=2048)
     datetime = models.DateTimeField(auto_now_add=True)
-
-class TagKey(models.Model):
-    name = models.CharField(max_length=256)
-
-class TagValue(models.Model):
-    name = models.CharField(max_length=256)
-
-# ternary relationship between Model, TagValue and TagKey
-class ModelTagValueTagKey(models.Model):
-    model = models.ForeignKey(Model, models.CASCADE)
-    tag_key = models.ForeignKey(TagKey, models.CASCADE)
-    tag_value = models.ForeignKey(TagValue, models.CASCADE)
