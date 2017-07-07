@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage
-from .models import LatestModel
+from .models import LatestModel, Comment
 from django.db.models import Max
 
 RESULTS_PER_API_CALL= 20
@@ -27,17 +27,22 @@ def get_info(request, model_id):
 
     result = {
         'id': model.model_id,
+        'revision': model.revision,
         'title': model.title,
         'lat': model.latitude,
         'lon': model.longitude,
+        'license': model.license,
         'desc': model.description,
-        'tags': model.tags,
         'author': model.author.username,
         'date': model.upload_date,
+        'rotation': model.rotation,
+        'scale': model.scale,
+        'translation': [model.translation_x, model.translation_y, model.translation_z],
+        'tags': model.tags,
 
         # Note: the [::1] evaluates the query set to a list
         'categories': model.categories.all().values_list('name', flat=True)[::1],
-        'comments': [],
+        'comments': Comment.objects.filter(model_id=model.model_id).values_list('author__username', 'comment', 'datetime')[::1],
     }
     return JsonResponse(result)
 
