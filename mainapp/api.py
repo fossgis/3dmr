@@ -59,3 +59,21 @@ def lookup_category(request, category, page_id=1):
 def lookup_author(request, username, page_id=1):
     models = LatestModel.objects.filter(author__username=username)
     return api_paginate(models, page_id)
+
+def search_range(request, latitude, longitude, distance, page_id=1):
+    # convert parameters to floats
+    latitude = float(latitude)
+    longitude = float(longitude)
+    distance = float(distance)
+
+    # TODO: update below to calculate correct values
+    min_latitude = latitude - distance
+    max_latitude = latitude + distance
+    min_longitude = longitude - distance
+    max_longitude = longitude + distance
+    models = LatestModel.objects.filter(
+            latitude__gte=min_latitude,
+            latitude__lte=max_latitude,
+            longitude__gte=min_longitude,
+            longitude__lte=max_longitude)
+    return api_paginate(models, page_id)
