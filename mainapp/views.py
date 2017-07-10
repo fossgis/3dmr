@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from social_django.models import UserSocialAuth
 from django.contrib.auth.models import User
@@ -109,4 +110,10 @@ def addcomment(request):
 
     obj.save()
 
-    return redirect(model, model_id, revision)
+    response = {
+        'comment': rendered_comment,
+        'author': author.username,
+        'datetime': obj.datetime
+    }
+
+    return JsonResponse(response)
