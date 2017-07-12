@@ -79,7 +79,12 @@ def search(request):
             models.filter(title__icontains=query) | \
             models.filter(description__icontains=query)
 
-    ordered_models = filtered_models.order_by('-pk')
+    try:
+        ordered_models = filtered_models.order_by('-pk')
+    except UnboundLocalError:
+        # filtered_models isn't set, redirect to homepage
+        return redirect(index)
+
 
     paginator = Paginator(ordered_models, RESULTS_PER_PAGE)
     try:
