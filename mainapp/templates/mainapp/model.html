@@ -121,6 +121,7 @@ function commentAdded(json) {
 					<textarea cols="80" rows="6" id="comment" name="comment">{{ owner.profile.description }}</textarea><br>
 					<input type="hidden" name="model_id" value="{{ model.model_id }}">
 					<input type="hidden" name="revision" value="{{ model.revision }}">
+					<input type="hidden" name="ajax" value="false">
 					<button type="submit" class="btn">Submit</button>
 				</form>
 				<br>

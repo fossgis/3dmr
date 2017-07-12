@@ -110,6 +110,11 @@ def addcomment(request):
 
     obj.save()
 
+    ajax = request.POST.get('ajax')
+
+    if ajax == 'false':
+        return redirect(model, model_id=model_id, revision=revision)
+
     response = {
         'comment': rendered_comment,
         'author': author.username,
