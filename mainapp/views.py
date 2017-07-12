@@ -67,7 +67,10 @@ def search(request):
     models = Model.objects
 
     if tag:
-        key, value = get_kv(tag)
+        try:
+            key, value = get_kv(tag)
+        except ValueError:
+            return redirect(index)
         filtered_models = models.filter(tags__contains={key: value})
     elif category:
         filtered_models = models.filter(categories__name=category)
