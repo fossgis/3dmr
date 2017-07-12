@@ -3,6 +3,14 @@
 {% block headadditions %}
 <script>
 function addComment() {
+	var comment = document.getElementById("comment");
+
+	// refuse if comment is empty
+	if(comment.value == "") {
+		alert("Empty comments aren't allowed.");
+		return false;
+	}
+
 	var request = new XMLHttpRequest();
 	var comment_url = "{% url 'addcomment' %}";
 	request.open("POST", comment_url, true);
@@ -15,12 +23,13 @@ function addComment() {
 	var form = document.getElementById("comment_form");
 	var csrf = form.children[0];
 
-	var comment = document.getElementById("comment");
-
 	var params = "comment=" + encodeURIComponent(comment.value);
 	params += "&" + csrf.name + "=" + csrf.value;
 	params += "&model_id={{ model.model_id }}&revision={{ model.revision }}";
 	request.send(params);
+
+	comment.value = "";
+
 	return false;
 }
 
@@ -29,7 +38,7 @@ function commentAdded(json) {
 
 	var html = '<div class="panel panel-default">';
 
-	html += '<div class="panel-body"';
+	html += '<div class="panel-body panel-new"';
 	html += fields["comment"];
 	html += '</div>'; // end of .panel-body
 
@@ -53,10 +62,13 @@ function commentAdded(json) {
 
 	html += '</div>'; // end of .panel.panel-default
 	
-	document.getElementById("comment_form")
+	// we'll place the returned comment after this element
+	var previousElement = document
+		.getElementById("comment_form")
 		.parentElement
 		.children[1]
-		.insertAdjacentHTML("afterEnd", html);
+	previousElement.insertAdjacentHTML("afterEnd", html);
+	previousElement.scrollIntoView();
 }
 </script>
 {% endblock %}
