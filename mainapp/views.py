@@ -4,12 +4,14 @@ from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from .models import Model, LatestModel, Comment
 
-from .utils import get_kv
+from .utils import get_kv, update_last_page, get_last_page
 
 import mistune
 
 # Create your views here.
 def index(request):
+    update_last_page(request)
+
     models = Model.objects.order_by('-pk')[:6]
     context = {
         'models': models,
@@ -17,17 +19,27 @@ def index(request):
 
     return render(request, 'mainapp/index.html', context)
 
+def login(request):
+    last_page = get_last_page(request)
+    return redirect(last_page)
+
 def logout_user(request):
     logout(request)
     return redirect(index)
 
 def docs(request):
+    update_last_page(request)
+
     return render(request, 'mainapp/docs.html')
 
 def downloads(request):
+    update_last_page(request)
+
     return render(request, 'mainapp/downloads.html')
 
 def model(request, model_id, revision=None):
+    update_last_page(request)
+
     if revision:
         model = get_object_or_404(Model, model_id=model_id, revision=revision)
     else:
@@ -43,6 +55,8 @@ def model(request, model_id, revision=None):
     return render(request, 'mainapp/model.html', context)
 
 def search(request):
+    update_last_page(request)
+
     query = request.GET.get('query', None)
     tag = request.GET.get('tag', None)
     category = request.GET.get('category', None)
@@ -56,9 +70,13 @@ def search(request):
     return render(request, 'mainapp/search.html', context)
 
 def upload(request):
+    update_last_page(request)
+
     return render(request, 'mainapp/upload.html')
 
 def user(request, username):
+    update_last_page(request)
+
     if username == '':
         if request.user:
             username = request.user.username # show our own userpage
@@ -80,6 +98,8 @@ def user(request, username):
     return render(request, 'mainapp/user.html', context)
 
 def map(request):
+    update_last_page(request)
+
     return render(request, 'mainapp/map.html')
 
 def editprofile(request):

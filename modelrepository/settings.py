@@ -79,7 +79,7 @@ TEMPLATES = [
     },
 ]
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/login'
 
 WSGI_APPLICATION = 'modelrepository.wsgi.application'
 

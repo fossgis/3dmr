@@ -5,6 +5,7 @@ from . import api
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^login$', views.login, name='login'),
     url(r'^logout$', views.logout_user, name='logout'),
     url(r'^docs$', views.docs, name='docs'),
     url(r'^downloads$', views.downloads, name='downloads'),
