@@ -70,8 +70,8 @@ def search(request):
         filtered_models = models.filter(categories__name=category)
     elif query:
         filtered_models = \
-            models.filter(title__contains=query) | \
-            models.filter(description__contains=query)
+            models.filter(title__icontains=query) | \
+            models.filter(description__icontains=query)
 
     ordered_models = filtered_models.order_by('-pk')
 
