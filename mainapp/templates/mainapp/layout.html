@@ -42,7 +42,7 @@
 					{% endif %}
 				</ul>
 				<form class="navbar-form navbar-left" action="{% url 'search' %}" method="GET">
-					<input type="text" class="form-control" placeholder="Search..." title="Search" name="query">
+					<input type="text" class="form-control" placeholder="Search..." title="Search" name="query" {% if query %}value="{{ query }}"{% endif %}>
 				</form>
 			</div>
 		</div>
