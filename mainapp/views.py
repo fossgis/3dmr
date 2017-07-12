@@ -50,7 +50,10 @@ def search(request):
     query = request.GET.get('query', None)
     tag = request.GET.get('tag', None)
     category = request.GET.get('category', None)
-    page_id = int(request.GET.get('page', 1))
+    try:
+        page_id = int(request.GET.get('page', 1))
+    except ValueError:
+        page_id = 1
 
     url_params = '?'
 
