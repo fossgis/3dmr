@@ -17,7 +17,7 @@ def api_paginate(models, page_id):
     except EmptyPage:
         model_results = []
 
-    results = [model.id for model in model_results]
+    results = [model.model_id for model in model_results]
 
     return JsonResponse(results, safe=False)
 
@@ -76,4 +76,7 @@ def search_range(request, latitude, longitude, distance, page_id=1):
             latitude__lte=max_latitude,
             longitude__gte=min_longitude,
             longitude__lte=max_longitude)
+def search_title(request, title, page_id=1):
+    models = LatestModel.objects.filter(title__icontains=title)
+
     return api_paginate(models, page_id)

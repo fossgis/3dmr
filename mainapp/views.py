@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.core.paginator import Paginator, EmptyPage
 from social_django.models import UserSocialAuth
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
@@ -12,7 +13,9 @@ import mistune
 def index(request):
     update_last_page(request)
 
-    models = Model.objects.order_by('-pk')[:6]
+    MODELS_IN_INDEX_PAGE = 6
+    models = Model.objects.order_by('-pk')[:MODELS_IN_INDEX_PAGE]
+
     context = {
         'models': models,
     }
@@ -57,14 +60,61 @@ def model(request, model_id, revision=None):
 def search(request):
     update_last_page(request)
 
+    RESULTS_PER_PAGE = 1
+
     query = request.GET.get('query', None)
     tag = request.GET.get('tag', None)
     category = request.GET.get('category', None)
+    try:
+        page_id = int(request.GET.get('page', 1))
+    except ValueError:
+        page_id = 1
+
+    url_params = '?'
+
+    if query:
+        url_params += 'query=' + query
+    if tag:
+        url_params += 'tag=' + tag
+    if category:
+        url_params += 'category=' + category
+
+    models = Model.objects
+
+    if tag:
+        try:
+            key, value = get_kv(tag)
+        except ValueError:
+            return redirect(index)
+        filtered_models = models.filter(tags__contains={key: value})
+    elif category:
+        filtered_models = models.filter(categories__name=category)
+    elif query:
+        filtered_models = \
+            models.filter(title__icontains=query) | \
+            models.filter(description__icontains=query)
+
+    try:
+        ordered_models = filtered_models.order_by('-pk')
+    except UnboundLocalError:
+        # filtered_models isn't set, redirect to homepage
+        return redirect(index)
+
+
+    paginator = Paginator(ordered_models, RESULTS_PER_PAGE)
+    try:
+        results = paginator.page(page_id)
+    except EmptyPage:
+        results = []
 
     context = {
         'query': query,
         'tag': tag,
-        'category': category
+        'category': category,
+        'models': results,
+        'paginator': paginator,
+        'page_id': page_id,
+        'url_params': url_params
     }
 
     return render(request, 'mainapp/search.html', context)
