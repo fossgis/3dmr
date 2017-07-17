@@ -55,7 +55,7 @@ def get_model(request, model_id, revision=None):
 
     response = FileResponse(open('{}/{}/{}.zip'.format(MODEL_DIR, model_id, revision), 'rb'))
     response['Content-Disposition'] = 'attachment; filename={}.zip'.format(revision)
-
+    response['Content-Type'] = 'application/zip'
     return response
 
 def lookup_tag(request, tag, page_id=1):
