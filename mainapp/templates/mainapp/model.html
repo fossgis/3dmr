@@ -1,5 +1,77 @@
 {% extends "mainapp/layout.html" %}
 {% block pagename %}{{ model.title }}{% endblock %}
+{% block headadditions %}
+<script>
+function addComment() {
+	var comment = document.getElementById("comment");
+
+	// refuse if comment is empty
+	if(comment.value == "") {
+		alert("Empty comments aren't allowed.");
+		return false;
+	}
+
+	var request = new XMLHttpRequest();
+	var comment_url = "{% url 'addcomment' %}";
+	request.open("POST", comment_url, true);
+	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	request.onreadystatechange = function() {
+		if(request.readyState == 4 && request.status == 200)
+			commentAdded(request.responseText);
+	};
+	
+	var form = document.getElementById("comment_form");
+	var csrf = form.children[0];
+
+	var params = "comment=" + encodeURIComponent(comment.value);
+	params += "&" + csrf.name + "=" + csrf.value;
+	params += "&model_id={{ model.model_id }}&revision={{ model.revision }}";
+	request.send(params);
+
+	comment.value = "";
+
+	return false;
+}
+
+function commentAdded(json) {
+	var fields = JSON.parse(json)
+
+	var html = '<div class="panel panel-default">';
+
+	html += '<div class="panel-body panel-new"';
+	html += fields["comment"];
+	html += '</div>'; // end of .panel-body
+
+	html += '<div class="panel-footer">';
+	html += '<a href="{% url 'user' '' %}' + fields["author"] + '">';
+	html += '<span class="label label-default">'
+	html += fields["author"];
+	html += '</span>';
+	html += '</a>'
+
+	// possibly find a library for this?
+	var datetime = new Date(fields.datetime);
+	var datestr = datetime.getFullYear() + "-"
+	datestr += ("0" + (datetime.getMonth() + 1)).slice(-2) + "-";
+	datestr += ("0" + (datetime.getDate())).slice(-2) + " ";
+	datestr += ("0" + (datetime.getHours())).slice(-2) + ":";
+	datestr += ("0" + (datetime.getMinutes())).slice(-2);
+
+	html += ' on ' + datestr;
+	html += '</div>'; // end of .panel-footer
+
+	html += '</div>'; // end of .panel.panel-default
+	
+	// we'll place the returned comment after this element
+	var previousElement = document
+		.getElementById("comment_form")
+		.parentElement
+		.children[1]
+	previousElement.insertAdjacentHTML("afterEnd", html);
+	previousElement.scrollIntoView();
+}
+</script>
+{% endblock %}
 {% block body %}
 <div class="container">
 	<div class="row">
@@ -43,12 +115,13 @@
 			</div>
 			<div class="panel-body">
 				{% if user.is_authenticated %}
-				<form action="{% url 'addcomment' %}" method="post">
+				<form action="{% url 'addcomment' %}" method="post" onsubmit="return addComment();" id="comment_form">
 					{% csrf_token %}
 					<label for="comment">Add your comment:</label><br>
 					<textarea cols="80" rows="6" id="comment" name="comment">{{ owner.profile.description }}</textarea><br>
 					<input type="hidden" name="model_id" value="{{ model.model_id }}">
 					<input type="hidden" name="revision" value="{{ model.revision }}">
+					<input type="hidden" name="ajax" value="false">
 					<button type="submit" class="btn">Submit</button>
 				</form>
 				<br>

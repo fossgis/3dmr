@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage
 from social_django.models import UserSocialAuth
@@ -179,4 +180,15 @@ def addcomment(request):
 
     obj.save()
 
-    return redirect(model, model_id, revision)
+    ajax = request.POST.get('ajax')
+
+    if ajax == 'false':
+        return redirect(model, model_id=model_id, revision=revision)
+
+    response = {
+        'comment': rendered_comment,
+        'author': author.username,
+        'datetime': obj.datetime
+    }
+
+    return JsonResponse(response)
