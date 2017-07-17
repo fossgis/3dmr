@@ -20,6 +20,8 @@ urlpatterns = [
     url(r'^action/addcomment$', views.addcomment, name='addcomment'),
     
     url(r'^api/info/(?P<model_id>[0-9]+)$', api.get_info, name='get_info'),
+    url(r'^api/model/(?P<model_id>[0-9]+)/(?P<revision>[0-9]+)$', api.get_model, name='get_model'),
+    url(r'^api/model/(?P<model_id>[0-9]+)$', api.get_model, name='get_model'),
     url(r'^api/tag/(?P<tag>.*)/(?P<page_id>[0-9]+)$', api.lookup_tag, name='lookup_tag'),
     url(r'^api/tag/(?P<tag>.*)$', api.lookup_tag, name='lookup_tag'),
     url(r'^api/category/(?P<category>.*)/(?P<page_id>[0-9]+)$', api.lookup_category, name='lookup_category'),
