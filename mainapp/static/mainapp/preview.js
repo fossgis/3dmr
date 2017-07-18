@@ -115,10 +115,14 @@ function onLoad(elementId, objText, mtlText, textures, options) {
 	object.position.y = -(bbox.min.y + bbox.max.y)/2;
 	object.position.z = -(bbox.min.z + bbox.max.z)/2;
 
-	var cameraDistanceFactor = 0.7;
-	camera.position.x = bbox.max.x * cameraDistanceFactor;
-	camera.position.y = bbox.max.y * cameraDistanceFactor;
-	camera.position.z = bbox.max.z * cameraDistanceFactor;
+	var difX = bbox.max.x - bbox.min.x;
+	var difY = bbox.max.y - bbox.min.y;
+	var difZ = bbox.max.z - bbox.min.z;
+
+	var cameraDistanceFactor = 0.9;
+	camera.position.x = object.position.x + difX * cameraDistanceFactor;
+	camera.position.y = object.position.y + difY * cameraDistanceFactor;
+	camera.position.z = object.position.z + difZ * cameraDistanceFactor;
 
 	var cameraLookAt = new THREE.Vector3(0, 0, 0);
 	camera.lookAt(cameraLookAt);
