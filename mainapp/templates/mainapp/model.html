@@ -8,14 +8,10 @@
 <script src="{% static 'mainapp/lib/OrbitControls.js' %}"></script>
 <script src="{% static 'mainapp/lib/zip.js' %}"></script>
 <script src="{% static 'mainapp/lib/zip-ext.js' %}"></script>
-<script>
-// zip lib, path for other source files
-zip.workerScriptsPath = "/static/mainapp/lib/";
-
-var model_id = {{ model.model_id }};
-var revision = {{ model.revision }};
-</script>
 <script src="{% static 'mainapp/preview.js' %}"></script>
+<script>
+displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }});
+</script>
 {% endblock %}
 {% block body %}
 <div class="container">

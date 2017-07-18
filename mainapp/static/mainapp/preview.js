@@ -1,39 +1,59 @@
-// TODO: update to use the get model API
-var url = "/static/mainapp/models/" + model_id + "/" + revision + ".zip";
+// zip lib, path for other source files
+zip.workerScriptsPath = "/static/mainapp/lib/";
 
-var objText;
-var mtlText;
-var textures = {};
+function displayPreview(elementId, model_id, revision) {
+	// TODO: update to use the get model API
+	var url = "/static/mainapp/models/" + model_id + "/" + revision + ".zip";
 
-zip.createReader(new zip.HttpReader(url), function(reader) {
-	// zip.createReader callback
-	reader.getEntries(function(entries) {
-		for(var i in entries) {
-			var entry = entries[i];
-			var name = entry.filename;
-			
-			if(name.endsWith(".obj"))
-				entry.getData(new zip.TextWriter(), function(text) {
-					objText = text;
-				});
-			else if(name.endsWith(".mtl"))
-				entry.getData(new zip.TextWriter(), function(text) {
-					mtlText = text;
-				});
-			else // let's assume it's a texture.
-				(function(name) {
-				entry.getData(new zip.BlobWriter(), function(blob) {
-					textures[name] = (window.webkitURL || window.URL).createObjectURL(blob);
-				});
-				})(name);
-		}
+	loadObjFromZip(url, elementId, onLoad);
+}
+
+function loadObjFromZip(url, elementId, callback) {
+	zip.createReader(new zip.HttpReader(url), function(reader) {
+		// zip.createReader callback
+		reader.getEntries(function(entries) {
+			var objText;
+			var mtlText;
+			var textures = {};
+
+			var counter = Object.keys(entries).length;
+			function updateCounter() {
+				--counter;
+				if(counter == 0)
+					callback(elementId, objText, mtlText, textures);
+			}
+
+			for(var i in entries) {
+				var entry = entries[i];
+				var name = entry.filename;
+				
+				if(name.endsWith(".obj"))
+					entry.getData(new zip.TextWriter(), function(text) {
+						objText = text;
+						updateCounter();
+					});
+				else if(name.endsWith(".mtl"))
+					entry.getData(new zip.TextWriter(), function(text) {
+						mtlText = text;
+						updateCounter();
+					});
+				else // let's assume it's a texture.
+					(function(name) {
+					entry.getData(new zip.BlobWriter(), function(blob) {
+						textures[name] = (window.webkitURL || window.URL).createObjectURL(blob);
+						updateCounter();
+					});
+					})(name);
+			}
+		});
+	}, function() {
+		// zip.createReader on error
+		alert("Failed loading model .zip");
 	});
-}, function() {
-	// zip.createReader on error
-	alert("Failed loading model .zip");
-});
+}
 
-function onLoad() {
+
+function onLoad(elementId, objText, mtlText, textures) {
 	var scene = new THREE.Scene();
 	var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
@@ -46,7 +66,7 @@ function onLoad() {
 	renderer.setSize(CANVAS_WIDTH, CANVAS_HEIGHT);
 	scene.background = new THREE.Color(0xffffff);
 
-	var renderPane = document.getElementById("render-pane");
+	var renderPane = document.getElementById(elementId);
 	renderPane.appendChild(renderer.domElement);
 
 	var controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -73,7 +93,6 @@ function onLoad() {
 	}
 
 	materialCreator.preload();
-	console.log(materialCreator);
 
 	var objLoader = new THREE.OBJLoader();
 	objLoader.setMaterials(materialCreator);
@@ -91,8 +110,3 @@ function onLoad() {
 
 	animate();
 }
-
-
-// TODO: set up polling to confirm that everything has been loaded,
-// or find a way to call a function when everything is loaded.
-setTimeout(onLoad, 5000);
