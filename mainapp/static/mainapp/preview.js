@@ -92,4 +92,7 @@ function onLoad() {
 	animate();
 }
 
-setTimeout(onLoad, 1000);
+
+// TODO: set up polling to confirm that everything has been loaded,
+// or find a way to call a function when everything is loaded.
+setTimeout(onLoad, 5000);
