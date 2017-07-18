@@ -10,7 +10,7 @@
 <script src="{% static 'mainapp/lib/zip-ext.js' %}"></script>
 <script src="{% static 'mainapp/preview.js' %}"></script>
 <script>
-displayPreview("render-pane", 750, 480, {{ model.model_id }}, {{ model.revision }});
+displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {width: 750, height: 480});
 </script>
 {% endblock %}
 {% block body %}

@@ -11,7 +11,7 @@
 <script src="{% static 'mainapp/preview.js' %}"></script>
 <script>
 {% for model in models %}
-displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", 256, 256, {{ model.model_id }}, {{ model.revision }});
+displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {height: 256});
 {% endfor %}
 </script>
 {% endblock %}
