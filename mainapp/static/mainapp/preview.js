@@ -1,11 +1,11 @@
 // TODO: update to use the get model API
-var URL = "/static/mainapp/models/" + model_id + "/" + revision + ".zip";
+var url = "/static/mainapp/models/" + model_id + "/" + revision + ".zip";
 
 var objText;
 var mtlText;
 var textures = {};
 
-zip.createReader(new zip.HttpReader(URL), function(reader) {
+zip.createReader(new zip.HttpReader(url), function(reader) {
 	// zip.createReader callback
 	reader.getEntries(function(entries) {
 		for(var i in entries) {
@@ -23,7 +23,7 @@ zip.createReader(new zip.HttpReader(URL), function(reader) {
 			else // let's assume it's a texture.
 				(function(name) {
 				entry.getData(new zip.BlobWriter(), function(blob) {
-					textures[name] = webkitURL.createObjectURL(blob);
+					textures[name] = (window.webkitURL || window.URL).createObjectURL(blob);
 				});
 				})(name);
 		}
