@@ -1,5 +1,20 @@
 {% extends "mainapp/layout.html" %}
 {% block pagename %}Homepage{% endblock %}
+{% block headadditions %}
+{% load static %}
+<script src="{% static 'mainapp/lib/three.js' %}"></script>
+<script src="{% static 'mainapp/lib/OBJLoader.js' %}"></script>
+<script src="{% static 'mainapp/lib/MTLLoader.js' %}"></script>
+<script src="{% static 'mainapp/lib/OrbitControls.js' %}"></script>
+<script src="{% static 'mainapp/lib/zip.js' %}"></script>
+<script src="{% static 'mainapp/lib/zip-ext.js' %}"></script>
+<script src="{% static 'mainapp/preview.js' %}"></script>
+<script>
+{% for model in models %}
+displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", 256, 256, {{ model.model_id }}, {{ model.revision }});
+{% endfor %}
+</script>
+{% endblock %}
 {% block body %}
 <div class="container">
 	<div class="row">

@@ -1,14 +1,14 @@
 // zip lib, path for other source files
 zip.workerScriptsPath = "/static/mainapp/lib/";
 
-function displayPreview(elementId, model_id, revision) {
+function displayPreview(elementId, width, height, model_id, revision) {
 	// TODO: update to use the get model API
 	var url = "/static/mainapp/models/" + model_id + "/" + revision + ".zip";
 
-	loadObjFromZip(url, elementId, onLoad);
+	loadObjFromZip(url, elementId, width, height, onLoad);
 }
 
-function loadObjFromZip(url, elementId, callback) {
+function loadObjFromZip(url, elementId, width, height, callback) {
 	zip.createReader(new zip.HttpReader(url), function(reader) {
 		// zip.createReader callback
 		reader.getEntries(function(entries) {
@@ -20,7 +20,7 @@ function loadObjFromZip(url, elementId, callback) {
 			function updateCounter() {
 				--counter;
 				if(counter == 0)
-					callback(elementId, objText, mtlText, textures);
+					callback(elementId, width, height, objText, mtlText, textures);
 			}
 
 			for(var i in entries) {
@@ -53,15 +53,15 @@ function loadObjFromZip(url, elementId, callback) {
 }
 
 
-function onLoad(elementId, objText, mtlText, textures) {
+function onLoad(elementId, width, height, objText, mtlText, textures) {
 	var scene = new THREE.Scene();
 	var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
 	var renderer = new THREE.WebGLRenderer();
 
 	// this is the size of the render pane
-	var CANVAS_WIDTH = 750;
-	var CANVAS_HEIGHT = 480;
+	var CANVAS_WIDTH = width;
+	var CANVAS_HEIGHT = height;
 
 	renderer.setSize(CANVAS_WIDTH, CANVAS_HEIGHT);
 	scene.background = new THREE.Color(0xffffff);
