@@ -100,7 +100,19 @@ function onLoad(elementId, width, height, objText, mtlText, textures) {
 
 	scene.add(object);
 
-	camera.position.z = 5;
+	var bbox = new THREE.Box3().setFromObject(object);
+
+	object.position.x = -(bbox.min.x + bbox.max.x)/2;
+	object.position.y = -(bbox.min.y + bbox.max.y)/2;
+	object.position.z = -(bbox.min.z + bbox.max.z)/2;
+
+	var cameraDistanceFactor = 0.7;
+	camera.position.x = bbox.max.x * cameraDistanceFactor;
+	camera.position.y = bbox.max.y * cameraDistanceFactor;
+	camera.position.z = bbox.max.z * cameraDistanceFactor;
+
+	var cameraLookAt = new THREE.Vector3(0, 0, 0);
+	camera.lookAt(cameraLookAt);
 
 	function animate() {
 		requestAnimationFrame(animate);
