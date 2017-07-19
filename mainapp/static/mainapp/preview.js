@@ -77,7 +77,7 @@ function onLoad(elementId, objText, mtlText, textures, options) {
 	var scene = new THREE.Scene();
 	scene.background = new THREE.Color(0x87cefa);
 
-	var camera = new THREE.PerspectiveCamera( 75, width / height, 0.1, 1000 );
+	var camera = new THREE.PerspectiveCamera( 75, width / height, 0.1, 1000);
 	var controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 	var light = new THREE.AmbientLight(0xffffff);
