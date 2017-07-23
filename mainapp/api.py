@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse, FileResponse
 from django.core.paginator import Paginator, EmptyPage
 from .models import LatestModel, Comment
-from .utils import get_kv
+from .utils import get_kv, MODEL_DIR
 from django.db.models import Max
 
 RESULTS_PER_API_CALL= 20
@@ -50,8 +50,6 @@ def get_info(request, model_id):
     return JsonResponse(result)
 
 def get_model(request, model_id, revision=None):
-    MODEL_DIR = 'mainapp/static/mainapp/models'
-
     if not revision:
         revision = LatestModel.objects.get(model_id=model_id).revision
 

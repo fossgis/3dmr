@@ -15,9 +15,10 @@ urlpatterns = [
     url(r'^search$', views.search, name='search'),
     url(r'^upload$', views.upload, name='upload'),
     url(r'^user/(?P<username>.*)$', views.user, name='user'),
-    url(r'^map$', views.map, name='map'),
+    url(r'^map$', views.modelmap, name='map'),
     url(r'^action/editprofile$', views.editprofile, name='editprofile'),
     url(r'^action/addcomment$', views.addcomment, name='addcomment'),
+    url(r'^action/addmodel$', views.addmodel, name='addmodel'),
     
     url(r'^api/info/(?P<model_id>[0-9]+)$', api.get_info, name='get_info'),
     url(r'^api/model/(?P<model_id>[0-9]+)/(?P<revision>[0-9]+)$', api.get_model, name='get_model'),

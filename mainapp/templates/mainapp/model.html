@@ -101,7 +101,7 @@ function commentAdded(json) {
 						{% endfor %}
 					</p>
 					<p>Description:</p>
-					<p>{{ model.description }}</p>
+					<p>{{ model.rendered_description|safe }}</p>
 					<p>Uploaded by <a href="{% url 'user' model.author.username %}"><span class="label label-default">{{ model.author.username }}</span></a> on {{ model.upload_date|date:"c" }}</p>
 				</div>
 			</div>
