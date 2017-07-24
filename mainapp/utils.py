@@ -15,5 +15,10 @@ LICENSES = {
     1: 'License 1',
 }
 
+# The possible changes users can make to the repository
+CHANGES = {
+    0: 'Upload',
+}
+
 # The directory the models will be stored in
 MODEL_DIR = 'mainapp/static/mainapp/models'

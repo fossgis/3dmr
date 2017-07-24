@@ -7,11 +7,11 @@ from django.core.paginator import Paginator, EmptyPage
 from social_django.models import UserSocialAuth
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
-from .models import Model, LatestModel, Comment, Category
+from .models import Model, LatestModel, Comment, Category, Change
 from django.contrib import messages
 from django.db import transaction
 
-from .utils import get_kv, update_last_page, get_last_page, LICENSES, MODEL_DIR
+from .utils import get_kv, update_last_page, get_last_page, LICENSES, MODEL_DIR, CHANGES
 
 import mistune
 
@@ -152,6 +152,7 @@ def user(request, username):
     oauth_user = get_object_or_404(UserSocialAuth, user=user)
 
     models = user.model_set.order_by('-pk')
+    changes = user.change_set.order_by('-pk')
 
     try:
         page_id = int(request.GET.get('page', 1))
@@ -169,10 +170,12 @@ def user(request, username):
             'username': user.username,
             'avatar': oauth_user.extra_data['avatar'],
             'profile': user.profile,
-            'models': results
+            'models': results,
+            'changes': changes,
         },
         'paginator': paginator,
         'page_id': page_id,
+        'changes': CHANGES,
     }
 
     return render(request, 'mainapp/user.html', context)
@@ -314,6 +317,14 @@ def addmodel(request):
                 m.categories.add(category)
 
             m.save()
+
+            change = Change(
+                author=request.user,
+                model=m,
+                typeof=0, # TODO: find better way to express this (Enum?)
+            )
+
+            change.save()
 
             filepath = MODEL_DIR + f'/{m.model_id}/{m.revision}.zip'
             os.makedirs(os.path.dirname(filepath), exist_ok=True)

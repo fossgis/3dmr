@@ -6,6 +6,8 @@ from django.dispatch import receiver
 
 from django_pgviews import view as pg
 
+from .utils import CHANGES
+
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -124,6 +126,10 @@ class Change(models.Model):
     model = models.ForeignKey(Model, models.CASCADE)
     typeof = models.IntegerField()
     datetime = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def typeof_text(self):
+        return CHANGES[self.typeof]
 
 class Comment(models.Model):
     author = models.ForeignKey(User, models.CASCADE)
