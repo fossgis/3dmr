@@ -128,6 +128,8 @@ def upload(request):
 def user(request, username):
     update_last_page(request)
 
+    RESULTS_PER_PAGE = 3
+
     if username == '':
         if request.user:
             username = request.user.username # show our own userpage
@@ -139,12 +141,27 @@ def user(request, username):
 
     models = user.model_set.order_by('-pk')
 
-    context = {'owner': {
-        'username': user.username,
-        'avatar': oauth_user.extra_data['avatar'],
-        'profile': user.profile,
-        'models': models,
-    }}
+    try:
+        page_id = int(request.GET.get('page', 1))
+    except ValueError:
+        page_id = 1
+
+    paginator = Paginator(models, RESULTS_PER_PAGE)
+    try:
+        results = paginator.page(page_id)
+    except EmptyPage:
+        results = []
+
+    context = {
+        'owner': {
+            'username': user.username,
+            'avatar': oauth_user.extra_data['avatar'],
+            'profile': user.profile,
+            'models': results
+        },
+        'paginator': paginator,
+        'page_id': page_id,
+    }
 
     return render(request, 'mainapp/user.html', context)
 

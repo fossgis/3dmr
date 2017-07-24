@@ -49,11 +49,13 @@ function enableEdit() {
 			</script>
 			<div class="row" style="margin-bottom:30px;text-align:center;">
 				<div class="btn-group" role="group" aria-label="...">
-					<button type="button" class="btn btn-primary disabled">1</button>
-					<button type="button" class="btn btn-default">2</button>
-					<button type="button" class="btn btn-default">3</button>
-					<button type="button" class="btn btn-default">...</button>
-					<button type="button" class="btn btn-default">10</button>
+					{% for page in paginator.page_range %}
+					{% if page == page_id %}
+					<a class="btn btn-primary disabled">{{ page }}</a>
+					{% else %}
+					<a href="{% url 'user' username=owner.username %}?page={{ page }}" class="btn btn-default">{{ page }}</a>
+					{% endif %}
+					{% endfor %}
 				</div>
 			</div>
 		</div>
