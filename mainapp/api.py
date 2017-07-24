@@ -1,3 +1,5 @@
+import math
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
 from django.http import JsonResponse, FileResponse
@@ -77,16 +79,51 @@ def search_range(request, latitude, longitude, distance, page_id=1):
     longitude = float(longitude)
     distance = float(distance)
 
-    # TODO: update below to calculate correct values
-    min_latitude = latitude - distance
-    max_latitude = latitude + distance
-    min_longitude = longitude - distance
-    max_longitude = longitude + distance
+    # bind latitude and longitude from [min, max] to [-pi, pi] for usage in trigonometry
+    latitude = math.radians(latitude)
+    longitude = math.radians(longitude)
+
+    PLANETARY_RADIUS = 6371e3 # in meters
+    angular_radius = distance / PLANETARY_RADIUS
+
+    min_latitude = latitude - angular_radius
+    max_latitude = latitude + angular_radius
+
+    MIN_LATITUDE = -math.pi/2
+    MAX_LATITUDE = math.pi/2
+    MIN_LONGITUDE = -math.pi
+    MAX_LONGITUDE = math.pi
+
+    if min_latitude > MIN_LATITUDE and max_latitude < MAX_LATITUDE:
+        d_longitude = math.asin(math.sin(angular_radius)/math.cos(latitude))
+
+        min_longitude = longitude - d_longitude
+        if min_longitude < MIN_LONGITUDE:
+            min_longitude += 2 * math.pi
+
+        max_longitude = longitude + d_longitude
+        if max_longitude > MAX_LONGITUDE:
+            max_longitude -= 2 * math.pi
+    else:
+        min_latitude = max(min_latitude, MIN_LATITUDE)
+        max_latitude = min(max_latitude, MAX_LATITUDE)
+        min_longitude = MIN_LONGITUDE
+        max_longitude = MAX_LONGITUDE
+
+    # bind results back for usage in the repository
+    min_latitude = math.degrees(min_latitude)
+    max_latitude = math.degrees(max_latitude)
+    min_longitude = math.degrees(min_longitude)
+    max_longitude = math.degrees(max_longitude)
+
     models = LatestModel.objects.filter(
             latitude__gte=min_latitude,
             latitude__lte=max_latitude,
             longitude__gte=min_longitude,
             longitude__lte=max_longitude)
+
+    return api_paginate(models, page_id)
+
 def search_title(request, title, page_id=1):
     models = LatestModel.objects.filter(title__icontains=title)
 
