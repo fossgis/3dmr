@@ -8,10 +8,11 @@ from social_django.models import UserSocialAuth
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from .models import Model, LatestModel, Comment, Category, Change
+from .forms import UploadForm
 from django.contrib import messages
 from django.db import transaction
 
-from .utils import get_kv, update_last_page, get_last_page, LICENSES, MODEL_DIR, CHANGES
+from .utils import get_kv, update_last_page, get_last_page, MODEL_DIR, CHANGES
 
 import mistune
 
@@ -128,17 +129,112 @@ def search(request):
     return render(request, 'mainapp/search.html', context)
 
 def upload(request):
-    if not request.user.is_authenticated():
-        return redirect(index)
-
     update_last_page(request)
 
-    context = {
-            'data': request.session.get('post_data', {}),
-            'licenses': LICENSES,
-    }
+    if request.method == 'POST':
+        form = UploadForm(request.POST, request.FILES)
 
-    return render(request, 'mainapp/upload.html', context)
+        if not request.user.is_authenticated():
+            # Show error in form, but don't redirect anywhere
+            messages.error(request, 'You must be logged in to use this feature.')
+
+            # Store form data in session, to use after login
+            request.session['post_data'] = request.POST
+        elif form.is_valid():
+            title = form.cleaned_data['title']
+            tags = form.cleaned_data['tags']
+            categories = form.cleaned_data['categories']
+            description = form.cleaned_data['description']
+            latitude = form.cleaned_data['latitude']
+            longitude = form.cleaned_data['longitude']
+            license = form.cleaned_data['license']
+            model_file = request.FILES['model_file']
+
+            try:
+                with transaction.atomic():
+                    # get the model_id for this model.
+                    # we can only do it this way because we're in a transaction.
+                    highest_model_id = LatestModel.objects.latest('model_id').model_id
+                    model_id = highest_model_id + 1
+
+                    rendered_description = mistune.markdown(description)
+
+                    m = Model(
+                        model_id=model_id,
+                        revision=1,
+                        title=title,
+                        description=description,
+                        rendered_description=rendered_description,
+                        tags=tags,
+                        longitude=longitude,
+                        latitude=latitude,
+                        license=license,
+                        author=request.user,
+                    )
+
+                    m.save()
+
+                    for category_name in categories:
+                        try:
+                            category = Category.objects.get(name=category_name)
+                        except:
+                            category = Category(name=category_name)
+
+                        category.save()
+                        m.categories.add(category)
+
+                    m.save()
+
+                    change = Change(
+                        author=request.user,
+                        model=m,
+                        typeof=0, # TODO: find better way to express this (Enum?)
+                    )
+
+                    change.save()
+
+                    filepath = MODEL_DIR + f'/{m.model_id}/{m.revision}.zip'
+                    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+                    with open(filepath, 'wb+') as destination:
+                        for chunk in model_file.chunks():
+                            destination.write(chunk)
+            except:
+                # We reach here when any of the following happens:
+                # 1) Database constraint is violated
+                # 2) File is not saved correctly to the specified directory
+                # 3) Unknown
+
+                # We should have verified everything to do with 1) earlier,
+                # and notified the user if there was any error. Thus, it's
+                # unlikely to be 1). 
+
+                # Thus, we can assume that 2) and 3) are server errors, and that
+                # the user can do nothing about them. Thus, report this.
+                logger.exception('Fatal server error when uploading model.')
+                messages.error(request, 'Fatal server error. Try again later.')
+
+                request.session['post_data'] = request.POST
+                return redirect(upload)
+
+            return redirect(model, model_id=m.model_id, revision=m.revision)
+    else:
+        if not request.user.is_authenticated():
+            return redirect(index)
+
+        post_data = request.session.get('post_data', None)
+        if post_data: # if there's post_data in our session
+            form = UploadForm(post_data)
+
+            # clear previous errors in model_file
+            form.errors['model_file'] = form.error_class()
+            # add a single error to this field
+            form.add_error('model_file', 'You must reupload your file.')
+
+            del request.session['post_data']
+        else: # otherwise
+            form = UploadForm()
+
+    return render(request, 'mainapp/upload.html', {'form': form})
 
 def user(request, username):
     update_last_page(request)
@@ -233,136 +329,3 @@ def addcomment(request):
     }
 
     return JsonResponse(response)
-
-def addmodel(request):
-    # Place all errors in a list, so that we can confirm the list
-    # is empty at the end, for a successful run, or that it has
-    # elements, for a failed run (and redirect to the upload page)
-    errors = []
-
-    title = request.POST.get('title')
-    if not title:
-        errors.append('Model name is empty.')
-
-    description = request.POST.get('description')
-    if not description:
-        messages.warning(request, 'Description is empty.')
-    rendered_description = mistune.markdown(description)
-
-    tag_string = request.POST.get('tags')
-    tags = {}
-    if tag_string != '':
-        tag_list = tag_string.split(', ')
-        for tag_str in tag_list:
-            try:
-                k, v = get_kv(tag_str)
-                tags[k] = v
-            except ValueError:
-                errors.append(f'Invalid tag: {tag_str}')
-    else:
-        messages.warning(request, 'This model has no tags.')
-
-    categories_string = request.POST.get('categories')
-
-    if categories_string == '':
-        categories_list = []
-        messages.warning(request, 'This model has no categories.')
-    else:
-        categories_list = categories_string.split(', ')
-    
-    location_string = request.POST.get('location')
-    try:
-        longitude, latitude = map(float, location_string.split(','))
-    except (ValueError, TypeError):
-        errors.append('Invalid latitude and longitude.')
-
-    try:
-        license = int(request.POST.get('license'))
-    except TypeError:
-        errors.append('You must select a license.')
-
-    try:
-        f = request.FILES['file']
-    except KeyError:
-        errors.append('You must upload a model file.')
-
-    # save post data in case we fail
-    request.session['post_data'] = request.POST
-
-    # check user login as late as possible, so that we can save as much as we can
-    if not request.user.is_authenticated():
-        messages.error(request, 'You must be logged in to use this feature.')
-        return redirect(index)
-
-    if errors:
-        for error in errors:
-            messages.error(request, error)
-        return redirect(upload)
-
-    # clear post data when all user input is validated
-    request.session['post_data'] = {}
-    del request.session['post_data']
-
-    try:
-        with transaction.atomic():
-            # get the model_id for this model.
-            # we can only do it this way because we're in a transaction.
-            highest_model_id = LatestModel.objects.latest('model_id').model_id
-            model_id = highest_model_id + 1
-
-            m = Model(
-                model_id=model_id,
-                revision=1,
-                title=title,
-                description=description,
-                rendered_description=rendered_description,
-                tags=tags,
-                longitude=longitude,
-                latitude=latitude,
-                license=license,
-                author=request.user,
-            )
-
-            m.save()
-
-            for category_name in categories_list:
-                try:
-                    category = Category.objects.get(name=category_name)
-                except:
-                    category = Category(name=category_name)
-
-                category.save()
-                m.categories.add(category)
-
-            m.save()
-
-            change = Change(
-                author=request.user,
-                model=m,
-                typeof=0, # TODO: find better way to express this (Enum?)
-            )
-
-            change.save()
-
-            filepath = MODEL_DIR + f'/{m.model_id}/{m.revision}.zip'
-            os.makedirs(os.path.dirname(filepath), exist_ok=True)
-            with open(filepath, 'wb+') as destination:
-                for chunk in f.chunks():
-                    destination.write(chunk)
-    except:
-        # We reach here when any of the following happens:
-        # 1) Database constraint is violated
-        # 2) File is not saved correctly to the specified directory
-        # 3) Unknown
-
-        # We should have verified everything to do with 1) earlier,
-        # and notified the user if there was any error. Thus, it's
-        # unlikely to be 1). 
-
-        # Thus, we can assume that 2) and 3) are server errors, and that
-        # the user can do nothing about them. Thus, report this.
-        logger.exception('Fatal server error when uploading model.')
-        messages.error(request, 'Fatal server error. Try again later.')
-        return redirect(upload)
-
-    return redirect(model, model_id=m.model_id, revision=m.revision)
