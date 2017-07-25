@@ -27,3 +27,9 @@ nav img {
 .panel-new {
 	background-color: #fcf8e3;
 }
+
+.form-group.required > label:before {
+	color: red;
+	content: "*";
+	margin-right: 5px;
+}

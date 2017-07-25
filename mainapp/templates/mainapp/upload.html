@@ -16,7 +16,7 @@
 		<p>Then, simply fill the fields below and upload your model!</p>
 		<form action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
 			{% csrf_token %}
-			<div class="form-group">
+			<div class="form-group required">
 				<label for="{{ form.title.id_for_label }}">{{ form.title.label }}:</label>
 				{% for error in form.title.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
 				{{ form.title }}
@@ -47,7 +47,7 @@
 				{% for error in form.longitude.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
 				{{ form.longitude }}
 			</div>
-			<div class="form-group">
+			<div class="form-group required">
 				<label>License</label>
 				{% for error in form.license.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
 				{% for radio in form.license %}
@@ -56,7 +56,7 @@
 				</div>
 				{% endfor %}
 			</div>
-			<div class="form-group">
+			<div class="form-group required">
 				<label for="{{ form.model_file.id_for_label }}">{{ form.model_file.label }}</label>
 				{% for error in form.model_file.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
 				{{ form.model_file }}
