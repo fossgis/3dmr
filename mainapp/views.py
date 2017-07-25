@@ -128,6 +128,9 @@ def search(request):
     return render(request, 'mainapp/search.html', context)
 
 def upload(request):
+    if not request.user.is_authenticated():
+        return redirect(index)
+
     update_last_page(request)
 
     context = {
@@ -186,6 +189,9 @@ def modelmap(request):
     return render(request, 'mainapp/map.html')
 
 def editprofile(request):
+    if not request.user.is_authenticated():
+        return redirect(index)
+
     description = request.POST.get('desc')
 
     request.user.profile.description = description
@@ -195,6 +201,9 @@ def editprofile(request):
     return redirect(user, username='')
 
 def addcomment(request):
+    if not request.user.is_authenticated():
+        return redirect(index)
+
     comment = request.POST.get('comment')
     model_id = int(request.POST.get('model_id'))
     revision = int(request.POST.get('revision'))
@@ -277,12 +286,17 @@ def addmodel(request):
     except KeyError:
         errors.append('You must upload a model file.')
 
+    # save post data in case we fail
+    request.session['post_data'] = request.POST
+
+    # check user login as late as possible, so that we can save as much as we can
+    if not request.user.is_authenticated():
+        messages.error(request, 'You must be logged in to use this feature.')
+        return redirect(index)
+
     if errors:
         for error in errors:
             messages.error(request, error)
-
-        request.session['post_data'] = request.POST
-
         return redirect(upload)
 
     # clear post data when all user input is validated
