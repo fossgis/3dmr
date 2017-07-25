@@ -5,7 +5,10 @@ class TagField(forms.CharField):
     def __init__(self, *args, **kwargs):
         if not kwargs.get('widget'):
             kwargs['widget'] = forms.TextInput(
-                attrs={'placeholder': 'shape=pyramidal, building=yes'})
+                attrs= {
+                    'placeholder': 'shape=pyramidal, building=yes',
+                    'pattern': '^.*?(?==)((?!, ).)*(, .*?(?==)((?!, ).)*)*$',
+                })
 
         super(TagField, self).__init__(*args, **kwargs)
 
