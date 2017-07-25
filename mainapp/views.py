@@ -244,8 +244,12 @@ def addmodel(request):
     tags = {}
     if tag_string != '':
         tag_list = tag_string.split(', ')
-        for k, v in map(get_kv, tag_list):
-            tags[k] = v
+        for tag_str in tag_list:
+            try:
+                k, v = get_kv(tag_str)
+                tags[k] = v
+            except ValueError:
+                errors.append(f'Invalid tag: {tag_str}')
     else:
         messages.warning(request, 'This model has no tags.')
 
