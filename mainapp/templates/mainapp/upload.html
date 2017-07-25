@@ -12,7 +12,7 @@
 	<div class="row">
 		<h1>Upload Model</h1>
 		<p>Here, you can upload a model to the repository.</p>
-		<p>First, make sure to package your model correctly: make sure it's in the OpenCOLLADA format, rename it to 'model.dae', then zip it up along with the texture it uses.</p>
+		<p>First, make sure to package your model correctly: make sure it's in the OBJ format, includes an MTL file, then zip these files, along with their textures. Make sure every file is in the root directory of the zip.</p>
 		<p>Then, simply fill the fields below and upload your model!</p>
 		<form action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
 			{% csrf_token %}
