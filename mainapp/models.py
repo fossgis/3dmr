@@ -71,23 +71,23 @@ class LatestModel(pg.MaterializedView):
     concurrent_index = 'id'
     sql = """
         SELECT
-            latest.id AS id,
-            latest.model_id AS model_id,
-            latest.revision AS revision,
-            latest.title AS title,
-            latest.description AS description,
-            latest.rendered_description AS rendered_description,
-            latest.upload_date AS upload_date,
-            latest.latitude AS latitude,
-            latest.longitude AS longitude,
-            latest.license AS license,
-            latest.rotation AS rotation,
-            latest.scale AS scale,
-            latest.translation_x AS translation_x,
-            latest.translation_y AS translation_y,
-            latest.translation_z AS translation_z,
-            latest.author_id AS author_id,
-            latest.tags AS tags
+            newer.id AS id,
+            newer.model_id AS model_id,
+            newer.revision AS revision,
+            newer.title AS title,
+            newer.description AS description,
+            newer.rendered_description AS rendered_description,
+            newer.upload_date AS upload_date,
+            newer.latitude AS latitude,
+            newer.longitude AS longitude,
+            newer.license AS license,
+            newer.rotation AS rotation,
+            newer.scale AS scale,
+            newer.translation_x AS translation_x,
+            newer.translation_y AS translation_y,
+            newer.translation_z AS translation_z,
+            newer.author_id AS author_id,
+            newer.tags AS tags
         FROM mainapp_model model 
             LEFT JOIN mainapp_model newer 
                 ON model.model_id = newer.model_id AND
