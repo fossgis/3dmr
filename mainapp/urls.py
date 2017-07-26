@@ -33,4 +33,5 @@ urlpatterns = [
     url(r'^api/search/(?P<latitude>[0-9]+(\.[0-9]+)?)/(?P<longitude>[0-9]+(\.[0-9]+)?)/(?P<distance>[0-9]+(\.[0-9]+)?)$', api.search_range, name='lookup_range'),
     url(r'^api/search/title/(?P<title>.*)/(?P<page_id>[0-9]+)$', api.search_title, name='search_title'),
     url(r'^api/search/title/(?P<title>.*)$', api.search_title, name='search_title'),
+    url(r'^api/search/full$', api.search_full, name='search_full'),
 ]
