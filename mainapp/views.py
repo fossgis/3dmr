@@ -154,7 +154,11 @@ def upload(request):
                 with transaction.atomic():
                     # get the model_id for this model.
                     # we can only do it this way because we're in a transaction.
-                    highest_model_id = LatestModel.objects.latest('model_id').model_id
+                    try:
+                        highest_model_id = LatestModel.objects.latest('model_id').model_id
+                    except LatestModel.DoesNotExist:
+                        highest_model_id = 1 # no models in db
+
                     model_id = highest_model_id + 1
 
                     rendered_description = mistune.markdown(description)
