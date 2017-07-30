@@ -155,16 +155,14 @@ def upload(request):
                     # get the model_id for this model.
                     # we can only do it this way because we're in a transaction.
                     try:
-                        highest_model_id = LatestModel.objects.latest('model_id').model_id
+                        next_model_id = LatestModel.objects.latest('model_id').model_id + 1
                     except LatestModel.DoesNotExist:
-                        highest_model_id = 1 # no models in db
-
-                    model_id = highest_model_id + 1
+                        next_model_id = 1 # no models in db
 
                     rendered_description = mistune.markdown(description)
 
                     m = Model(
-                        model_id=model_id,
+                        model_id=next_model_id,
                         revision=1,
                         title=title,
                         description=description,
