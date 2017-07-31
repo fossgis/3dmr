@@ -134,7 +134,6 @@ def search_title(request, title, page_id=1):
 
 def search_full(request):
     body = request.body.decode('UTF-8')
-    print(body)
     data = json.loads(body)
 
     models = LatestModel.objects.all()
