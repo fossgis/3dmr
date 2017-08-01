@@ -49,6 +49,7 @@ class Model(models.Model):
     translation_x = models.FloatField(default=0.0)
     translation_y = models.FloatField(default=0.0)
     translation_z = models.FloatField(default=0.0)
+    is_hidden = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'mainapp'
@@ -71,6 +72,7 @@ class LatestModel(pg.MaterializedView):
     translation_x = models.FloatField(default=0.0)
     translation_y = models.FloatField(default=0.0)
     translation_z = models.FloatField(default=0.0)
+    is_hidden = models.BooleanField(default=False)
 
     concurrent_index = 'id'
     sql = """
@@ -91,7 +93,8 @@ class LatestModel(pg.MaterializedView):
             model.translation_y AS translation_y,
             model.translation_z AS translation_z,
             model.author_id AS author_id,
-            model.tags AS tags
+            model.tags AS tags,
+            model.is_hidden AS is_hidden
         FROM mainapp_model model 
             LEFT JOIN mainapp_model newer 
                 ON model.model_id = newer.model_id AND
