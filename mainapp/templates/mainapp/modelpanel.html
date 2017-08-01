@@ -1,5 +1,9 @@
 <div class="col-md-4 col-sm-6">
+	{% if model.is_hidden %}
+	<div class="panel panel-danger">
+	{% else %}
 	<div class="panel panel-primary">
+	{% endif %}
 		<div class="panel-heading">
 			<h3 class="panel-title"><a href="{% url 'model' model_id=model.model_id revision=model.revision %}">{{ model.title }}</a></h3>
 		</div>

@@ -9,6 +9,10 @@ def update_last_page(request):
 def get_last_page(request):
     return request.session['last_page']
 
+# Checks that the user that made a request is an admin
+def admin(request):
+    return request.user.is_authenticated() and request.user.profile.is_admin
+
 # The available licenses in the project
 LICENSES = {
     0: 'License 0',
