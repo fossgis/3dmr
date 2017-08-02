@@ -67,7 +67,7 @@ class UploadForm(forms.Form):
         label='Tags', max_length=1024, required=False)
 
     license = forms.ChoiceField(
-        label='License', required=True, choices=LICENSES.items(),
+        label='License', required=True, choices=LICENSES.items(), initial=0,
         widget=forms.RadioSelect)
 
     model_file = forms.FileField(
