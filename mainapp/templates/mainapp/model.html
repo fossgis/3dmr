@@ -36,6 +36,11 @@ function addComment() {
 function commentAdded(json) {
 	var fields = JSON.parse(json)
 
+	if(fields["success"] == "no") {
+		alert(fields["error"]);
+		return;
+	}
+
 	var html = '<div class="panel panel-default">';
 
 	html += '<div class="panel-body panel-new"';
@@ -114,7 +119,7 @@ function commentAdded(json) {
 				<h3 class="panel-title">Comments</h3>
 			</div>
 			<div class="panel-body">
-				{% if user.is_authenticated %}
+				{% if user.is_authenticated and not user.profile.is_banned %}
 				<form action="{% url 'addcomment' %}" method="post" onsubmit="return addComment();" id="comment_form">
 					{% csrf_token %}
 					<label for="comment">Add your comment:</label><br>

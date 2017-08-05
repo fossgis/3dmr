@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^map$', views.modelmap, name='map'),
     url(r'^action/editprofile$', views.editprofile, name='editprofile'),
     url(r'^action/addcomment$', views.addcomment, name='addcomment'),
+    url(r'^action/ban$', views.ban, name='ban'),
     
     url(r'^api/info/(?P<model_id>[0-9]+)$', api.get_info, name='get_info'),
     url(r'^api/model/(?P<model_id>[0-9]+)/(?P<revision>[0-9]+)$', api.get_model, name='get_model'),
@@ -32,4 +33,5 @@ urlpatterns = [
     url(r'^api/search/(?P<latitude>[0-9]+(\.[0-9]+)?)/(?P<longitude>[0-9]+(\.[0-9]+)?)/(?P<distance>[0-9]+(\.[0-9]+)?)$', api.search_range, name='lookup_range'),
     url(r'^api/search/title/(?P<title>.*)/(?P<page_id>[0-9]+)$', api.search_title, name='search_title'),
     url(r'^api/search/title/(?P<title>.*)$', api.search_title, name='search_title'),
+    url(r'^api/search/full$', api.search_full, name='search_full'),
 ]

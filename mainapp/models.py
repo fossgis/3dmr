@@ -14,8 +14,10 @@ class Profile(models.Model):
     description = models.CharField(max_length=2048, default='Your description...')
     rendered_description = models.CharField(max_length=4096, default='<p>Your description...</p>')
     is_admin = models.BooleanField(default=False)
-    is_banned = models.BooleanField(default=False)
-    ban_date = models.DateField(default=None, null=True)
+
+    @property
+    def is_banned(self):
+        return self.user.ban_set.all().first() != None
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):

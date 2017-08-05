@@ -7,7 +7,7 @@ from django.core.paginator import Paginator, EmptyPage
 from social_django.models import UserSocialAuth
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
-from .models import Model, LatestModel, Comment, Category, Change
+from .models import Model, LatestModel, Comment, Category, Change, Ban
 from .forms import UploadForm
 from django.contrib import messages
 from django.db import transaction
@@ -130,6 +130,10 @@ def search(request):
 
 def upload(request):
     update_last_page(request)
+
+    if request.user.profile.is_banned:
+        messages.error(request, 'You are banned. Uploading models is not permitted.')
+        return redirect(index)
 
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
@@ -273,6 +277,7 @@ def user(request, username):
             'profile': user.profile,
             'models': results,
             'changes': changes,
+            'ban': user.ban_set.all().first()
         },
         'paginator': paginator,
         'page_id': page_id,
@@ -290,6 +295,10 @@ def editprofile(request):
     if not request.user.is_authenticated():
         return redirect(index)
 
+    if request.user.profile.is_banned:
+        messages.error(request, 'You are banned. Editing your profile is not permitted.')
+        return redirect(index)
+
     description = request.POST.get('desc')
 
     request.user.profile.description = description
@@ -301,6 +310,19 @@ def editprofile(request):
 def addcomment(request):
     if not request.user.is_authenticated():
         return redirect(index)
+
+    ajax = request.POST.get('ajax')
+
+    if request.user.profile.is_banned:
+        if ajax == 'false':
+            messages.error(request, 'You are banned. Commenting is not permitted.')
+            return redirect(index)
+        else:
+            response = {
+                'success': 'no',
+                'error': 'You are banned. Commenting is not permitted.'
+            }
+            return JsonResponse(response)
 
     comment = request.POST.get('comment')
     model_id = int(request.POST.get('model_id'))
@@ -319,15 +341,57 @@ def addcomment(request):
 
     obj.save()
 
-    ajax = request.POST.get('ajax')
-
     if ajax == 'false':
         return redirect(model, model_id=model_id, revision=revision)
 
     response = {
         'comment': rendered_comment,
         'author': author.username,
-        'datetime': obj.datetime
+        'datetime': obj.datetime,
+        'success': 'yes'
     }
 
     return JsonResponse(response)
+
+def ban(request):
+    if not request.user.is_authenticated() or \
+       not request.user.profile.is_admin:
+        return redirect(index)
+
+    username = request.POST.get('username')
+    reason = request.POST.get('reason')
+
+    if not username:
+        return redirect(index)
+
+    banned_user = User.objects.get(username=username)
+    
+    action = request.POST.get('type')
+
+    if action == 'ban':
+        if not reason or len(reason) == 0:
+            messages.error(request, 'No reason for ban was specified.')
+            return redirect(user, username=username)
+        
+        with transaction.atomic():
+            if banned_user.profile.is_banned:
+                messages.error(request, 'User is already banned.')
+            else:
+                ban = Ban(
+                    admin=request.user,
+                    banned_user=banned_user,
+                    reason=reason
+                )
+
+                ban.save()
+            return redirect(user, username=username)
+    elif action == 'unban':
+        ban = banned_user.ban_set.first()
+        if ban:
+            ban.delete()
+        else:
+            messages.error(request, 'User is not banned.')
+        return redirect(user, username=username)
+
+    messages.error(request, 'An error occurred. Please try again.')
+    return redirect(user, username=username)
