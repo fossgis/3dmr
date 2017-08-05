@@ -6,14 +6,18 @@ from django.dispatch import receiver
 
 from django_pgviews import view as pg
 
+from .utils import CHANGES
+
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     description = models.CharField(max_length=2048, default='Your description...')
     rendered_description = models.CharField(max_length=4096, default='<p>Your description...</p>')
     is_admin = models.BooleanField(default=False)
-    is_banned = models.BooleanField(default=False)
-    ban_date = models.DateField(default=None, null=True)
+
+    @property
+    def is_banned(self):
+        return self.user.ban_set.all().first() != None
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -35,8 +39,8 @@ class Model(models.Model):
     description = models.CharField(max_length=512)
     rendered_description = models.CharField(max_length=1024)
     upload_date = models.DateField(auto_now_add=True)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    latitude = models.FloatField(null=True, default=None)
+    longitude = models.FloatField(null=True, default=None)
     license = models.IntegerField()
     categories = models.ManyToManyField(Category)
     tags = fields.HStoreField(default={})
@@ -124,6 +128,10 @@ class Change(models.Model):
     model = models.ForeignKey(Model, models.CASCADE)
     typeof = models.IntegerField()
     datetime = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def typeof_text(self):
+        return CHANGES[self.typeof]
 
 class Comment(models.Model):
     author = models.ForeignKey(User, models.CASCADE)

@@ -8,3 +8,17 @@ def update_last_page(request):
 
 def get_last_page(request):
     return request.session['last_page']
+
+# The available licenses in the project
+LICENSES = {
+    0: 'License 0',
+    1: 'License 1',
+}
+
+# The possible changes users can make to the repository
+CHANGES = {
+    0: 'Upload',
+}
+
+# The directory the models will be stored in
+MODEL_DIR = 'mainapp/static/mainapp/models'

@@ -1,11 +1,12 @@
 import math
+import json
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
 from django.http import JsonResponse, FileResponse
 from django.core.paginator import Paginator, EmptyPage
 from .models import LatestModel, Comment
-from .utils import get_kv
+from .utils import get_kv, MODEL_DIR
 from django.db.models import Max
 
 RESULTS_PER_API_CALL= 20
@@ -50,8 +51,6 @@ def get_info(request, model_id):
     return JsonResponse(result)
 
 def get_model(request, model_id, revision=None):
-    MODEL_DIR = 'mainapp/static/mainapp/models'
-
     if not revision:
         revision = LatestModel.objects.get(model_id=model_id).revision
 
@@ -73,12 +72,7 @@ def lookup_author(request, username, page_id=1):
     models = LatestModel.objects.filter(author__username=username)
     return api_paginate(models, page_id)
 
-def search_range(request, latitude, longitude, distance, page_id=1):
-    # convert parameters to floats
-    latitude = float(latitude)
-    longitude = float(longitude)
-    distance = float(distance)
-
+def range_filter(models, latitude, longitude, distance):
     # bind latitude and longitude from [min, max] to [-pi, pi] for usage in trigonometry
     latitude = math.radians(latitude)
     longitude = math.radians(longitude)
@@ -116,15 +110,60 @@ def search_range(request, latitude, longitude, distance, page_id=1):
     min_longitude = math.degrees(min_longitude)
     max_longitude = math.degrees(max_longitude)
 
-    models = LatestModel.objects.filter(
+    return models.filter(
             latitude__gte=min_latitude,
             latitude__lte=max_latitude,
             longitude__gte=min_longitude,
             longitude__lte=max_longitude)
 
+
+def search_range(request, latitude, longitude, distance, page_id=1):
+    # convert parameters to floats
+    latitude = float(latitude)
+    longitude = float(longitude)
+    distance = float(distance)
+
+    models = range_filter(LatestModel.objects.all(), latitude, longitude, distance)
+
     return api_paginate(models, page_id)
 
 def search_title(request, title, page_id=1):
     models = LatestModel.objects.filter(title__icontains=title)
+
+    return api_paginate(models, page_id)
+
+def search_full(request):
+    body = request.body.decode('UTF-8')
+    data = json.loads(body)
+
+    models = LatestModel.objects.all()
+
+    author = data.get('author')
+    if author:
+        models = models.filter(author__username=author)
+
+    latitude = data.get('lat')
+    longitude = data.get('lon')
+    distance = data.get('range')
+    if latitude and longitude:
+        models = range_filter(models, latitude, longitude, distance)
+
+    title = data.get('title')
+    if title:
+        models = models.filter(title__icontains=title)
+
+    tags = data.get('tags')
+    if tags:
+        for key, value in tags.items():
+            models = models.filter(tags__contains={key:value})
+
+    categories = data.get('categories')
+    if categories:
+        for category in categories:
+            models = models.filter(categories__name=category)
+
+    models = models.order_by('model_id')
+
+    page_id = int(data.get('page', 1))
 
     return api_paginate(models, page_id)
