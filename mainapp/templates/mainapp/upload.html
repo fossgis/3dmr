@@ -1,10 +1,23 @@
 {% extends "mainapp/layout.html" %}
 {% block pagename %}Upload Model{% endblock %}
 {% block headadditions %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css" integrity="sha512-wcw6ts8Anuw10Mzh9Ytw4pylW8+NAD4ch3lqm9lzAsTxg0GFeJgoAtxuCLREZSC5lUXdVyo/7yfsqFjQ4S+aKw==" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.1.0/dist/leaflet.js" integrity="sha512-mNqn2Wg7tSToJhvHcqfzLMU6J4mkOImSPTxVZAdo+lcPlk+GhZmYgACEe0x35K7YzW1zJ7XyJV/TT1MrdXvMcA==" crossorigin=""></script>
 <style>
-	body {
-		padding-bottom: 50px;
-	}
+body {
+	padding-bottom: 50px;
+}
+
+#map {
+	margin: 0px auto;
+	width: 450px;
+	height: 300px;
+}
+
+#map-descriptor {
+	margin-top: 5px;
+	text-align: center;
+}
 </style>
 {% endblock %}
 {% block body %}
@@ -36,7 +49,8 @@
 				{% for error in form.categories.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
 				{{ form.categories }}
 			</div>
-			<!-- TODO: use a slippy map for latitude and longitude -->
+			<div id="map"></div>
+			<p id="map-descriptor"></p>
 			<div class="form-group">
 				<label for="{{ form.latitude.id_for_label }}">{{ form.latitude.label }}:</label>
 				{% for error in form.latitude.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
@@ -65,4 +79,30 @@
 		</form>
 	</div>
 </div>
+<script>
+	var map = L.map('map');
+	map.on('load', function() {
+		var descriptor = document.getElementById('map-descriptor');
+		descriptor.innerHTML = 'Click anywhere on the map to set longitude/latitude values.';
+	});
+	map.setView([51.505, -0.09], 3);
+
+	L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+		attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+		minZoom: 2,
+		maxZoom: 18
+	}).addTo(map);
+
+	var marker = undefined;
+
+	map.on('click', function(e) {
+		if(marker)
+			marker.remove(map);
+
+		document.getElementById('id_latitude').value = e.latlng.lat;
+		document.getElementById('id_longitude').value = e.latlng.lng;
+
+		marker = new L.marker(e.latlng).addTo(map);
+	});
+</script>
 {% endblock %}
