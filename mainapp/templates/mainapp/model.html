@@ -76,17 +76,27 @@ function commentAdded(json) {
 	previousElement.scrollIntoView();
 }
 </script>
+{% load static %}
+<script src="{% static 'mainapp/lib/three.js' %}"></script>
+<script src="{% static 'mainapp/lib/OBJLoader.js' %}"></script>
+<script src="{% static 'mainapp/lib/MTLLoader.js' %}"></script>
+<script src="{% static 'mainapp/lib/OrbitControls.js' %}"></script>
+<script src="{% static 'mainapp/lib/zip.js' %}"></script>
+<script src="{% static 'mainapp/lib/zip-ext.js' %}"></script>
+<script src="{% static 'mainapp/preview.js' %}"></script>
+<script>
+displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {width: 750, height: 480});
+</script>
 {% endblock %}
 {% block body %}
 <div class="container">
 	<div class="row">
 		<div class="col-md-8">
 			<br>
-			<ul class="nav nav-tabs">
+			<ul class="nav nav-tabs" id="render-pane">
 				<li class="active"><a href="#">3D View</a></li>
 				<li><a href="#">Map View</a></li>
 			</ul>
-			<img src="http://placehold.it/750x480" alt="Eiffel Tower">
 		</div>
 		<div class="col-md-4">
 			<br>
