@@ -100,7 +100,7 @@ body {
 			marker.remove(map);
 
 		document.getElementById('id_latitude').value = e.latlng.lat;
-		document.getElementById('id_longitude').value = e.latlng.lng;
+		document.getElementById('id_longitude').value = ((e.latlng.lng - 180) % 360) + 180;
 
 		marker = new L.marker(e.latlng).addTo(map);
 	});
