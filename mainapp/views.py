@@ -7,7 +7,7 @@ from django.core.paginator import Paginator, EmptyPage
 from social_django.models import UserSocialAuth
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
-from .models import Model, LatestModel, Comment, Category, Change, Ban
+from .models import Model, LatestModel, Comment, Category, Change, Ban, Location
 from .forms import UploadForm
 from django.contrib import messages
 from django.db import transaction
@@ -174,6 +174,15 @@ def upload(request):
 
                     rendered_description = mistune.markdown(description)
 
+                    if latitude and longitude:
+                        location = Location(
+                            latitude=latitude,
+                            longitude=longitude
+                        )
+                        location.save()
+                    else:
+                        location = None
+
                     m = Model(
                         model_id=next_model_id,
                         revision=1,
@@ -181,8 +190,7 @@ def upload(request):
                         description=description,
                         rendered_description=rendered_description,
                         tags=tags,
-                        longitude=longitude,
-                        latitude=latitude,
+                        location=location,
                         license=license,
                         author=request.user,
                     )

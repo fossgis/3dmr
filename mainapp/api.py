@@ -36,8 +36,8 @@ def get_info(request, model_id):
         'id': model.model_id,
         'revision': model.revision,
         'title': model.title,
-        'lat': model.latitude,
-        'lon': model.longitude,
+        'lat': model.location.latitude,
+        'lon': model.location.longitude,
         'license': model.license,
         'desc': model.description,
         'author': model.author.username,
@@ -133,10 +133,10 @@ def range_filter(models, latitude, longitude, distance):
     max_longitude = math.degrees(max_longitude)
 
     return models.filter(
-            latitude__gte=min_latitude,
-            latitude__lte=max_latitude,
-            longitude__gte=min_longitude,
-            longitude__lte=max_longitude)
+            location__latitude__gte=min_latitude,
+            location__latitude__lte=max_latitude,
+            location__longitude__gte=min_longitude,
+            location__longitude__lte=max_longitude)
 
 def search_range(request, latitude, longitude, distance, page_id=1):
     # convert parameters to floats
