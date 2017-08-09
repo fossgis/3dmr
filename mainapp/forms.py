@@ -43,6 +43,30 @@ class CategoriesField(forms.CharField):
 
         return value.split(', ')
 
+class TranslationField(forms.CharField):
+    def __init__(self, *args, **kwargs):
+        if not kwargs.get('widget'):
+            kwargs['widget'] = forms.TextInput(
+                attrs={
+                    'value': '0.0 0.0 0.0',
+                    'placeholder': '3 -4.5 1.03',
+                    'pattern': '^(+|-)?[0-9]+(\.[0-9]+)? (+|-)?[0-9]+(\.[0-9]+)? (+|-)?[0-9]+(\.[0-9]+)?$'
+                })
+
+            super(TranslationField, self).__init__(*args, **kwargs)
+    
+    def to_python(self, value):
+        # Normalize string to a list of 3 ints
+        if not value:
+            return [0, 0, 0] # default value
+
+        numbers = list(map(float, value.split(' ')))
+
+        if len(numbers) != 3:
+            raise forms.ValidationError('Too many values', code='invalid')
+        
+        return numbers
+
 class UploadForm(forms.Form):
     title = forms.CharField(
         label='Name', min_length=1, max_length=32, required=True,
@@ -66,8 +90,19 @@ class UploadForm(forms.Form):
     tags = TagField(
         label='Tags', max_length=1024, required=False)
 
+    translation = TranslationField(
+        label='Translation', max_length=100, required=False)
+
+    rotation = forms.FloatField(
+        label='Rotation', min_value=0, max_value=360, required=True, localize=True,
+        widget=forms.NumberInput(attrs={'placeholder': '45.5', 'value': '0.0'}))
+
+    scale = forms.FloatField(
+        label='Scale', required=True, localize=True,
+        widget=forms.NumberInput(attrs={'placeholder': '1.2', 'value': '1.0'}))
+
     license = forms.ChoiceField(
-        label='License', required=True, choices=LICENSES.items(), initial=0,
+        label='License', required=False, choices=LICENSES.items(), initial=0,
         widget=forms.RadioSelect)
 
     model_file = forms.FileField(

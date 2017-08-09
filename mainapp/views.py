@@ -155,11 +155,14 @@ def upload(request):
             request.session['post_data'] = request.POST
         elif form.is_valid():
             title = form.cleaned_data['title']
-            tags = form.cleaned_data['tags']
-            categories = form.cleaned_data['categories']
             description = form.cleaned_data['description']
             latitude = form.cleaned_data['latitude']
             longitude = form.cleaned_data['longitude']
+            categories = form.cleaned_data['categories']
+            tags = form.cleaned_data['tags']
+            translation = form.cleaned_data['translation']
+            rotation = form.cleaned_data['rotation']
+            scale = form.cleaned_data['scale']
             license = form.cleaned_data['license']
             model_file = request.FILES['model_file']
 
@@ -193,6 +196,11 @@ def upload(request):
                         location=location,
                         license=license,
                         author=request.user,
+                        translation_x=translation[0],
+                        translation_y=translation[1],
+                        translation_z=translation[2],
+                        rotation=rotation,
+                        scale=scale
                     )
 
                     m.save()
