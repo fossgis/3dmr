@@ -140,7 +140,7 @@ def search(request):
 def upload(request):
     update_last_page(request)
 
-    if request.user.profile.is_banned:
+    if request.user.is_authenticated() and request.user.profile.is_banned:
         messages.error(request, 'You are banned. Uploading models is not permitted.')
         return redirect(index)
 
