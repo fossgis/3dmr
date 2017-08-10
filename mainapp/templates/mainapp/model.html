@@ -92,9 +92,6 @@ function commentAdded(json) {
 <script src="{% static 'mainapp/lib/zip.js' %}"></script>
 <script src="{% static 'mainapp/lib/zip-ext.js' %}"></script>
 <script src="{% static 'mainapp/preview.js' %}"></script>
-<script>
-displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {width: 750, height: 480});
-</script>
 <script src="{% static 'mainapp/map.js' %}"></script>
 {% endblock %}
 {% block body %}
@@ -104,7 +101,7 @@ displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {width
 			<br>
 			<ul class="nav nav-tabs" role="tablist" onchange="tabChange();">
 				<li class="nav-item active"><a class="nav-link active" data-toggle="tab" href="#view" role="tab">3D View</a></li>
-				{% if model.latitude and model.longitude %}
+				{% if model.location %}
 				<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#map" role="tab">Map</a></li>
 				{% endif %}
 			</ul>
@@ -113,7 +110,7 @@ displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {width
 					<div id="render-pane">
 					</div>
 				</div>
-				{% if model.latitude and model.longitude %}
+				{% if model.location %}
 				<div class="tab-pane" id="map" role="tabpanel">
 					<div id="mapdiv">
 					</div>
@@ -205,9 +202,10 @@ displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {width
 		</div>
 	</div>
 </div>
-{% if model.latitude and model.longitude %}
 <script>
-initMap("mapdiv", {{ model.latitude }}, {{ model.longitude }}, 750, 480);
-</script>
+displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {width: 750, height: 480});
+{% if model.location %}
+initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }}, 750, 480);
 {% endif %}
+</script>
 {% endblock %}
