@@ -22,16 +22,12 @@ html, body {
 	margin-top: 50px;
 }
 </style>
+{% load static %}
+<script src="{% static 'mainapp/map.js' %}"></script>
 {% endblock %}
 {% block body %}
 <div id="mapdiv"></div>
 <script>
-	var map = L.map('mapdiv').setView([48.858, 2.294], 17);
-	L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-		attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-		minZoom: 8,
-		maxZoom: 18
-	}).addTo(map);
-L.marker([48.858, 2.294]).bindPopup('<a href="{% url 'model' model_id=1 %}">Eiffel Tower</a>').addTo(map);
+initMap('mapdiv', 48.858, 2.294);
 </script>
 {% endblock %}
