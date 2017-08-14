@@ -224,7 +224,8 @@ def upload(request):
 
                     change.save()
 
-                    filepath = MODEL_DIR + f'/{m.model_id}/{m.revision}.zip'
+                    filepath = '{}/{}/{}.zip'
+                        .format(MODEL_DIR, m.model_id, m.revision)
                     os.makedirs(os.path.dirname(filepath), exist_ok=True)
                     with open(filepath, 'wb+') as destination:
                         for chunk in model_file.chunks():

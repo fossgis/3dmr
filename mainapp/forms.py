@@ -24,7 +24,7 @@ class TagField(forms.CharField):
                 k, v = get_kv(tag)
                 tags[k] = v
             except ValueError:
-                raise forms.ValidationError(f'Invalid tag: {tag}', code='invalid')
+                raise forms.ValidationError('Invalid tag: {}'.format(tag), code='invalid')
 
         return tags
 

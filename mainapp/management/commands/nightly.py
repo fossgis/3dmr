@@ -47,8 +47,8 @@ class Command(BaseCommand):
                 ]
             })
 
-            info_file.write(f'"{model_id}": {output}\n')
-            zip_file.write(f'{MODEL_DIR}/{model_id}/{model.revision}.zip', f'models/{model_id}.zip')
+            info_file.write('"{}": {}\n'.format(model_id, output))
+            zip_file.write('{}/{}/{}.zip'.format(MODEL_DIR, model_id, model.revision), 'models/{}.zip'.format(model_id))
 
         info_file.write('}')
         info_file.close()
