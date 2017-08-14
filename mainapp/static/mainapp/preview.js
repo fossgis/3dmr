@@ -2,8 +2,7 @@
 zip.workerScriptsPath = "/static/mainapp/lib/";
 
 function displayPreview(elementId, model_id, revision, options) {
-	// TODO: update to use the get model API
-	var url = "/static/mainapp/models/" + model_id + "/" + revision + ".zip";
+	var url = "/api/model/" + model_id + "/" + revision;
 
 	loadObjFromZip(url, elementId, options, onLoad);
 }
