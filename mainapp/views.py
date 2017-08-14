@@ -1,18 +1,18 @@
 import os
 import logging
 
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage
 from social_django.models import UserSocialAuth
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
-from .models import Model, LatestModel, Comment, Category, Change, Ban
+from .models import Model, LatestModel, Comment, Category, Change, Ban, Location
 from .forms import UploadForm
 from django.contrib import messages
 from django.db import transaction
 
-from .utils import get_kv, update_last_page, get_last_page, MODEL_DIR, CHANGES
+from .utils import get_kv, update_last_page, get_last_page, MODEL_DIR, CHANGES, admin
 
 import mistune
 
@@ -23,10 +23,13 @@ def index(request):
     update_last_page(request)
 
     MODELS_IN_INDEX_PAGE = 6
-    models = Model.objects.order_by('-pk')[:MODELS_IN_INDEX_PAGE]
+    models = Model.objects.order_by('-pk')
+
+    if not admin(request):
+        models = models.filter(is_hidden=False)
 
     context = {
-        'models': models,
+            'models': models[:MODELS_IN_INDEX_PAGE],
     }
 
     return render(request, 'mainapp/index.html', context)
@@ -56,6 +59,9 @@ def model(request, model_id, revision=None):
         model = get_object_or_404(Model, model_id=model_id, revision=revision)
     else:
         model = get_object_or_404(LatestModel, model_id=model_id)
+
+    if model.is_hidden and not admin(request):
+        raise Http404('Model does not exist.')
 
     comments = Comment.objects.filter(model__model_id=model_id).order_by('-datetime')
 
@@ -103,6 +109,9 @@ def search(request):
             models.filter(title__icontains=query) | \
             models.filter(description__icontains=query)
 
+    if not admin(request):
+        filtered_models = filtered_models.filter(is_hidden=False)
+
     try:
         ordered_models = filtered_models.order_by('-pk')
     except UnboundLocalError:
@@ -131,7 +140,7 @@ def search(request):
 def upload(request):
     update_last_page(request)
 
-    if request.user.profile.is_banned:
+    if request.user.is_authenticated() and request.user.profile.is_banned:
         messages.error(request, 'You are banned. Uploading models is not permitted.')
         return redirect(index)
 
@@ -146,11 +155,14 @@ def upload(request):
             request.session['post_data'] = request.POST
         elif form.is_valid():
             title = form.cleaned_data['title']
-            tags = form.cleaned_data['tags']
-            categories = form.cleaned_data['categories']
             description = form.cleaned_data['description']
             latitude = form.cleaned_data['latitude']
             longitude = form.cleaned_data['longitude']
+            categories = form.cleaned_data['categories']
+            tags = form.cleaned_data['tags']
+            translation = form.cleaned_data['translation']
+            rotation = form.cleaned_data['rotation']
+            scale = form.cleaned_data['scale']
             license = form.cleaned_data['license']
             model_file = request.FILES['model_file']
 
@@ -165,6 +177,15 @@ def upload(request):
 
                     rendered_description = mistune.markdown(description)
 
+                    if latitude and longitude:
+                        location = Location(
+                            latitude=latitude,
+                            longitude=longitude
+                        )
+                        location.save()
+                    else:
+                        location = None
+
                     m = Model(
                         model_id=next_model_id,
                         revision=1,
@@ -172,10 +193,14 @@ def upload(request):
                         description=description,
                         rendered_description=rendered_description,
                         tags=tags,
-                        longitude=longitude,
-                        latitude=latitude,
+                        location=location,
                         license=license,
                         author=request.user,
+                        translation_x=translation[0],
+                        translation_y=translation[1],
+                        translation_z=translation[2],
+                        rotation=rotation,
+                        scale=scale
                     )
 
                     m.save()
@@ -257,6 +282,10 @@ def user(request, username):
     oauth_user = get_object_or_404(UserSocialAuth, user=user)
 
     models = user.model_set.order_by('-pk')
+
+    if not admin(request):
+        models = models.filter(is_hidden=False)
+
     changes = user.change_set.order_by('-pk')
 
     try:
@@ -354,8 +383,7 @@ def addcomment(request):
     return JsonResponse(response)
 
 def ban(request):
-    if not request.user.is_authenticated() or \
-       not request.user.profile.is_admin:
+    if not admin(request):
         return redirect(index)
 
     username = request.POST.get('username')
@@ -395,3 +423,31 @@ def ban(request):
 
     messages.error(request, 'An error occurred. Please try again.')
     return redirect(user, username=username)
+
+def hide(request):
+    if not admin(request):
+        return redirect(index)
+
+    model_id = request.POST.get('model_id')
+    revision = request.POST.get('revision')
+
+    if not model_id or not revision:
+        return redirect(index)
+    
+    hidden_model = Model.objects.get(model_id=model_id, revision=revision)
+
+    action = request.POST.get('type')
+
+    try:
+        if action == 'hide':
+            hidden_model.is_hidden = True
+        elif action == 'unhide':
+            hidden_model.is_hidden = False
+        else:
+            raise ValueError('Invalid argument for action.')
+
+        hidden_model.save()
+    except ValueError:
+        messages.error(request, 'An error occurred. Please try again.')
+
+    return redirect(model, model_id=model_id, revision=revision)

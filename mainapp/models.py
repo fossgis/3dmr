@@ -31,6 +31,10 @@ def save_user_profile(sender, instance, **kwargs):
 class Category(models.Model):
     name = models.CharField(max_length=256)
 
+class Location(models.Model):
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+
 class Model(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     model_id = models.IntegerField()
@@ -39,8 +43,7 @@ class Model(models.Model):
     description = models.CharField(max_length=512)
     rendered_description = models.CharField(max_length=1024)
     upload_date = models.DateField(auto_now_add=True)
-    latitude = models.FloatField(null=True, default=None)
-    longitude = models.FloatField(null=True, default=None)
+    location = models.OneToOneField(Location, null=True, default=None, on_delete=models.CASCADE)
     license = models.IntegerField()
     categories = models.ManyToManyField(Category)
     tags = fields.HStoreField(default={})
@@ -49,6 +52,7 @@ class Model(models.Model):
     translation_x = models.FloatField(default=0.0)
     translation_y = models.FloatField(default=0.0)
     translation_z = models.FloatField(default=0.0)
+    is_hidden = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'mainapp'
@@ -61,8 +65,7 @@ class LatestModel(pg.MaterializedView):
     description = models.CharField(max_length=512)
     rendered_description = models.CharField(max_length=1024)
     upload_date = models.DateField(auto_now_add=True)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    location = models.OneToOneField(Location, on_delete=models.CASCADE)
     license = models.IntegerField()
     categories = models.ManyToManyField(Category)
     tags = fields.HStoreField(default={})
@@ -71,6 +74,7 @@ class LatestModel(pg.MaterializedView):
     translation_x = models.FloatField(default=0.0)
     translation_y = models.FloatField(default=0.0)
     translation_z = models.FloatField(default=0.0)
+    is_hidden = models.BooleanField(default=False)
 
     concurrent_index = 'id'
     sql = """
@@ -82,8 +86,7 @@ class LatestModel(pg.MaterializedView):
             model.description AS description,
             model.rendered_description AS rendered_description,
             model.upload_date AS upload_date,
-            model.latitude AS latitude,
-            model.longitude AS longitude,
+            model.location_id as location_id,
             model.license AS license,
             model.rotation AS rotation,
             model.scale AS scale,
@@ -91,7 +94,8 @@ class LatestModel(pg.MaterializedView):
             model.translation_y AS translation_y,
             model.translation_z AS translation_z,
             model.author_id AS author_id,
-            model.tags AS tags
+            model.tags AS tags,
+            model.is_hidden AS is_hidden
         FROM mainapp_model model 
             LEFT JOIN mainapp_model newer 
                 ON model.model_id = newer.model_id AND

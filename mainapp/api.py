@@ -3,10 +3,10 @@ import json
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
-from django.http import JsonResponse, FileResponse
+from django.http import JsonResponse, FileResponse, Http404
 from django.core.paginator import Paginator, EmptyPage
-from .models import LatestModel, Comment
-from .utils import get_kv, MODEL_DIR
+from .models import LatestModel, Comment, Model
+from .utils import get_kv, MODEL_DIR, admin
 from django.db.models import Max
 
 RESULTS_PER_API_CALL= 20
@@ -27,14 +27,17 @@ def api_paginate(models, page_id):
 
 # Create your views here.
 def get_info(request, model_id):
-    model = LatestModel.objects.get(model_id=model_id)
+    model = get_object_or_404(LatestModel, model_id=model_id)
+
+    if model.is_hidden and not admin(request):
+        raise Http404('Model does not exist.')
 
     result = {
         'id': model.model_id,
         'revision': model.revision,
         'title': model.title,
-        'lat': model.latitude,
-        'lon': model.longitude,
+        'lat': model.location.latitude,
+        'lon': model.location.longitude,
         'license': model.license,
         'desc': model.description,
         'author': model.author.username,
@@ -48,11 +51,18 @@ def get_info(request, model_id):
         'categories': model.categories.all().values_list('name', flat=True)[::1],
         'comments': Comment.objects.filter(model_id=model.model_id).values_list('author__username', 'comment', 'datetime')[::1],
     }
+
     return JsonResponse(result)
 
 def get_model(request, model_id, revision=None):
     if not revision:
-        revision = LatestModel.objects.get(model_id=model_id).revision
+        revision = get_object_or_404(LatestModel, model_id=model_id).revision
+
+    model = get_object_or_404(Model, model_id=model_id, revision=revision)
+
+    if model.is_hidden and not admin(request):
+        raise Http404('Model does not exist.')
+
 
     response = FileResponse(open('{}/{}/{}.zip'.format(MODEL_DIR, model_id, revision), 'rb'))
     response['Content-Disposition'] = 'attachment; filename={}.zip'.format(revision)
@@ -62,14 +72,26 @@ def get_model(request, model_id, revision=None):
 def lookup_tag(request, tag, page_id=1):
     key, value = get_kv(tag)
     models = LatestModel.objects.filter(tags__contains={key: value}).order_by('model_id')
+
+    if not admin(request):
+        models = models.filter(is_hidden=False)
+
     return api_paginate(models, page_id)
 
 def lookup_category(request, category, page_id=1):
     models = LatestModel.objects.filter(categories__name=category)
+
+    if not admin(request):
+        models = models.filter(is_hidden=False)
+
     return api_paginate(models, page_id)
 
 def lookup_author(request, username, page_id=1):
     models = LatestModel.objects.filter(author__username=username)
+
+    if not admin(request):
+        models = models.filter(is_hidden=False)
+
     return api_paginate(models, page_id)
 
 def range_filter(models, latitude, longitude, distance):
@@ -111,11 +133,10 @@ def range_filter(models, latitude, longitude, distance):
     max_longitude = math.degrees(max_longitude)
 
     return models.filter(
-            latitude__gte=min_latitude,
-            latitude__lte=max_latitude,
-            longitude__gte=min_longitude,
-            longitude__lte=max_longitude)
-
+            location__latitude__gte=min_latitude,
+            location__latitude__lte=max_latitude,
+            location__longitude__gte=min_longitude,
+            location__longitude__lte=max_longitude)
 
 def search_range(request, latitude, longitude, distance, page_id=1):
     # convert parameters to floats
@@ -123,12 +144,20 @@ def search_range(request, latitude, longitude, distance, page_id=1):
     longitude = float(longitude)
     distance = float(distance)
 
-    models = range_filter(LatestModel.objects.all(), latitude, longitude, distance)
+    models = LatestModel.objects.all()
+
+    if not admin(request):
+        models = models.filter(is_hidden=False)
+
+    models = range_filter(models, latitude, longitude, distance)
 
     return api_paginate(models, page_id)
 
 def search_title(request, title, page_id=1):
     models = LatestModel.objects.filter(title__icontains=title)
+
+    if not admin(request):
+        models = models.filter(is_hidden=False)
 
     return api_paginate(models, page_id)
 
@@ -137,6 +166,9 @@ def search_full(request):
     data = json.loads(body)
 
     models = LatestModel.objects.all()
+
+    if not admin(request):
+        models = models.filter(is_hidden=False)
 
     author = data.get('author')
     if author:

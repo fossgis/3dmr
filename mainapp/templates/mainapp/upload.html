@@ -61,6 +61,21 @@ body {
 				{% for error in form.longitude.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
 				{{ form.longitude }}
 			</div>
+			<div class="form-group">
+				<label for="{{ form.translation.id_for_translation }}">{{ form.translation.label }}:</label>
+				{% for error in form.translation.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+				{{ form.translation }}
+			</div>
+			<div class="form-group">
+				<label for="{{ form.rotation.id_for_rotation }}">{{ form.rotation.label }}:</label>
+				{% for error in form.rotation.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+				{{ form.rotation }}
+			</div>
+			<div class="form-group">
+				<label for="{{ form.scale.id_for_scale }}">{{ form.scale.label }}:</label>
+				{% for error in form.scale.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+				{{ form.scale }}
+			</div>
 			<div class="form-group required">
 				<label>License</label>
 				{% for error in form.license.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}

@@ -1,6 +1,14 @@
 {% extends "mainapp/layout.html" %}
 {% block pagename %}{{ model.title }}{% endblock %}
 {% block headadditions %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js" integrity="sha512-A7vV8IFfih/D732iSSKi20u/ooOfj/AGehOKq0f4vLT1Zr2Y+RX7C+w8A1gaSasGtRUZpF/NZgzSAu4/Gc41Lg==" crossorigin=""></script>
+<style>
+#mapdiv {
+	width: 750px;
+	height: 480px;
+}
+</style>
 <script>
 function addComment() {
 	var comment = document.getElementById("comment");
@@ -84,23 +92,39 @@ function commentAdded(json) {
 <script src="{% static 'mainapp/lib/zip.js' %}"></script>
 <script src="{% static 'mainapp/lib/zip-ext.js' %}"></script>
 <script src="{% static 'mainapp/preview.js' %}"></script>
-<script>
-displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {width: 750, height: 480});
-</script>
+<script src="{% static 'mainapp/map.js' %}"></script>
 {% endblock %}
 {% block body %}
 <div class="container">
 	<div class="row">
 		<div class="col-md-8">
 			<br>
-			<ul class="nav nav-tabs" id="render-pane">
-				<li class="active"><a href="#">3D View</a></li>
-				<li><a href="#">Map View</a></li>
+			<ul class="nav nav-tabs" role="tablist" onchange="tabChange();">
+				<li class="nav-item active"><a class="nav-link active" data-toggle="tab" href="#view" role="tab">3D View</a></li>
+				{% if model.location %}
+				<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#map" role="tab">Map</a></li>
+				{% endif %}
 			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active" id="view" role="tabpanel">
+					<div id="render-pane">
+					</div>
+				</div>
+				{% if model.location %}
+				<div class="tab-pane" id="map" role="tabpanel">
+					<div id="mapdiv">
+					</div>
+				</div>
+				{% endif %}
+			</div>
 		</div>
 		<div class="col-md-4">
 			<br>
+			{% if model.is_hidden %}
+			<div class="panel panel-danger">
+			{% else %}
 			<div class="panel panel-primary">
+			{% endif %}
 				<div class="panel-heading">
 					<h3 class="panel-title">{{ model.title }}</h3>
 				</div>
@@ -118,6 +142,23 @@ displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {width
 					<p>Description:</p>
 					<p>{{ model.rendered_description|safe }}</p>
 					<p>Uploaded by <a href="{% url 'user' model.author.username %}"><span class="label label-default">{{ model.author.username }}</span></a> on {{ model.upload_date|date:"c" }}</p>
+					{% if user.is_authenticated and user.profile.is_admin %}
+					{% if model.is_hidden %}
+					<strong>This model is hidden</strong>
+					{% endif %}
+					<form action="{% url 'hide' %}" method="post">
+						{% csrf_token %}
+						<input type="hidden" name="model_id" value="{{ model.model_id }}">
+						<input type="hidden" name="revision" value="{{ model.revision }}">
+						{% if model.is_hidden %}
+						<input type="hidden" name="type" value="unhide">
+						<button type="submit" class="btn btn-danger">Unhide Model</button>
+						{% else %}
+						<input type="hidden" name="type" value="hide">
+						<button type="submit" class="btn btn-danger">Hide Model</button>
+						{% endif %}
+					</form>
+					{% endif %}
 				</div>
 			</div>
 		</div>
@@ -161,4 +202,10 @@ displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {width
 		</div>
 	</div>
 </div>
+<script>
+displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {width: 750, height: 480});
+{% if model.location %}
+initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }}, 750, 480);
+{% endif %}
+</script>
 {% endblock %}
