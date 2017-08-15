@@ -92,8 +92,10 @@ function loadObjFromZip(url, options, three, callback) {
 		var scene = three['scene'];
 		var camera = three['camera'];
 		var renderer = three['renderer'];
+		var controls = three['controls'];
 		scene.background = new THREE.Color(0xed4337);
-		renderer.render(scene, camera, options);
+
+		animate(renderer, scene, camera, controls, options);
 	});
 }
 
@@ -148,16 +150,18 @@ function onLoad(objText, mtlText, textures, options, three) {
 	var cameraLookAt = new THREE.Vector3(0, 0, 0);
 	camera.lookAt(cameraLookAt);
 
-	function animate() {
-		requestAnimationFrame(animate);
+	animate(renderer, scene, camera, controls, options);
+}
 
-		resizeCanvas(renderer, camera, options);
-		controls.update();
+function animate(renderer, scene, camera, controls, options) {
+	requestAnimationFrame(function() {
+		animate(renderer, scene, camera, controls, options);
+	});
 
-		renderer.render(scene, camera);
-	}
+	resizeCanvas(renderer, camera, options);
+	controls.update();
 
-	animate();
+	renderer.render(scene, camera);
 }
 
 function resizeCanvas(renderer, camera, options) {
