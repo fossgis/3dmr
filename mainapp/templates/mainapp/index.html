@@ -20,12 +20,10 @@
 	<div class="row flex">
 		{% for model in models %}
 			{% include "mainapp/modelpanel.html" %}
+			<script>
+				displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {height: 256});
+			</script>
 		{% endfor %}
 	</div>
 </div>
-<script>
-{% for model in models %}
-displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {height: 256});
-{% endfor %}
-</script>
 {% endblock %}

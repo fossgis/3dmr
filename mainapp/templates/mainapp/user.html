@@ -70,6 +70,9 @@ function enableEdit() {
 				{% with hide_user=True %}
 				{% for model in owner.models %}
 				{% include "mainapp/modelpanel.html" %}
+				<script>
+				displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {height: 200});
+				</script>
 				{% endfor %}
 				{% endwith %}
 			</div>
@@ -111,9 +114,4 @@ function enableEdit() {
 		</div>
 	</div>
 </div>
-<script>
-{% for model in owner.models %}
-displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {height: 200});
-{% endfor %}
-</script>
 {% endblock %}

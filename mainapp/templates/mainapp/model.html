@@ -112,6 +112,9 @@ function commentAdded(json) {
 					<div class="tab-pane active" id="view" role="tabpanel">
 						<div id="render-pane" style="height: 480px;">
 						</div>
+						<script>
+							displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {height: 480});
+						</script>
 					</div>
 					{% if model.location %}
 					<div class="tab-pane" id="map" role="tabpanel">
@@ -208,7 +211,6 @@ function commentAdded(json) {
 	</div>
 </div>
 <script>
-displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {height: 480});
 {% if model.location %}
 initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }}, 750, 480);
 {% endif %}
