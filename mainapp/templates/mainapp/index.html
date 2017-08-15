@@ -12,20 +12,20 @@
 {% endblock %}
 {% block body %}
 <div class="container">
-	<div class="row">
+	<div class="col-12">
 		<h1>3D Model Repository</h1>
 		<p>This is a repository for storing models for use in OSM 3D visualizers. Login using OSM OAuth on the top right.</p>
 	</div>
 	<hr>
-	<div class="row flex">
-		{% for model in models %}
+	{% for model in models %}
+		<div class="col-6">
 		{% include "mainapp/modelpanel.html" %}
-		{% endfor %}
-	</div>
+		</div>
+	{% endfor %}
 </div>
 <script>
 {% for model in models %}
-displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {width: 358, height: 256, resize: true});
+displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {height: 256, resize: true});
 {% endfor %}
 </script>
 {% endblock %}

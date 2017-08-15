@@ -93,7 +93,7 @@ function loadObjFromZip(url, options, three, callback) {
 		var camera = three['camera'];
 		var renderer = three['renderer'];
 		scene.background = new THREE.Color(0xed4337);
-		renderer.render(scene, camera);
+		renderer.render(scene, camera, options);
 	});
 }
 
@@ -152,7 +152,7 @@ function onLoad(objText, mtlText, textures, options, three) {
 		requestAnimationFrame(animate);
 
 		if(options['resize'])
-			resizeCanvas(renderer, camera);
+			resizeCanvas(renderer, camera, options);
 
 		controls.update();
 
@@ -167,6 +167,12 @@ function resizeCanvas(renderer, camera, options) {
 
 	var width = canvas.clientWidth;
 	var height = canvas.clientHeight;
+
+	if(options['width'])
+		width = options['width'];
+
+	if(options['height'])
+		height = options['height'];
 
 	if(canvas.width != width || canvas.height != height) {
 		renderer.setSize(width, height, false);
