@@ -4,55 +4,11 @@ zip.workerScriptsPath = "/static/mainapp/lib/";
 function displayPreview(elementId, model_id, revision, options) {
 	var url = "/api/model/" + model_id + "/" + revision;
 
-	loadObjFromZip(url, elementId, options, onLoad);
+	var three = initTHREE(elementId, options);
+	loadObjFromZip(url, three, onLoad);
 }
 
-function loadObjFromZip(url, elementId, options, callback) {
-	zip.createReader(new zip.HttpReader(url), function(reader) {
-		// zip.createReader callback
-		reader.getEntries(function(entries) {
-			var objText;
-			var mtlText;
-			var textures = {};
-
-			var counter = Object.keys(entries).length;
-			function updateCounter() {
-				--counter;
-				if(counter == 0)
-					callback(elementId, objText, mtlText, textures, options);
-			}
-
-			for(var i in entries) {
-				var entry = entries[i];
-				var name = entry.filename;
-				
-				if(name.endsWith(".obj"))
-					entry.getData(new zip.TextWriter(), function(text) {
-						objText = text;
-						updateCounter();
-					});
-				else if(name.endsWith(".mtl"))
-					entry.getData(new zip.TextWriter(), function(text) {
-						mtlText = text;
-						updateCounter();
-					});
-				else // let's assume it's a texture.
-					(function(name) {
-					entry.getData(new zip.BlobWriter(), function(blob) {
-						textures[name] = (window.webkitURL || window.URL).createObjectURL(blob);
-						updateCounter();
-					});
-					})(name);
-			}
-		});
-	}, function() {
-		// zip.createReader on error
-		alert("Failed loading model .zip");
-	});
-}
-
-
-function onLoad(elementId, objText, mtlText, textures, options) {
+function initTHREE(elementId, options) {
 	if(typeof options === "undefined")
 		options = {};
 
@@ -81,6 +37,71 @@ function onLoad(elementId, objText, mtlText, textures, options) {
 
 	var light = new THREE.AmbientLight(0xffffff);
 	scene.add(light);
+
+	renderer.render(scene, camera);
+
+	return {
+		'scene': scene,
+		'camera': camera,
+		'renderer': renderer,
+		'controls': controls
+	}
+}
+
+function loadObjFromZip(url, three, callback) {
+	zip.createReader(new zip.HttpReader(url), function(reader) {
+		// zip.createReader callback
+		reader.getEntries(function(entries) {
+			var objText;
+			var mtlText;
+			var textures = {};
+
+			var counter = Object.keys(entries).length;
+			function updateCounter() {
+				--counter;
+				if(counter == 0)
+					callback(objText, mtlText, textures, three);
+			}
+
+			for(var i in entries) {
+				var entry = entries[i];
+				var name = entry.filename;
+				
+				if(name.endsWith(".obj"))
+					entry.getData(new zip.TextWriter(), function(text) {
+						objText = text;
+						updateCounter();
+					});
+				else if(name.endsWith(".mtl"))
+					entry.getData(new zip.TextWriter(), function(text) {
+						mtlText = text;
+						updateCounter();
+					});
+				else // let's assume it's a texture.
+					(function(name) {
+					entry.getData(new zip.BlobWriter(), function(blob) {
+						textures[name] = (window.webkitURL || window.URL).createObjectURL(blob);
+						updateCounter();
+					});
+					})(name);
+			}
+		});
+	}, function() {
+		// zip.createReader on error
+		var scene = three['scene'];
+		var camera = three['camera'];
+		var renderer = three['renderer'];
+		scene.background = new THREE.Color(0xed4337);
+		renderer.render(scene, camera);
+	});
+}
+
+
+function onLoad(objText, mtlText, textures, three) {
+	var scene = three['scene'];
+	var camera = three['camera'];
+	var renderer = three['renderer'];
+	var controls = three['controls'];
 
 	var mtlLoader = new THREE.MTLLoader();
 	var materialCreator = mtlLoader.parse(mtlText);
