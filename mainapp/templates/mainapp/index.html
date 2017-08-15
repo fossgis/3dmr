@@ -17,11 +17,11 @@
 		<p>This is a repository for storing models for use in OSM 3D visualizers. Login using OSM OAuth on the top right.</p>
 	</div>
 	<hr>
-	{% for model in models %}
-		<div class="col-6">
-		{% include "mainapp/modelpanel.html" %}
-		</div>
-	{% endfor %}
+	<div class="row flex">
+		{% for model in models %}
+			{% include "mainapp/modelpanel.html" %}
+		{% endfor %}
+	</div>
 </div>
 <script>
 {% for model in models %}
