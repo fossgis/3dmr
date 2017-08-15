@@ -97,29 +97,32 @@ function commentAdded(json) {
 {% block body %}
 <div class="container">
 	<div class="row">
-		<div class="col-md-8">
-			<br>
+		<br>
+		<div class="col-md-12">
 			<ul class="nav nav-tabs" role="tablist" onchange="tabChange();">
 				<li class="nav-item active"><a class="nav-link active" data-toggle="tab" href="#view" role="tab">3D View</a></li>
 				{% if model.location %}
 				<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#map" role="tab">Map</a></li>
 				{% endif %}
 			</ul>
-			<div class="tab-content">
-				<div class="tab-pane active" id="view" role="tabpanel">
-					<div id="render-pane">
+		</div>
+		<div class="col-md-8">
+			<div>
+				<div class="tab-content" style="overflow: hidden;">
+					<div class="tab-pane active" id="view" role="tabpanel">
+						<div id="render-pane">
+						</div>
 					</div>
-				</div>
-				{% if model.location %}
-				<div class="tab-pane" id="map" role="tabpanel">
-					<div id="mapdiv">
+					{% if model.location %}
+					<div class="tab-pane" id="map" role="tabpanel">
+						<div id="mapdiv">
+						</div>
 					</div>
+					{% endif %}
 				</div>
-				{% endif %}
 			</div>
 		</div>
 		<div class="col-md-4">
-			<br>
 			{% if model.is_hidden %}
 			<div class="panel panel-danger">
 			{% else %}
@@ -165,45 +168,47 @@ function commentAdded(json) {
 	</div>
 	<br>
 	<div class="row">
-		<div class="panel panel-primary">
-			<div class="panel-heading">
-				<h3 class="panel-title">Comments</h3>
-			</div>
-			<div class="panel-body">
-				{% if user.is_authenticated and not user.profile.is_banned %}
-				<form action="{% url 'addcomment' %}" method="post" onsubmit="return addComment();" id="comment_form">
-					{% csrf_token %}
-					<label for="comment">Add your comment:</label><br>
-					<textarea cols="80" rows="6" id="comment" name="comment">{{ owner.profile.description }}</textarea><br>
-					<input type="hidden" name="model_id" value="{{ model.model_id }}">
-					<input type="hidden" name="revision" value="{{ model.revision }}">
-					<input type="hidden" name="ajax" value="false">
-					<button type="submit" class="btn">Submit</button>
-				</form>
-				<br>
-				{% endif %}
-				{% for comment in comments %}
-				<div class="panel panel-default">
-					<div class="panel-body">
-						{{ comment.rendered_comment|safe }}
-					</div>
-					<div class="panel-footer">
-						<a href="{% url 'user' comment.author.username %}">
-							<span class="label label-default">{{ comment.author.username }}</span>
-						</a>
-						on {{ comment.datetime|date:"Y-m-d H:i" }}
-						{% if model.revision != comment.model.revision %}
-						(revision {{ comment.model.revision }})
-						{% endif %}
-					</div>
+		<div class="col-md-12 col-xs-12">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">Comments</h3>
 				</div>
-				{% endfor %}
+				<div class="panel-body">
+					{% if user.is_authenticated and not user.profile.is_banned %}
+					<form action="{% url 'addcomment' %}" method="post" onsubmit="return addComment();" id="comment_form">
+						{% csrf_token %}
+						<label for="comment">Add your comment:</label><br>
+						<textarea cols="80" rows="6" id="comment" name="comment">{{ owner.profile.description }}</textarea><br>
+						<input type="hidden" name="model_id" value="{{ model.model_id }}">
+						<input type="hidden" name="revision" value="{{ model.revision }}">
+						<input type="hidden" name="ajax" value="false">
+						<button type="submit" class="btn">Submit</button>
+					</form>
+					<br>
+					{% endif %}
+					{% for comment in comments %}
+					<div class="panel panel-default">
+						<div class="panel-body">
+							{{ comment.rendered_comment|safe }}
+						</div>
+						<div class="panel-footer">
+							<a href="{% url 'user' comment.author.username %}">
+								<span class="label label-default">{{ comment.author.username }}</span>
+							</a>
+							on {{ comment.datetime|date:"Y-m-d H:i" }}
+							{% if model.revision != comment.model.revision %}
+							(revision {{ comment.model.revision }})
+							{% endif %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
 <script>
-displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {width: 750, height: 480});
+displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {width: 750, height: 480, resize: true});
 {% if model.location %}
 initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }}, 750, 480);
 {% endif %}

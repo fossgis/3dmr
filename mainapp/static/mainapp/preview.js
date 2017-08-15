@@ -5,7 +5,7 @@ function displayPreview(elementId, model_id, revision, options) {
 	var url = "/api/model/" + model_id + "/" + revision;
 
 	var three = initTHREE(elementId, options);
-	loadObjFromZip(url, three, onLoad);
+	loadObjFromZip(url, options, three, onLoad);
 }
 
 function initTHREE(elementId, options) {
@@ -32,7 +32,7 @@ function initTHREE(elementId, options) {
 	var scene = new THREE.Scene();
 	scene.background = new THREE.Color(0x87cefa);
 
-	var camera = new THREE.PerspectiveCamera( 75, width / height, 0.1, 1000);
+	var camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
 	var controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 	var light = new THREE.AmbientLight(0xffffff);
@@ -48,7 +48,7 @@ function initTHREE(elementId, options) {
 	}
 }
 
-function loadObjFromZip(url, three, callback) {
+function loadObjFromZip(url, options, three, callback) {
 	zip.createReader(new zip.HttpReader(url), function(reader) {
 		// zip.createReader callback
 		reader.getEntries(function(entries) {
@@ -60,7 +60,7 @@ function loadObjFromZip(url, three, callback) {
 			function updateCounter() {
 				--counter;
 				if(counter == 0)
-					callback(objText, mtlText, textures, three);
+					callback(objText, mtlText, textures, options, three);
 			}
 
 			for(var i in entries) {
@@ -97,7 +97,7 @@ function loadObjFromZip(url, three, callback) {
 }
 
 
-function onLoad(objText, mtlText, textures, three) {
+function onLoad(objText, mtlText, textures, options, three) {
 	var scene = three['scene'];
 	var camera = three['camera'];
 	var renderer = three['renderer'];
@@ -149,9 +149,27 @@ function onLoad(objText, mtlText, textures, three) {
 
 	function animate() {
 		requestAnimationFrame(animate);
+
+		if(options['resize'])
+			resizeCanvas(renderer, camera);
+
 		controls.update();
+
 		renderer.render(scene, camera);
 	}
 
 	animate();
+}
+
+function resizeCanvas(renderer, camera) {
+	var canvas = renderer.domElement;
+
+	var width = canvas.clientWidth;
+	var height = canvas.clientHeight;
+
+	if(canvas.width != width || canvas.height != height) {
+		renderer.setSize(width, height, false);
+		camera.aspect = width/height;
+		camera.updateProjectionMatrix();
+	}
 }

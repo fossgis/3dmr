@@ -33,3 +33,36 @@ nav img {
 	content: "*";
 	margin-right: 5px;
 }
+
+.center {
+	display: table;
+	margin: auto;
+}
+
+.fullwidth {
+	width: 100%;
+}
+
+.navbar-short {
+	display: none;
+}
+
+@media (max-width: 1010px) and (min-width: 768px) {
+	.navbar-brand {
+		display: none;
+	}
+
+	.navbar-short {
+		display: block;
+	}
+}
+
+@media (max-width: 884px) and (min-width: 768px) {
+	#search {
+		width: 85px;
+	}
+}
+
+.nav-tabs {
+	border-bottom: none;
+}
