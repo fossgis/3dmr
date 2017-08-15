@@ -208,7 +208,7 @@ function commentAdded(json) {
 	</div>
 </div>
 <script>
-displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {height: 480, resize: true});
+displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {height: 480});
 {% if model.location %}
 initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }}, 750, 480);
 {% endif %}

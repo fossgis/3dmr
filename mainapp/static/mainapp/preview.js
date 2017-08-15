@@ -151,9 +151,7 @@ function onLoad(objText, mtlText, textures, options, three) {
 	function animate() {
 		requestAnimationFrame(animate);
 
-		if(options['resize'])
-			resizeCanvas(renderer, camera, options);
-
+		resizeCanvas(renderer, camera, options);
 		controls.update();
 
 		renderer.render(scene, camera);
