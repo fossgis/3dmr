@@ -25,7 +25,6 @@ function initTHREE(elementId, options) {
 		var height = options["height"];
 
 	var renderer = new THREE.WebGLRenderer();
-	renderer.setSize(width, height);
 
 	renderPane.appendChild(renderer.domElement);
 
@@ -33,6 +32,8 @@ function initTHREE(elementId, options) {
 	scene.background = new THREE.Color(0x87cefa);
 
 	var camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+	resizeCanvas(renderer, camera, options);
+
 	var controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 	var light = new THREE.AmbientLight(0xffffff);
@@ -161,7 +162,7 @@ function onLoad(objText, mtlText, textures, options, three) {
 	animate();
 }
 
-function resizeCanvas(renderer, camera) {
+function resizeCanvas(renderer, camera, options) {
 	var canvas = renderer.domElement;
 
 	var width = canvas.clientWidth;

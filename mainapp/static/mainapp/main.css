@@ -34,15 +34,6 @@ nav img {
 	margin-right: 5px;
 }
 
-.center {
-	display: table;
-	margin: auto;
-}
-
-.fullwidth {
-	width: 100%;
-}
-
 .navbar-short {
 	display: none;
 }
@@ -65,4 +56,9 @@ nav img {
 
 .nav-tabs {
 	border-bottom: none;
+}
+
+canvas {
+	width: 100%;
+	height: 100%;
 }

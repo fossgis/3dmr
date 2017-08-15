@@ -25,7 +25,7 @@
 </div>
 <script>
 {% for model in models %}
-displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {height: 256});
+displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {width: 358, height: 256, resize: true});
 {% endfor %}
 </script>
 {% endblock %}
