@@ -29,7 +29,7 @@ nav img {
 }
 
 .form-group.required > label:before {
-	color: #ff6a6a;
+	color: #60ff14;
 	content: "*";
 	margin-right: 5px;
 }
