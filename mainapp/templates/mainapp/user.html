@@ -28,90 +28,88 @@ function enableEdit() {
 {% endblock %}
 {% block body %}
 <div class="container">
-	<div class="row">
+	<div class="col-12">
 		<h1>{{ owner.username }}'s user page</h1>
-		<div class="col-md-8">
-			<div class="row">
-				<div id="description">
-					{{ owner.profile.rendered_description|safe }}
-					{% if user.username == owner.username and not user.profile.is_banned %}
-					<form action="{% url 'editprofile' %}" method="post" id="editForm">
-						{% csrf_token %}
-						<label for="desc">Description:</label><br>
-						<textarea cols="80" rows="6" id="desc" name="desc">{{ owner.profile.description }}</textarea><br>
-						<button type="submit" class="btn">Submit</button>
-					</form>
-					<button type="button" class="btn" onclick="enableEdit();" style="display: none;" id="editButton">Edit Description</button>
-					{% endif %}
-				</div>
-				{% if user.profile.is_admin %}
-				<div style="margin-top: 20px">
-					{% if owner.ban %}
-					<p>Banned by <a href="{% url 'user' username=owner.ban.admin.username %}">{{ owner.ban.admin.username }}</a> on {{ owner.ban.datetime|date:"Y-m-d H:i" }} (Reason: {{ owner.ban.reason }})</p>
-					<form action="{% url 'ban' %}" method="post" class="form-inline">
-						{% csrf_token %}
-						<input type="hidden" name="username" value="{{ owner.username}}">
-						<input type="hidden" name="type" value="unban">
-						<button type="submit" class="btn btn-danger">Unban user</button>
-					</form>
-	   				{% else %}
-					<form action="{% url 'ban' %}" method="post" class="form-inline">
-						{% csrf_token %}
-						<label for="reason">Reason:</label>
-						<input type="text" class="form-control" maxlength="1024" minlength="1" name="reason" id="reason" placeholder="Uploaded Utah Teapot">
-						<input type="hidden" name="username" value="{{ owner.username}}">
-						<input type="hidden" name="type" value="ban">
-						<button type="submit" class="btn btn-danger">Ban user</button>
-					</form>
-	   				{% endif %}
-				</div>
-				{% endif %}
-				<h2>{{ owner.username }}'s models</h2><br>
-				{% with hide_user=True %}
-				{% for model in owner.models %}
-				{% include "mainapp/modelpanel.html" %}
-				<script>
-				displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {height: 200});
-				</script>
-				{% endfor %}
-				{% endwith %}
-			</div>
-			<script>
-				document.getElementById("editForm").style.display = "none";
-				document.getElementById("editButton").style.display = "block";
-			</script>
-			<div class="row" style="margin-bottom:30px;text-align:center;">
-				<div class="btn-group" role="group" aria-label="...">
-					{% for page in paginator.page_range %}
-					{% if page == page_id %}
-					<a class="btn btn-primary disabled">{{ page }}</a>
-					{% else %}
-					<a href="{% url 'user' username=owner.username %}?page={{ page }}" class="btn btn-default">{{ page }}</a>
-					{% endif %}
-					{% endfor %}
-				</div>
-			</div>
-		</div>
-		<div class="col-md-4">
-			{% if owner.avatar %}
-			<img src="{{ owner.avatar }}" alt="">
+	</div>
+	<div class="col-md-8">
+		<div id="description">
+			{{ owner.profile.rendered_description|safe }}
+			{% if user.username == owner.username and not user.profile.is_banned %}
+			<form action="{% url 'editprofile' %}" method="post" id="editForm">
+				{% csrf_token %}
+				<label for="desc">Description:</label><br>
+				<textarea cols="80" rows="6" id="desc" name="desc">{{ owner.profile.description }}</textarea><br>
+				<button type="submit" class="btn">Submit</button>
+			</form>
+			<button type="button" class="btn" onclick="enableEdit();" style="display: none;" id="editButton">Edit Description</button>
 			{% endif %}
-			<h2>Latest Changes</h2>
-			<table>
-				<tr>
-					<th>Type</th>
-					<th>Model</th>
-					<th>Date</th>
-				</tr>
-				{% for change in owner.changes %}
-				<tr>
-					<td>{{ change.typeof_text }}</td>
-					<td><a href="{% url 'model' model_id=change.model.model_id revision=change.model.revision %}">{{ change.model.title }}</a></td>
-					<td>{{ change.datetime }}</td>
-				</tr>
-				{% endfor %}
-			</table>
 		</div>
+		{% if user.profile.is_admin %}
+		<div style="margin-top: 20px">
+			{% if owner.ban %}
+			<p>Banned by <a href="{% url 'user' username=owner.ban.admin.username %}">{{ owner.ban.admin.username }}</a> on {{ owner.ban.datetime|date:"Y-m-d H:i" }} (Reason: {{ owner.ban.reason }})</p>
+			<form action="{% url 'ban' %}" method="post" class="form-inline">
+				{% csrf_token %}
+				<input type="hidden" name="username" value="{{ owner.username}}">
+				<input type="hidden" name="type" value="unban">
+				<button type="submit" class="btn btn-danger">Unban user</button>
+			</form>
+			{% else %}
+			<form action="{% url 'ban' %}" method="post" class="form-inline">
+				{% csrf_token %}
+				<label for="reason">Reason:</label>
+				<input type="text" class="form-control" maxlength="1024" minlength="1" name="reason" id="reason" placeholder="Uploaded Utah Teapot">
+				<input type="hidden" name="username" value="{{ owner.username}}">
+				<input type="hidden" name="type" value="ban">
+				<button type="submit" class="btn btn-danger">Ban user</button>
+			</form>
+			{% endif %}
+		</div>
+		{% endif %}
+		<h2>{{ owner.username }}'s models</h2><br>
+		{% with hide_user=True %}
+		{% for model in owner.models %}
+		{% include "mainapp/modelpanel.html" %}
+		<script>
+		displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {height: 200});
+		</script>
+		{% endfor %}
+		{% endwith %}
+		<script>
+			document.getElementById("editForm").style.display = "none";
+			document.getElementById("editButton").style.display = "block";
+		</script>
+		<div class="row" style="margin-bottom:30px;text-align:center;">
+			<div class="btn-group" role="group" aria-label="...">
+				{% for page in paginator.page_range %}
+				{% if page == page_id %}
+				<a class="btn btn-primary disabled">{{ page }}</a>
+				{% else %}
+				<a href="{% url 'user' username=owner.username %}?page={{ page }}" class="btn btn-default">{{ page }}</a>
+				{% endif %}
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4">
+		{% if owner.avatar %}
+		<img src="{{ owner.avatar }}" alt="">
+		{% endif %}
+		<h2>Latest Changes</h2>
+		<table>
+			<tr>
+				<th>Type</th>
+				<th>Model</th>
+				<th>Date</th>
+			</tr>
+			{% for change in owner.changes %}
+			<tr>
+				<td>{{ change.typeof_text }}</td>
+				<td><a href="{% url 'model' model_id=change.model.model_id revision=change.model.revision %}">{{ change.model.title }}</a></td>
+				<td>{{ change.datetime }}</td>
+			</tr>
+			{% endfor %}
+		</table>
 	</div>
 </div>
 {% endblock %}

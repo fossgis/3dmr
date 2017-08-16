@@ -17,7 +17,7 @@ displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.
 {% endblock %}
 {% block body %}
 <div class="container">
-	<div class="row">
+	<div class="col-12">
 		<div class="page-header">
 			<h1>Search Results
 			{% if query %}
@@ -31,9 +31,11 @@ displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.
 			{% endif %}
 			</h1>
 		</div>
-		{% for model in models %}
-		{% include "mainapp/modelpanel.html" %}
-		{% endfor %}
+	</div>
+	<div class="row">
+	{% for model in models %}
+	{% include "mainapp/modelpanel.html" %}
+	{% endfor %}
 	</div>
 	<div class="row" style="margin-bottom:30px;text-align:center;">
 		<div class="btn-group" role="group" aria-label="...">
