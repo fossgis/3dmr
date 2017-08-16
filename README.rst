@@ -1,7 +1,10 @@
-= 3D Model Repository =
+===================
+3D Model Repository
+===================
 This is a temporary name for the model repository I am developing as part of GSoC.
 
-== Development Server Instructions ==
+Development Server Instructions
+===============================
 Firstly, install `python3` and `pip3`. You also need the `virtualenv` python package, you can install it with `sudo pip3 install virtualenv`.
 Then, to get a development server running from this repository:
 
@@ -14,5 +17,6 @@ Then, to get a development server running from this repository:
 
 Your development server should now be running on port 8080. Note that you will need to make and apply migrations: `./manage.py makemigrations` and `./manage.py migrate`.
 
-== Deployment Instructions ==
+Deployment Instructions
+=======================
 TODO
