@@ -41,7 +41,12 @@ function enableEdit() {
 				<textarea cols="80" rows="6" id="desc" name="desc">{{ owner.profile.description }}</textarea><br>
 				<button type="submit" class="btn">Submit</button>
 			</form>
-			<button type="button" class="btn" onclick="enableEdit();" style="display: none;" id="editButton">Edit Description</button>
+			<button type="button" class="btn" style="display: none;" id="editButton">Edit Description</button>
+			<script>
+				document.getElementById("editForm").style.display = "none";
+				document.getElementById("editButton").style.display = "block";
+				document.getElementById("editButton").onclick = enableEdit;
+			</script>
 			{% endif %}
 		</div>
 		{% if user.profile.is_admin %}
@@ -75,10 +80,6 @@ function enableEdit() {
 		</script>
 		{% endfor %}
 		{% endwith %}
-		<script>
-			document.getElementById("editForm").style.display = "none";
-			document.getElementById("editButton").style.display = "block";
-		</script>
 		<div class="row" style="margin-bottom:30px;text-align:center;">
 			<div class="btn-group" role="group" aria-label="...">
 				{% for page in paginator.page_range %}
