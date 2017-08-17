@@ -199,9 +199,9 @@ def upload(request):
                         location=location,
                         license=license,
                         author=request.user,
-                        translation_x=translation[0],
-                        translation_y=translation[1],
-                        translation_z=translation[2],
+                        translation_x=-translation[0],
+                        translation_y=-translation[1],
+                        translation_z=-translation[2],
                         rotation=rotation,
                         scale=scale
                     )

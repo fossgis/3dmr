@@ -92,7 +92,7 @@ class UploadForm(forms.Form):
         label='Tags', max_length=1024, required=False)
 
     translation = TranslationField(
-        label='Translation', max_length=100, required=False)
+        label='Origin', max_length=100, required=False)
 
     rotation = forms.FloatField(
         label='Rotation', min_value=0, max_value=360, required=True, localize=True,
