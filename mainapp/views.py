@@ -118,12 +118,15 @@ def search(request):
         # filtered_models isn't set, redirect to homepage
         return redirect(index)
 
-
-    paginator = Paginator(ordered_models, RESULTS_PER_PAGE)
-    try:
-        results = paginator.page(page_id)
-    except EmptyPage:
-        results = []
+    if not ordered_models:
+        results = None
+        paginator = None
+    else:
+        paginator = Paginator(ordered_models, RESULTS_PER_PAGE)
+        try:
+            results = paginator.page(page_id)
+        except EmptyPage:
+            results = []
 
     context = {
         'query': query,

@@ -33,10 +33,13 @@ displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.
 		</div>
 	</div>
 	<div class="row">
+	{% if models %}
 	{% for model in models %}
 	{% include "mainapp/modelpanel.html" %}
 	{% endfor %}
+	{% endif %}
 	</div>
+	{% if paginator %}
 	<div class="row" style="margin-bottom:30px;text-align:center;">
 		<div class="btn-group" role="group" aria-label="...">
 			{% for page in paginator.page_range %}
@@ -48,5 +51,8 @@ displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.
 			{% endfor %}
 		</div>
 	</div>
+	{% else %}
+	<p>No models were found with those parameters.</p>
+	{% endif %}
 </div>
 {% endblock %}
