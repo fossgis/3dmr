@@ -181,6 +181,7 @@
 						<li>The "categories" attribute finds models that match all categories.</li>
 						<li>The "author" attribute does what is described in the <a href="#author">Author Lookup</a> endpoint.</li>
 						<li>Only models that match all attributes are returned</li>
+						<li>The "format" attribute allows you to retrieve more than the model id, allowing quick access to the location and title of many models around a point, for example.</li>
 					</ul>
 					<span class="label label-danger">POST</span>
 					<span class="label label-default">/api/search/full</span>
@@ -203,6 +204,15 @@
 }</code></pre>
 					<p class="response">Sample Response:</p>
 					<pre><code>[6, 8]</code></pre>
+					<p class="response">Sample request body with format attribute:</p>
+<pre><code>{
+"lat": 48.8583,
+"lon": 2.2945,
+"range": 1000,
+"format": ["id", "latitude", "longitude", "title"]
+}</code></pre>
+					<p class="response">Sample Response:</p>
+					<pre><code>[[1, 48.8583, 2.2945, "Eiffel Tower"], [64, 48.85831, 2.2945, "Near Eiffel Tower"]]</code></pre>
 				</div>
 			</div>
 		</div>

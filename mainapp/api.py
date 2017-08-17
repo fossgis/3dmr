@@ -1,9 +1,10 @@
 import math
 import json
+from collections import defaultdict
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
-from django.http import JsonResponse, FileResponse, Http404
+from django.http import JsonResponse, FileResponse, Http404, HttpResponseBadRequest
 from django.core.paginator import Paginator, EmptyPage
 from .models import LatestModel, Comment, Model
 from .utils import get_kv, MODEL_DIR, admin
@@ -200,4 +201,45 @@ def search_full(request):
 
     page_id = int(data.get('page', 1))
 
-    return api_paginate(models, page_id)
+    fmt = data.get('format')
+
+    if not fmt:
+        return api_paginate(models, page_id)
+
+    paginator = Paginator(models, RESULTS_PER_API_CALL)
+
+    try:
+        model_results = paginator.page(page_id)
+    except EmptyPage:
+        model_results = []
+
+    def result(model):
+        output = []
+
+        for string in fmt:
+            if string == 'id':
+                output.append(model.model_id)
+            elif string == 'latitude':
+                try:
+                    output.append(model.location.latitude)
+                except:
+                    output.append(None)
+            elif string == 'longitude':
+                try:
+                    output.append(model.location.longitude)
+                except:
+                    output.append(None)
+            elif string == 'title':
+                output.append(model.title)
+            else:
+                raise Exception()
+
+        return output
+
+    try:
+        results = [result(model) for model in model_results]
+    except:
+        return HttpResponseBadRequest('Invalid format specifier')
+
+
+    return JsonResponse(results, safe=False)
