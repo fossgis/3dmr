@@ -7,7 +7,7 @@ class TagField(forms.CharField):
             kwargs['widget'] = forms.TextInput(
                 attrs= {
                     'placeholder': 'shape=pyramidal, building=yes',
-                    'pattern': '^.*?(?==)((?!, ).)*(, .*?(?==)((?!, ).)*)*$',
+                    'pattern': '^ *.*?(?==)((?!, ).)*(, .*?(?==)((?!, ).)*)* *$',
                 })
 
         super(TagField, self).__init__(*args, **kwargs)
@@ -18,7 +18,7 @@ class TagField(forms.CharField):
             return {}
 
         tags = {}
-        tag_list = value.split(', ')
+        tag_list = value.strip().split(', ')
         for tag in tag_list:
             try:
                 k, v = get_kv(tag)
@@ -41,7 +41,7 @@ class CategoriesField(forms.CharField):
         if not value:
             return []
 
-        return value.split(', ')
+        return value.strip().split(', ')
 
 class TranslationField(forms.CharField):
     def __init__(self, *args, **kwargs):
