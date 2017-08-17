@@ -2,7 +2,7 @@ function addComment() {
 	var comment = document.getElementById("comment");
 
 	// refuse if comment is empty
-	if(comment.value == "") {
+	if(comment.value.trim() == "") {
 		alert("Empty comments aren't allowed.");
 		return false;
 	}

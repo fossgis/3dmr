@@ -356,9 +356,20 @@ def addcomment(request):
             }
             return JsonResponse(response)
 
-    comment = request.POST.get('comment')
+    comment = request.POST.get('comment').strip()
     model_id = int(request.POST.get('model_id'))
     revision = int(request.POST.get('revision'))
+
+    if len(comment) == 0:
+        if ajax == 'false':
+            messages.error(request, 'Comment must not be empty.');
+            return redirect(model, model_id=model_id, revision=revision)
+        else:
+            response = {
+                'success': 'no',
+                'error': 'Comment must not be empty.'
+            }
+            return JsonResponse(response)
 
     author = request.user
     rendered_comment = mistune.markdown(comment)
