@@ -96,6 +96,11 @@ body {
 	</div>
 </div>
 <script>
+	function updateLatLon(e) {
+		document.getElementById('id_latitude').value = e.latlng.lat;
+		document.getElementById('id_longitude').value = ((e.latlng.lng - 180) % 360) + 180;
+	}
+
 	var map = L.map('map');
 	map.on('load', function() {
 		var descriptor = document.getElementById('map-descriptor');
@@ -114,11 +119,11 @@ body {
 	map.on('click', function(e) {
 		if(marker)
 			marker.remove(map);
+		
+		updateLatLon(e);
 
-		document.getElementById('id_latitude').value = e.latlng.lat;
-		document.getElementById('id_longitude').value = ((e.latlng.lng - 180) % 360) + 180;
-
-		marker = new L.marker(e.latlng).addTo(map);
+		marker = new L.marker(e.latlng, {draggable: true}).addTo(map);
+		marker.on('drag', updateLatLon);
 	});
 </script>
 {% endblock %}
