@@ -50,7 +50,7 @@ class TranslationField(forms.CharField):
                 attrs={
                     'value': '0.0 0.0 0.0',
                     'placeholder': '3 -4.5 1.03',
-                    'pattern': '^(+|-)?[0-9]+(\.[0-9]+)? (+|-)?[0-9]+(\.[0-9]+)? (+|-)?[0-9]+(\.[0-9]+)?$',
+                    'pattern': '^(\+|-)?[0-9]+((\.|,)[0-9]+)? (\+|-)?[0-9]+((\.|,)[0-9]+) (\+|-)?[0-9]+((\.|,)[0-9]+)$',
                     'aria-describedby': 'translation-help'
                 })
 
@@ -61,12 +61,41 @@ class TranslationField(forms.CharField):
         if not value:
             return [0, 0, 0] # default value
 
-        numbers = list(map(float, value.split(' ')))
+        numbers = list(map(float, value.replace(',', '.').split(' ')))
 
         if len(numbers) != 3:
             raise forms.ValidationError('Too many values', code='invalid')
         
         return numbers
+
+class CompatibleFloatField(forms.CharField):
+    def __init__(self, *args, **kwargs):
+        if not kwargs.get('widget'):
+            if kwargs.get('attrs'):
+                attrs = kwargs['attrs']
+            else:
+                attrs = {}
+            attrs['pattern'] = '^(\+|-)?[0-9]+((\.|,)[0-9]+)?$'
+
+            kwargs['widget'] = forms.TextInput(attrs)
+
+        kwargs = kwargs.copy()
+        kwargs.pop('attrs')
+
+        super(CompatibleFloatField, self).__init__(*args, **kwargs)
+
+    def to_python(self, value):
+        # Normalize string to a dict, representing the tags
+        if value == '':
+            return None
+
+        try:
+            number = float(value.replace(',', '.'))
+        except ValueError:
+            raise forms.ValidationError('Invalid number.', code='invalid')
+
+        return number
+
 
 class UploadForm(forms.Form):
     title = forms.CharField(
@@ -77,13 +106,13 @@ class UploadForm(forms.Form):
         label='Description', max_length=512,
         widget=forms.Textarea(attrs={'cols': '80', 'rows': '5'}), required=False)
 
-    latitude = forms.FloatField(
-        label='Latitude', min_value=-90, max_value=90, required=False, localize=False,
-        widget=forms.NumberInput(attrs={'placeholder': '2.294481'}))
+    latitude = CompatibleFloatField(
+        label='Latitude', required=False,
+        attrs={'placeholder': '2.294481'})
 
-    longitude = forms.FloatField(
-        label='Longitude', min_value=-180, max_value=180, required=False, localize=False,
-        widget=forms.NumberInput(attrs={'placeholder': '48.858370'}))
+    longitude = CompatibleFloatField(
+        label='Longitude', required=False,
+        attrs={'placeholder': '48.858370'})
 
     categories = CategoriesField(
         label='Categories', max_length=1024, required=False)
@@ -94,13 +123,13 @@ class UploadForm(forms.Form):
     translation = TranslationField(
         label='Origin', max_length=100, required=False)
 
-    rotation = forms.FloatField(
-        label='Rotation', min_value=0, max_value=360, required=True, localize=True,
-        widget=forms.NumberInput(attrs={'placeholder': '45.5', 'value': '0.0', 'aria-describedby': 'rotation-help'}))
+    rotation = CompatibleFloatField(
+        label='Rotation', required=False, 
+        attrs={'placeholder': '45.5', 'value': '0.0', 'aria-describedby': 'rotation-help'})
 
-    scale = forms.FloatField(
-        label='Scale', required=True, localize=True,
-        widget=forms.NumberInput(attrs={'placeholder': '1.2', 'value': '1.0', 'aria-describedby': 'scaling-help'}))
+    scale = CompatibleFloatField(
+        label='Scale', required=False,
+        attrs={'placeholder': '1.2', 'value': '1.0', 'aria-describedby': 'scaling-help'})
 
     license = forms.ChoiceField(
         label='License', required=False, choices=LICENSES.items(), initial=0,
