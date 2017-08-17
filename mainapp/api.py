@@ -8,6 +8,7 @@ from django.core.paginator import Paginator, EmptyPage
 from .models import LatestModel, Comment, Model
 from .utils import get_kv, MODEL_DIR, admin
 from django.db.models import Max
+from django.views.decorators.csrf import csrf_exempt
 
 RESULTS_PER_API_CALL= 20
 
@@ -161,6 +162,7 @@ def search_title(request, title, page_id=1):
 
     return api_paginate(models, page_id)
 
+@csrf_exempt # there's no need for this, since no data is modified
 def search_full(request):
     body = request.body.decode('UTF-8')
     data = json.loads(body)
