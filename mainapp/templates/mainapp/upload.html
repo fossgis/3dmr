@@ -184,7 +184,9 @@ body {
 			}
 		}
 
-		displayError('form', 'Recheck the form for errors.');
+		if(!ok)
+			displayError('form', 'Recheck the form for errors.');
+
 		return ok;
 	}
 </script>
