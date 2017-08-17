@@ -157,8 +157,8 @@ def upload(request):
             # Store form data in session, to use after login
             request.session['post_data'] = request.POST
         elif form.is_valid():
-            title = form.cleaned_data['title']
-            description = form.cleaned_data['description']
+            title = form.cleaned_data['title'].strip()
+            description = form.cleaned_data['description'].strip()
             latitude = form.cleaned_data['latitude']
             longitude = form.cleaned_data['longitude']
             categories = form.cleaned_data['categories']
