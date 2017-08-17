@@ -66,16 +66,19 @@ body {
 				<label for="{{ form.translation.id_for_translation }}">{{ form.translation.label }}:</label>
 				{% for error in form.translation.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
 				{{ form.translation }}
+				<span id="translation-help" class="help-block">Specifies the translation of the model, in model units.</span>
 			</div>
 			<div class="form-group">
 				<label for="{{ form.rotation.id_for_rotation }}">{{ form.rotation.label }}:</label>
 				{% for error in form.rotation.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
 				{{ form.rotation }}
+				<span id="rotation-help" class="help-block">Specifies the rotation of the model, in the vertical axis. In degrees, clockwise</span>
 			</div>
 			<div class="form-group">
 				<label for="{{ form.scale.id_for_scale }}">{{ form.scale.label }}:</label>
 				{% for error in form.scale.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
 				{{ form.scale }}
+				<span id="scaling-help" class="help-block">Specifies the scaling of the model. '2' here would mean that each unit in the model corresponds to 2 meters.</span>
 			</div>
 			<div class="form-group required">
 				<label>License</label>

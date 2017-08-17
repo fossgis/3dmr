@@ -50,7 +50,8 @@ class TranslationField(forms.CharField):
                 attrs={
                     'value': '0.0 0.0 0.0',
                     'placeholder': '3 -4.5 1.03',
-                    'pattern': '^(+|-)?[0-9]+(\.[0-9]+)? (+|-)?[0-9]+(\.[0-9]+)? (+|-)?[0-9]+(\.[0-9]+)?$'
+                    'pattern': '^(+|-)?[0-9]+(\.[0-9]+)? (+|-)?[0-9]+(\.[0-9]+)? (+|-)?[0-9]+(\.[0-9]+)?$',
+                    'aria-describedby': 'translation-help'
                 })
 
             super(TranslationField, self).__init__(*args, **kwargs)
@@ -95,11 +96,11 @@ class UploadForm(forms.Form):
 
     rotation = forms.FloatField(
         label='Rotation', min_value=0, max_value=360, required=True, localize=True,
-        widget=forms.NumberInput(attrs={'placeholder': '45.5', 'value': '0.0'}))
+        widget=forms.NumberInput(attrs={'placeholder': '45.5', 'value': '0.0', 'aria-describedby': 'rotation-help'}))
 
     scale = forms.FloatField(
         label='Scale', required=True, localize=True,
-        widget=forms.NumberInput(attrs={'placeholder': '1.2', 'value': '1.0'}))
+        widget=forms.NumberInput(attrs={'placeholder': '1.2', 'value': '1.0', 'aria-describedby': 'scaling-help'}))
 
     license = forms.ChoiceField(
         label='License', required=False, choices=LICENSES.items(), initial=0,
