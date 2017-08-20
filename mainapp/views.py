@@ -68,6 +68,7 @@ def model(request, model_id, revision=None):
     context = {
         'model': model,
         'comments': comments,
+        'old_comment': request.session.get('comment')
     }
 
     return render(request, 'mainapp/model.html', context)
@@ -340,36 +341,34 @@ def editprofile(request):
     return redirect(user, username='')
 
 def addcomment(request):
+    def error(ajax, msg, redirect_page=index, *args, **kwargs):
+        if ajax == 'false':
+            messages.error(request, msg)
+            return redirect(redirect_page, **kwargs)
+        else:
+            response = {
+                'success': 'no',
+                'error': msg
+            }
+            return JsonResponse(response)
+
     if not request.user.is_authenticated():
         return redirect(index)
 
     ajax = request.POST.get('ajax')
 
     if request.user.profile.is_banned:
-        if ajax == 'false':
-            messages.error(request, 'You are banned. Commenting is not permitted.')
-            return redirect(index)
-        else:
-            response = {
-                'success': 'no',
-                'error': 'You are banned. Commenting is not permitted.'
-            }
-            return JsonResponse(response)
+        return error(ajax, 'You are banned. Commenting is not permitted.')
 
     comment = request.POST.get('comment').strip()
     model_id = int(request.POST.get('model_id'))
     revision = int(request.POST.get('revision'))
 
     if len(comment) == 0:
-        if ajax == 'false':
-            messages.error(request, 'Comment must not be empty.');
-            return redirect(model, model_id=model_id, revision=revision)
-        else:
-            response = {
-                'success': 'no',
-                'error': 'Comment must not be empty.'
-            }
-            return JsonResponse(response)
+        return error(ajax, 'Comment must not be empty.')
+    elif len(comment) > 1024:
+        request.session['comment'] = comment
+        return error(ajax, 'Comment too long.', model, model_id=model_id, revision=revision)
 
     author = request.user
     rendered_comment = mistune.markdown(comment)
@@ -383,6 +382,9 @@ def addcomment(request):
     )
 
     obj.save()
+
+    if request.session['comment']:
+        del request.session['comment']
 
     if ajax == 'false':
         return redirect(model, model_id=model_id, revision=revision)

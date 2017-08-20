@@ -112,7 +112,7 @@
 					<form action="{% url 'addcomment' %}" method="post" onsubmit="return addComment();" id="comment_form">
 						{% csrf_token %}
 						<label for="comment">Add your comment:</label><br>
-						<textarea cols="80" rows="6" id="comment" name="comment">{{ owner.profile.description }}</textarea><br>
+						<textarea cols="80" rows="6" id="comment" name="comment">{{ old_comment }}</textarea><br>
 						<input type="hidden" name="model_id" value="{{ model.model_id }}">
 						<input type="hidden" name="revision" value="{{ model.revision }}">
 						<input type="hidden" name="ajax" value="false">

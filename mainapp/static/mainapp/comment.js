@@ -1,3 +1,5 @@
+var previousComment;
+
 function addComment() {
 	var comment = document.getElementById("comment");
 
@@ -24,6 +26,8 @@ function addComment() {
 	params += "&model_id=" + model_id + "&revision=" + revision;
 	request.send(params);
 
+	previousComment = comment.value;
+
 	comment.value = "";
 
 	return false;
@@ -34,6 +38,8 @@ function commentAdded(json) {
 
 	if(fields["success"] == "no") {
 		alert(fields["error"]);
+		var comment = document.getElementById("comment");
+		comment.value = previousComment;
 		return;
 	}
 
