@@ -5,9 +5,9 @@ class TagField(forms.CharField):
     def __init__(self, *args, **kwargs):
         if not kwargs.get('widget'):
             kwargs['widget'] = forms.TextInput(
-                attrs= {
+                attrs = {
                     'placeholder': 'shape=pyramidal, building=yes',
-                    'pattern': '^ *.*?(?==)((?!, ).)*(, .*?(?==)((?!, ).)*)* *$',
+                    'pattern': '^ *((((?!, )[^=])+=((?!, ).)+)(, ((?!, )[^=])+=((?!, ).)+)*)? *$',
                 })
 
         super(TagField, self).__init__(*args, **kwargs)
@@ -32,7 +32,10 @@ class CategoriesField(forms.CharField):
     def __init__(self, *args, **kwargs):
         if not kwargs.get('widget'):
             kwargs['widget'] = forms.TextInput(
-                attrs={'placeholder': 'monuments, tall'})
+                attrs = {
+                    'placeholder': 'monuments, tall',
+                    'pattern': '^ *(((?!, ).)+)(, ((?!, ).)+)* *$',
+                })
 
         super(CategoriesField, self).__init__(*args, **kwargs)
 
