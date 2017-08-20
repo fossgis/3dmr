@@ -22,14 +22,21 @@ urlpatterns = [
     url(r'^action/hide$', views.hide, name='hide'),
     
     url(r'^api/info/(?P<model_id>[0-9]+)$', api.get_info, name='get_info'),
+
     url(r'^api/model/(?P<model_id>[0-9]+)/(?P<revision>[0-9]+)$', api.get_model, name='get_model'),
     url(r'^api/model/(?P<model_id>[0-9]+)$', api.get_model, name='get_model'),
+    url(r'^api/filelist/(?P<model_id>[0-9]+)/(?P<revision>[0-9]+)$', api.get_filelist, name='get_list'),
+    url(r'^api/filelist/(?P<model_id>[0-9]+)$', api.get_filelist, name='get_list'),
+    url(r'^api/file/(?P<model_id>[0-9]+)/(?P<revision>[0-9]+)/(?P<filename>.+)$', api.get_file, name='get_file'),
+    url(r'^api/filelatest/(?P<model_id>[0-9]+)/(?P<filename>.+)$', api.get_file, name='get_file'),
+
     url(r'^api/tag/(?P<tag>.*)/(?P<page_id>[0-9]+)$', api.lookup_tag, name='lookup_tag'),
     url(r'^api/tag/(?P<tag>.*)$', api.lookup_tag, name='lookup_tag'),
     url(r'^api/category/(?P<category>.*)/(?P<page_id>[0-9]+)$', api.lookup_category, name='lookup_category'),
     url(r'^api/category/(?P<category>.*)$', api.lookup_category, name='lookup_category'),
     url(r'^api/author/(?P<username>.*)/(?P<page_id>[0-9]+)$', api.lookup_author, name='lookup_author'),
     url(r'^api/author/(?P<username>.*)$', api.lookup_author, name='lookup_author'),
+
     url(r'^api/search/?(?P<latitude>-?[0-9]+(\.[0-9]+)?)/(?P<longitude>-?[0-9]+(\.[0-9]+)?)/(?P<distance>[0-9]+(\.[0-9]+)?)/(?P<page_id>[0-9]+)$', api.search_range, name='lookup_range'),
     url(r'^api/search/(?P<latitude>-?[0-9]+(\.[0-9]+)?)/(?P<longitude>-?[0-9]+(\.[0-9]+)?)/(?P<distance>[0-9]+(\.[0-9]+)?)$', api.search_range, name='lookup_range'),
     url(r'^api/search/title/(?P<title>.*)/(?P<page_id>[0-9]+)$', api.search_title, name='search_title'),
