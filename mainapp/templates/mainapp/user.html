@@ -31,7 +31,7 @@ function enableEdit() {
 	<div class="col-12">
 		<h1>{{ owner.username }}'s user page</h1>
 	</div>
-	<div class="col-md-8">
+	<div class="col-lg-8 col-12">
 		<div id="description">
 			{{ owner.profile.rendered_description|safe }}
 			{% if user.username == owner.username and not user.profile.is_banned %}
@@ -72,15 +72,17 @@ function enableEdit() {
 		</div>
 		{% endif %}
 		<h2>{{ owner.username }}'s models</h2><br>
-		{% with hide_user=True %}
-		{% for model in owner.models %}
-		{% include "mainapp/modelpanel.html" %}
-		<script>
-		displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {height: 200});
-		</script>
-		{% endfor %}
-		{% endwith %}
-		<div class="row" style="margin-bottom:30px;text-align:center;">
+		<div class="row flex">
+			{% with hide_user=True %}
+			{% for model in owner.models %}
+			{% include "mainapp/modelpanel.html" %}
+			<script>
+			displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {height: 200});
+			</script>
+			{% endfor %}
+			{% endwith %}
+		</div>
+		<div class="col-12">
 			<div class="btn-group" role="group" aria-label="...">
 				{% for page in paginator.page_range %}
 				{% if page == page_id %}
@@ -92,7 +94,7 @@ function enableEdit() {
 			</div>
 		</div>
 	</div>
-	<div class="col-md-4">
+	<div class="col-lg-4 col-12">
 		{% if owner.avatar %}
 		<img src="{{ owner.avatar }}" alt="">
 		{% endif %}

@@ -273,7 +273,7 @@ def upload(request):
 def user(request, username):
     update_last_page(request)
 
-    RESULTS_PER_PAGE = 3
+    RESULTS_PER_PAGE = 6
 
     if username == '':
         if request.user:
@@ -289,7 +289,7 @@ def user(request, username):
     if not admin(request):
         models = models.filter(is_hidden=False)
 
-    changes = user.change_set.order_by('-pk')
+    changes = user.change_set.order_by('-pk')[:10] # get the 10 latest changes
 
     try:
         page_id = int(request.GET.get('page', 1))

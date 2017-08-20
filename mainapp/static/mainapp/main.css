@@ -61,3 +61,22 @@ nav img {
 canvas {
 	width: 100%;
 }
+
+/* Specific to user page */
+.col-lg-4.col-12 {
+	text-align: center;
+}
+
+.col-lg-4.col-12 table {
+	margin: auto;
+}
+
+.col-lg-4.col-12 td {
+	padding: 3px;
+}
+
+.col-lg-8.col-12 > .col-12 {
+	margin-bottom: 30px;
+	text-align: center;
+	clear: both;
+}
