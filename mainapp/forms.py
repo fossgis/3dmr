@@ -89,7 +89,7 @@ class CompatibleFloatField(forms.CharField):
 
     def to_python(self, value):
         # Normalize string to a dict, representing the tags
-        if value == '':
+        if value == '' or value == None:
             return None
 
         try:
@@ -99,8 +99,26 @@ class CompatibleFloatField(forms.CharField):
 
         return number
 
+# This function adds the 'form-control' class to all fields, with possible exceptions
+def init_bootstrap_form(fields, exceptions=[]):
+    # add class="form-control" to all fields
+    for field in fields:
+        fields[field].widget.attrs['class'] = 'form-control'
 
-class UploadForm(forms.Form):
+    # remove from exceptions
+    for field in exceptions:
+        del fields[field].widget.attrs['class']
+
+
+class UploadFileForm(forms.Form):
+    model_file = forms.FileField(
+        label='Model File', required=True, allow_empty_file=False)
+
+    def __init__(self, *args, **kwargs):
+        super(UploadFileForm, self).__init__(*args, **kwargs)
+        init_bootstrap_form(self.fields, ['model_file'])
+
+class MetadataForm(forms.Form):
     title = forms.CharField(
         label='Name', min_length=1, max_length=32, required=True,
         widget=forms.TextInput(attrs={'placeholder': 'Eiffel Tower'}))
@@ -138,16 +156,15 @@ class UploadForm(forms.Form):
         label='License', required=False, choices=LICENSES.items(), initial=0,
         widget=forms.RadioSelect)
 
+    def __init__(self, *args, **kwargs):
+        super(MetadataForm, self).__init__(*args, **kwargs)
+        init_bootstrap_form(self.fields, ['license'])
+
+# This class represents a mix of the UploadFileForm and the MetadataForm
+class UploadFileMetadataForm(MetadataForm):
     model_file = forms.FileField(
         label='Model File', required=True, allow_empty_file=False)
 
     def __init__(self, *args, **kwargs):
-        super(UploadForm, self).__init__(*args, **kwargs)
-
-        # add class="form-control" to all fields
-        for field in self.fields:
-            self.fields[field].widget.attrs['class'] = 'form-control'
-
-        # remove from license and model_file
-        for field in ['license', 'model_file']:
-            del self.fields[field].widget.attrs['class']
+        super(UploadFileMetadataForm, self).__init__(*args, **kwargs)
+        init_bootstrap_form(self.fields, ['license', 'model_file'])

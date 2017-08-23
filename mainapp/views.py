@@ -1,5 +1,5 @@
-import os
 import logging
+import mistune
 
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -7,14 +7,12 @@ from django.core.paginator import Paginator, EmptyPage
 from social_django.models import UserSocialAuth
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
-from .models import Model, LatestModel, Comment, Category, Change, Ban, Location
-from .forms import UploadForm
 from django.contrib import messages
-from django.db import transaction
 
+from .models import Model, LatestModel, Comment, Category, Change, Ban, Location
+from .forms import UploadFileForm, UploadFileMetadataForm, MetadataForm
 from .utils import get_kv, update_last_page, get_last_page, MODEL_DIR, CHANGES, admin
-
-import mistune
+import mainapp.database as database
 
 logger = logging.getLogger(__name__)
 
@@ -141,6 +139,122 @@ def search(request):
 
     return render(request, 'mainapp/search.html', context)
 
+def edit(request, model_id, revision):
+    if request.user.is_authenticated() and request.user.profile.is_banned:
+        messages.error(request, 'You are banned. Editing models is not permitted.')
+        return redirect(index)
+
+    m = get_object_or_404(Model, model_id=model_id, revision=revision)
+
+    if request.method == 'POST':
+        form = MetadataForm(request.POST, request.FILES)
+
+        if not request.user.is_authenticated():
+            messages.error(request, 'You must be logged in to use this feature.')
+            return redirect(index)
+        elif request.user != m.author:
+            messages.error(request, 'You must be the author of the model to edit it.')
+            return redirect(model, model_id=m.model_id, revision=m.revision)
+        elif form.is_valid():
+            status = database.edit({
+                'title': form.cleaned_data['title'].strip(),
+                'description': form.cleaned_data['description'].strip(),
+                'latitude': form.cleaned_data['latitude'],
+                'longitude': form.cleaned_data['longitude'],
+                'categories': form.cleaned_data['categories'],
+                'tags': form.cleaned_data['tags'],
+                'translation': form.cleaned_data['translation'],
+                'rotation': form.cleaned_data['rotation'],
+                'scale': form.cleaned_data['scale'],
+                'license': form.cleaned_data['license'],
+                'model_id': model_id,
+                'revision': revision
+            })
+
+            if status:
+                return redirect(model, model_id=m.model_id, revision=m.revision)
+            else:
+                messages.error(request, 'Server error. Try again later.')
+                return redirect(revise, model_id=model_id, revision=m.revision)
+    else:
+        if not request.user.is_authenticated():
+            return redirect(index)
+        elif request.user != m.author:
+            messages.error(request, 'You must be the author of the model to edit it.')
+            return redirect(model, model_id=m.model_id, revision=m.revision)
+
+        tags = []
+        for k, v in m.tags.items():
+            tags.append("{}={}".format(k, v))
+
+        initial = {
+            'title': m.title,
+            'description': m.description,
+            'tags': ', '.join(tags),
+            'categories': ', '.join(m.categories.all().values_list('name', flat=True)[::1]),
+            # "+ 0" fixes negative zero float (-0.0)
+            'translation': '{} {} {}'.format(-m.translation_x + 0, -m.translation_y + 0, -m.translation_z + 0),
+            'rotation': m.rotation,
+            'scale': m.scale,
+            'license': m.license
+        }
+
+        if m.location:
+            initial['latitude'] = m.location.latitude
+            initial['longitude'] = m.location.longitude
+
+        form = MetadataForm(initial=initial)
+
+    return render(request, 'mainapp/edit.html', {
+        'form': form,
+        'model': m
+    })
+
+
+def revise(request, model_id):
+    if request.user.is_authenticated() and request.user.profile.is_banned:
+        messages.error(request, 'You are banned. Revising models is not permitted.')
+        return redirect(index)
+
+    m = LatestModel.objects.get(model_id=model_id)
+
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+
+        if not request.user.is_authenticated():
+            messages.error(request, 'You must be logged in to use this feature.')
+            return redirect(index)
+        elif request.user != m.author:
+            messages.error(request, 'You must be the author of the model to revise it.')
+            return redirect(model, model_id=m.model_id, revision=m.revision)
+        elif form.is_valid():
+            model_file = request.FILES['model_file']
+
+            m = database.upload(model_file, {
+                'revision': True,
+                'model_id': model_id,
+                'author': request.user
+            })
+
+            if m:
+                return redirect(model, model_id=m.model_id, revision=m.revision)
+            else:
+                messages.error(request, 'Server error. Try again later.')
+                return redirect(revise, model_id=model_id)
+    else:
+        if not request.user.is_authenticated():
+            return redirect(index)
+        elif request.user != m.author:
+            messages.error(request, 'You must be the author of the model to revise it.')
+            return redirect(model, model_id=m.model_id, revision=m.revision)
+
+        form = UploadFileForm()
+
+    return render(request, 'mainapp/revise.html', {
+        'form': form,
+        'model': m
+    })
+
 def upload(request):
     update_last_page(request)
 
@@ -149,7 +263,7 @@ def upload(request):
         return redirect(index)
 
     if request.method == 'POST':
-        form = UploadForm(request.POST, request.FILES)
+        form = UploadFileMetadataForm(request.POST, request.FILES)
 
         if not request.user.is_authenticated():
             # Show error in form, but don't redirect anywhere
@@ -158,107 +272,35 @@ def upload(request):
             # Store form data in session, to use after login
             request.session['post_data'] = request.POST
         elif form.is_valid():
-            title = form.cleaned_data['title'].strip()
-            description = form.cleaned_data['description'].strip()
-            latitude = form.cleaned_data['latitude']
-            longitude = form.cleaned_data['longitude']
-            categories = form.cleaned_data['categories']
-            tags = form.cleaned_data['tags']
-            translation = form.cleaned_data['translation']
-            rotation = form.cleaned_data['rotation']
-            scale = form.cleaned_data['scale']
-            license = form.cleaned_data['license']
             model_file = request.FILES['model_file']
 
-            try:
-                with transaction.atomic():
-                    # get the model_id for this model.
-                    # we can only do it this way because we're in a transaction.
-                    try:
-                        next_model_id = LatestModel.objects.latest('model_id').model_id + 1
-                    except LatestModel.DoesNotExist:
-                        next_model_id = 1 # no models in db
+            m = database.upload(model_file, {
+                'title': form.cleaned_data['title'].strip(),
+                'description': form.cleaned_data['description'].strip(),
+                'latitude': form.cleaned_data['latitude'],
+                'longitude': form.cleaned_data['longitude'],
+                'categories': form.cleaned_data['categories'],
+                'tags': form.cleaned_data['tags'],
+                'translation': form.cleaned_data['translation'],
+                'rotation': form.cleaned_data['rotation'],
+                'scale': form.cleaned_data['scale'],
+                'license': form.cleaned_data['license'],
+                'author': request.user
+                })
 
-                    rendered_description = mistune.markdown(description)
-
-                    if latitude and longitude:
-                        location = Location(
-                            latitude=latitude,
-                            longitude=longitude
-                        )
-                        location.save()
-                    else:
-                        location = None
-
-                    m = Model(
-                        model_id=next_model_id,
-                        revision=1,
-                        title=title,
-                        description=description,
-                        rendered_description=rendered_description,
-                        tags=tags,
-                        location=location,
-                        license=license,
-                        author=request.user,
-                        translation_x=-translation[0],
-                        translation_y=-translation[1],
-                        translation_z=-translation[2],
-                        rotation=rotation,
-                        scale=scale
-                    )
-
-                    m.save()
-
-                    for category_name in categories:
-                        try:
-                            category = Category.objects.get(name=category_name)
-                        except:
-                            category = Category(name=category_name)
-
-                        category.save()
-                        m.categories.add(category)
-
-                    m.save()
-
-                    change = Change(
-                        author=request.user,
-                        model=m,
-                        typeof=0, # TODO: find better way to express this (Enum?)
-                    )
-
-                    change.save()
-
-                    filepath = '{}/{}/{}.zip'.format(MODEL_DIR, m.model_id, m.revision)
-                    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-                    with open(filepath, 'wb+') as destination:
-                        for chunk in model_file.chunks():
-                            destination.write(chunk)
-            except:
-                # We reach here when any of the following happens:
-                # 1) Database constraint is violated
-                # 2) File is not saved correctly to the specified directory
-                # 3) Unknown
-
-                # We should have verified everything to do with 1) earlier,
-                # and notified the user if there was any error. Thus, it's
-                # unlikely to be 1). 
-
-                # Thus, we can assume that 2) and 3) are server errors, and that
-                # the user can do nothing about them. Thus, report this.
-                logger.exception('Fatal server error when uploading model.')
-                messages.error(request, 'Fatal server error. Try again later.')
-
+            if m:
+                return redirect(model, model_id=m.model_id, revision=m.revision)
+            else:
+                messages.error(request, 'Server error. Try again later.')
                 request.session['post_data'] = request.POST
                 return redirect(upload)
-
-            return redirect(model, model_id=m.model_id, revision=m.revision)
     else:
         if not request.user.is_authenticated():
             return redirect(index)
 
         post_data = request.session.get('post_data', None)
         if post_data: # if there's post_data in our session
-            form = UploadForm(post_data)
+            form = UploadFileMetadataForm(post_data)
 
             # clear previous errors in model_file
             form.errors['model_file'] = form.error_class()
@@ -267,7 +309,7 @@ def upload(request):
 
             del request.session['post_data']
         else: # otherwise
-            form = UploadForm()
+            form = UploadFileMetadataForm()
 
     return render(request, 'mainapp/upload.html', {'form': form})
 
