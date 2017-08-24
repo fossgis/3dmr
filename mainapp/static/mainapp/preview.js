@@ -130,6 +130,18 @@ function onLoad(objText, mtlText, textures, options, three) {
 	objLoader.setMaterials(materialCreator);
 	var object = objLoader.parse(objText);
 
+	for(var i in object.children) {
+		var mesh = object.children[i];
+
+		if(mesh.type != 'LineSegments')
+			continue;
+
+		if(!mesh.material)
+			continue;
+
+		mesh.material.lights = false;
+	}
+
 	scene.add(object);
 
 	var bbox = new THREE.Box3().setFromObject(object);
