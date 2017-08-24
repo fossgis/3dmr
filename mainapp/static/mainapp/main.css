@@ -80,3 +80,13 @@ canvas {
 	text-align: center;
 	clear: both;
 }
+
+/* Specific to model page */
+.panel-footer > form > button {
+	padding-bottom: 1px;
+	padding-top: 1px;
+}
+
+.panel-body.panel-hidden {
+	background-color: #faf0f0;
+}
