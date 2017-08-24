@@ -76,7 +76,7 @@ def model(request, model_id, revision=None):
 def search(request):
     update_last_page(request)
 
-    RESULTS_PER_PAGE = 1
+    RESULTS_PER_PAGE = 6
 
     query = request.GET.get('query', None)
     tag = request.GET.get('tag', None)

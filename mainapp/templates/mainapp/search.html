@@ -32,7 +32,7 @@ displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.
 			</h1>
 		</div>
 	</div>
-	<div class="row">
+	<div class="row flex">
 	{% if models %}
 	{% for model in models %}
 	{% include "mainapp/modelpanel.html" %}
