@@ -9,11 +9,6 @@
 <script src="{% static 'mainapp/lib/zip.js' %}"></script>
 <script src="{% static 'mainapp/lib/zip-ext.js' %}"></script>
 <script src="{% static 'mainapp/preview.js' %}"></script>
-<script>
-{% for model in models %}
-displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {height: 256});
-{% endfor %}
-</script>
 {% endblock %}
 {% block body %}
 <div class="container">
@@ -32,13 +27,16 @@ displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.
 			</h1>
 		</div>
 	</div>
-	<div class="row flex">
 	{% if models %}
-	{% for model in models %}
-	{% include "mainapp/modelpanel.html" %}
-	{% endfor %}
-	{% endif %}
+	<div class="row flex">
+		{% for model in models %}
+			{% include "mainapp/modelpanel.html" %}
+			<script>
+				displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {height: 256});
+			</script>
+		{% endfor %}
 	</div>
+	{% endif %}
 	{% if paginator %}
 	<div class="row" style="margin-bottom:30px;text-align:center;">
 		<div class="btn-group" role="group" aria-label="...">
