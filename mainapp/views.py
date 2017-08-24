@@ -88,32 +88,32 @@ def search(request):
 
     url_params = '?'
 
-    if query != None:
+    if query:
         url_params += 'query=' + query
-    if tag != None:
+    if tag:
         url_params += 'tag=' + tag
-    if category != None:
+    if category:
         url_params += 'category=' + category
 
     models = Model.objects
 
-    if tag != None:
+    if tag:
         try:
             key, value = get_kv(tag)
         except ValueError:
             return redirect(index)
         filtered_models = models.filter(tags__contains={key: value})
-    elif category != None:
+    elif category:
         filtered_models = models.filter(categories__name=category)
-    elif query != None:
+    elif query:
         filtered_models = \
             models.filter(title__icontains=query) | \
             models.filter(description__icontains=query)
 
-    if not admin(request):
-        filtered_models = filtered_models.filter(is_hidden=False)
-
     try:
+        if not admin(request):
+            filtered_models = filtered_models.filter(is_hidden=False)
+
         ordered_models = filtered_models.order_by('-pk')
     except UnboundLocalError:
         # filtered_models isn't set, redirect to homepage
