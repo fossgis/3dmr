@@ -65,7 +65,7 @@ class LatestModel(pg.MaterializedView):
     description = models.CharField(max_length=512)
     rendered_description = models.CharField(max_length=1024)
     upload_date = models.DateField(auto_now_add=True)
-    location = models.OneToOneField(Location, on_delete=models.CASCADE)
+    location = models.OneToOneField(Location, null=True, default=None, on_delete=models.CASCADE)
     license = models.IntegerField()
     categories = models.ManyToManyField(Category)
     tags = fields.HStoreField(default={})

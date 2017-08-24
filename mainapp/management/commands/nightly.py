@@ -27,14 +27,21 @@ class Command(BaseCommand):
                 info_file.write(',')
             first = False
 
+            if model.location:
+                latitude = model.location.latitude
+                longitude = model.location.longitude
+            else:
+                latitude = None
+                longitude = None
+
             output = dumps({
                 'author': model.author.username,
                 'revision': model.revision,
                 'title': model.title,
                 'description': model.description,
                 'upload_date': format(model.upload_date, 'U'),
-                'latitude': model.latitude,
-                'longitude': model.longitude,
+                'latitude': latitude,
+                'longitude': longitude,
                 'license': model.license,
                 'categories': model.categories.all().values_list('name', flat=True)[::1],
                 'tags': model.tags,
