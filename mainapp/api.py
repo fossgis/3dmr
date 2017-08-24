@@ -70,6 +70,7 @@ def get_model(request, model_id, revision=None):
     response = FileResponse(open('{}/{}/{}.zip'.format(MODEL_DIR, model_id, revision), 'rb'))
     response['Content-Disposition'] = 'attachment; filename={}.zip'.format(revision)
     response['Content-Type'] = 'application/zip'
+    response['Cache-Control'] = 'public, max-age=86400'
     return response
 
 def get_filelist(request, model_id, revision=None):
@@ -82,8 +83,10 @@ def get_filelist(request, model_id, revision=None):
         raise Http404('Model does not exist.')
 
     zip_file = ZipFile('{}/{}/{}.zip'.format(MODEL_DIR, model_id, revision))
-    
-    return HttpResponse('\n'.join(zip_file.namelist()), content_type='text/plain')
+
+    response = HttpResponse('\n'.join(zip_file.namelist()), content_type='text/plain')
+    response['Cache-Control'] = 'public, max-age=86400';
+    return response
 
 def get_file(request, filename, model_id, revision=None):
     if not revision:
@@ -99,9 +102,8 @@ def get_file(request, filename, model_id, revision=None):
     response = FileResponse(zip_file.open(filename))
     response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
     response['Content-Type'] = 'application/zip'
-    
+    response['Cache-Control'] = 'public, max-age=86400'
     return response
-
 
 def lookup_tag(request, tag, page_id=1):
     key, value = get_kv(tag)
