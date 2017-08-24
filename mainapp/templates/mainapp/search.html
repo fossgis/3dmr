@@ -20,13 +20,13 @@ displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.
 	<div class="col-12">
 		<div class="page-header">
 			<h1>Search Results
-			{% if query %}
+			{% if query != None %}
 			<small>'{{ query }}'{% if tag or category %},{% endif %}</small>
 			{% endif %}
-			{% if category %}
+			{% if category != None %}
 			<small>category '{{ category }}'{% if tag %},{% endif %}</small>
 			{% endif %}
-			{% if tag %}
+			{% if tag != None %}
 			<small>tag '{{ tag }}'</small>
 			{% endif %}
 			</h1>

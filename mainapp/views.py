@@ -88,24 +88,24 @@ def search(request):
 
     url_params = '?'
 
-    if query:
+    if query != None:
         url_params += 'query=' + query
-    if tag:
+    if tag != None:
         url_params += 'tag=' + tag
-    if category:
+    if category != None:
         url_params += 'category=' + category
 
     models = Model.objects
 
-    if tag:
+    if tag != None:
         try:
             key, value = get_kv(tag)
         except ValueError:
             return redirect(index)
         filtered_models = models.filter(tags__contains={key: value})
-    elif category:
+    elif category != None:
         filtered_models = models.filter(categories__name=category)
-    elif query:
+    elif query != None:
         filtered_models = \
             models.filter(title__icontains=query) | \
             models.filter(description__icontains=query)
