@@ -383,7 +383,7 @@ def addcomment(request):
 
     obj.save()
 
-    if request.session['comment']:
+    if request.session.get('comment'):
         del request.session['comment']
 
     if ajax == 'false':
