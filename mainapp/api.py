@@ -212,7 +212,7 @@ def search_full(request):
     latitude = data.get('lat')
     longitude = data.get('lon')
     distance = data.get('range')
-    if latitude and longitude:
+    if latitude and longitude and distance:
         models = range_filter(models, latitude, longitude, distance)
 
     title = data.get('title')
