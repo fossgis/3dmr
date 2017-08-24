@@ -150,6 +150,7 @@ def edit(options):
                 if m.location:
                     m.location.latitude = latitude
                     m.location.longitude = longitude
+                    m.location.save()
                 else:
                     location = Location(
                         latitude=latitude,
@@ -157,7 +158,6 @@ def edit(options):
                     )
                     location.save()
                     m.location = location
-
             else:
                 location = m.location
                 m.location = None
