@@ -5,17 +5,19 @@ function rangeSearch(latitude, longitude, range, callback, page) {
 	xhr.addEventListener("load", function() {
 		callback(JSON.parse(xhr.responseText));
 	});
-	xhr.open("GET", "/api/search/" + latitude + "/" + longitude + "/" + range + "/" + page);
-	xhr.send();
-}
 
-function modelGet(model_id, callback) {
-	var xhr = new XMLHttpRequest();
-	xhr.addEventListener("load", function() {
-		callback(JSON.parse(xhr.responseText));
-	});
-	xhr.open("GET", "/api/info/" + model_id);
-	xhr.send();
+	xhr.open("POST", "/api/search/full");
+
+	var requestBody = 
+		'{' +
+		'"lat":' + latitude + ',' +
+		'"lon":' + longitude + ',' +
+		'"range":' + range + ',' +
+		'"page":' + page + ',' +
+		'"format": ["id", "title", "latitude", "longitude"]' +
+		'}';
+
+	xhr.send(requestBody);
 }
 
 var model_ids = new Set();
@@ -25,12 +27,22 @@ function queryModels(response) {
 		if(response.length == 0)
 			return;
 		else for(var i in response) {
-			var model_id = response[i];
+			var model = response[i];
+			var model_id = model[0];
 
 			if(model_ids.has(model_id))
-				continue
+				continue;
 
-			modelGet(model_id, addPin);
+			var title = model[1];
+			var latitude = model[2];
+			var longitude = model[3];
+
+			addPin({
+				id: model_id,
+				title: title,
+				lat: latitude,
+				lon: longitude
+			});
 		}
 	}
 
