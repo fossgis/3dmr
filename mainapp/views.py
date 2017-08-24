@@ -68,7 +68,7 @@ def model(request, model_id, revision=None):
     context = {
         'model': model,
         'comments': comments,
-        'old_comment': request.session.get('comment')
+        'old_comment': request.session.get('comment', '')
     }
 
     return render(request, 'mainapp/model.html', context)
