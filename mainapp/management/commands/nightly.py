@@ -15,7 +15,7 @@ class Command(BaseCommand):
         info_file = open(INFO_FILENAME, 'w')
         zip_file = ZipFile(NIGHTLY_FILENAME, 'w')
 
-        models = LatestModel.objects.all()
+        models = LatestModel.objects.filter(is_hidden=False)
 
         info_file.write('{\n')
 
