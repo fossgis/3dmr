@@ -35,12 +35,19 @@ def get_info(request, model_id):
     if model.is_hidden and not admin(request):
         raise Http404('Model does not exist.')
 
+    if model.location:
+        latitude = model.location.latitude
+        longitude = model.location.longitude
+    else:
+        latitude = None
+        longitude = None
+
     result = {
         'id': model.model_id,
         'revision': model.revision,
         'title': model.title,
-        'lat': model.location.latitude,
-        'lon': model.location.longitude,
+        'lat': latitude,
+        'lon': longitude,
         'license': model.license,
         'desc': model.description,
         'author': model.author.username,
