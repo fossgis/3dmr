@@ -87,8 +87,15 @@ function loadObjFromZip(url, options, three, callback) {
 					})(name);
 			}
 		});
-	}, function() {
+	}, function(e) {
 		// zip.createReader on error
+		if(e && e.target && e.target.getAllResponseHeaders) {
+			// if abort is truthy, then the user aborted the downloading.
+			var abort = !e.target.getAllResponseHeaders();
+
+			if(abort) return;
+		}
+
 		var scene = three['scene'];
 		var camera = three['camera'];
 		var renderer = three['renderer'];
