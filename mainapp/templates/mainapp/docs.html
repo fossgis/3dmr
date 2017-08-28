@@ -220,6 +220,49 @@ et.jpg</code></pre>
 					</ul>
 					<span class="label label-danger">POST</span>
 					<span class="label label-default">/api/search/full</span>
+					<p class="response">Live request body (try pressing Submit!):</p>
+					<script>
+						function send() {
+							var query = document.getElementById("json").value;
+							var responseElement = document.getElementById("response");
+
+							var xhr = new XMLHttpRequest();
+							xhr.open('POST', '/api/search/full', true);
+
+							xhr.onreadystatechange = function() {
+								if(xhr.status == 200) {
+									responseElement.innerHTML = xhr.responseText;
+								} else {
+									responseElement.innerHTML = 'error';
+								}
+							}
+
+							xhr.send(query);
+
+							return false;
+						}
+					</script>
+					<form>
+						<textarea id="json" rows="20" cols="80">{
+	"lat": 48.8583,
+	"lon": 2.2945,
+	"range": 1000,
+	"title": "Eiffel",
+	"tags": {
+		"shape": "pyramidal",
+		"building": "yes"
+	},
+	"categories": [
+		"monuments",
+		"tall"
+	],
+	"page": 1,
+	"author": "n42k"
+}</textarea><br>
+						<input type="submit" onclick="return send()">
+					</form>
+					<p class="response">Response:</p>
+					<pre><code id="response">(None yet)</code></pre>
 					<p class="response">Sample request body:</p>
 <pre><code>{
 "lat": 48.8583,
