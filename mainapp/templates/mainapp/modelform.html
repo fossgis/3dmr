@@ -35,6 +35,7 @@
 		<div class="alert alert-danger" role="alert" id="longitude-error" style="display: none;"></div>
 		{{ form.longitude }}
 	</div>
+	<span class="help-block">The origin, rotation and scale fields should probably be left as their defaults, especially if it's your first time uploading a model.</span>
 	<div class="form-group">
 		<label for="{{ form.translation.id_for_label }}">{{ form.translation.label }}:</label>
 		{% for error in form.translation.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
@@ -77,9 +78,16 @@
 </form>
 {% if form_metadata %}
 <script>
-	function updateLatLon(e) {
-		document.getElementById('id_latitude').value = e.latlng.lat;
-		document.getElementById('id_longitude').value = ((e.latlng.lng - 180) % 360) + 180;
+	function updateLatLon(lat, lon) {
+		document.getElementById('id_latitude').value = lat;
+		document.getElementById('id_longitude').value = ((lon - 180) % 360) + 180;
+	}
+
+	function createMarker(lat, lon) {
+		marker = new L.marker([lat, lon], {draggable: true}).addTo(map);
+		marker.on('drag', function(e) {
+			updateLatLon(e.latlng.lat, e.latlng.lng);
+		});
 	}
 
 	var map = L.map('map');
@@ -97,14 +105,20 @@
 
 	var marker = undefined;
 
+	var latitude = parseFloat(document.getElementById('id_latitude').value);
+	var longitude = parseFloat(document.getElementById('id_longitude').value);
+
+	if(latitude && longitude) {
+		updateLatLon(latitude, longitude);
+		createMarker(latitude, longitude);
+	}
+
 	map.on('click', function(e) {
 		if(marker)
 			marker.remove(map);
 		
-		updateLatLon(e);
-
-		marker = new L.marker(e.latlng, {draggable: true}).addTo(map);
-		marker.on('drag', updateLatLon);
+		updateLatLon(e.latlng.lat, e.latlng.lng);
+		createMarker(e.latlng.lat, e.latlng.lng);
 	});
 
 	function displayError(name, message) {
