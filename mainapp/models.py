@@ -143,6 +143,7 @@ class Comment(models.Model):
     comment = models.CharField(max_length=1024)
     rendered_comment = models.CharField(max_length=2048)
     datetime = models.DateTimeField(auto_now_add=True)
+    is_hidden = models.BooleanField(default=False)
 
 class Ban(models.Model):
     # note: the models.PROTECT means that admin accounts who

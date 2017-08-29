@@ -100,3 +100,13 @@ form > #map-descriptor {
 .panel-body > a.btn-default  {
 	margin-bottom: 10px;
 }
+
+/* Specific to model page */
+.panel-footer > form > button {
+	padding-bottom: 1px;
+	padding-top: 1px;
+}
+
+.panel-body.panel-hidden {
+	background-color: #faf0f0;
+}

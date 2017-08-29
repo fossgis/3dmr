@@ -61,11 +61,14 @@ def model(request, model_id, revision=None):
     if model.is_hidden and not admin(request):
         raise Http404('Model does not exist.')
 
-    comments = Comment.objects.filter(model__model_id=model_id).order_by('-datetime')
+    comments = Comment.objects.filter(model__model_id=model_id)
+
+    if not admin(request):
+        comments = comments.filter(is_hidden=False)
 
     context = {
         'model': model,
-        'comments': comments,
+        'comments': comments.order_by('-datetime'),
         'old_comment': request.session.get('comment', '')
     }
 
@@ -482,7 +485,7 @@ def ban(request):
     messages.error(request, 'An error occurred. Please try again.')
     return redirect(user, username=username)
 
-def hide(request):
+def hide_model(request):
     if not admin(request):
         return redirect(index)
 
@@ -505,6 +508,39 @@ def hide(request):
             raise ValueError('Invalid argument for action.')
 
         hidden_model.save()
+    except ValueError:
+        messages.error(request, 'An error occurred. Please try again.')
+
+    return redirect(model, model_id=model_id, revision=revision)
+
+def hide_comment(request):
+    if not admin(request):
+        return redirect(index)
+
+    model_id = request.POST.get('model_id')
+    revision = request.POST.get('revision')
+
+    if not model_id or not revision:
+        return redirect(index)
+
+    comment_id = request.POST.get('comment_id')
+
+    if not comment_id:
+        return redirect(model, model_id=model_id, revision=revision)
+    
+    comment = Comment.objects.get(pk=comment_id)
+
+    action = request.POST.get('type')
+
+    try:
+        if action == 'hide':
+            comment.is_hidden = True
+        elif action == 'unhide':
+            comment.is_hidden = False
+        else:
+            raise ValueError('Invalid argument for action.')
+
+        comment.save()
     except ValueError:
         messages.error(request, 'An error occurred. Please try again.')
 

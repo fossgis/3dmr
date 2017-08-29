@@ -87,7 +87,7 @@
 					{% if model.is_hidden %}
 					<strong>This model is hidden</strong>
 					{% endif %}
-					<form action="{% url 'hide' %}" method="post">
+					<form action="{% url 'hide_model' %}" method="post">
 						{% csrf_token %}
 						<input type="hidden" name="model_id" value="{{ model.model_id }}">
 						<input type="hidden" name="revision" value="{{ model.revision }}">
@@ -126,7 +126,11 @@
 					{% endif %}
 					{% for comment in comments %}
 					<div class="panel panel-default">
+						{% if user.is_authenticated and user.profile.is_admin and comment.is_hidden %}
+						<div class="panel-body panel-hidden">
+						{% else %}
 						<div class="panel-body">
+						{% endif %}
 							{{ comment.rendered_comment|safe }}
 						</div>
 						<div class="panel-footer">
@@ -136,6 +140,21 @@
 							on {{ comment.datetime|date:"Y-m-d H:i" }}
 							{% if model.revision != comment.model.revision %}
 							(revision {{ comment.model.revision }})
+							{% endif %}
+							{% if user.is_authenticated and user.profile.is_admin %}
+							<form action="{% url 'hide_comment' %}" method="post" style="float: right; clear: both;">
+								{% csrf_token %}
+								<input type="hidden" name="model_id" value="{{ model.model_id }}">
+								<input type="hidden" name="revision" value="{{ model.revision }}">
+								<input type="hidden" name="comment_id" value="{{ comment.pk}}">
+								{% if comment.is_hidden %}
+								<input type="hidden" name="type" value="unhide">
+								<button type="submit" class="btn btn-danger">Unhide</button>
+								{% else %}
+								<input type="hidden" name="type" value="hide">
+								<button type="submit" class="btn btn-danger">Hide</button>
+								{% endif %}
+							</form>
 							{% endif %}
 						</div>
 					</div>

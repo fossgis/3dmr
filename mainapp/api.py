@@ -42,6 +42,10 @@ def get_info(request, model_id):
         latitude = None
         longitude = None
 
+    comments = Comment.objects.filter(model__model_id=model.model_id)
+    if not admin(request):
+        comments = comments.filter(is_hidden=False)
+
     result = {
         'id': model.model_id,
         'revision': model.revision,
@@ -59,7 +63,7 @@ def get_info(request, model_id):
 
         # Note: the [::1] evaluates the query set to a list
         'categories': model.categories.all().values_list('name', flat=True)[::1],
-        'comments': Comment.objects.filter(model_id=model.model_id).values_list('author__username', 'comment', 'datetime')[::1],
+        'comments': comments.values_list('author__username', 'comment', 'datetime')[::1],
     }
 
     return JsonResponse(result)
