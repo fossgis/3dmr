@@ -71,7 +71,7 @@ Deployment Instructions
 
   8. You can now save and close this file.
 
- 6. Run ``./manage.py migrate`` to create the tables for our database. Note: run ``./manage.py makemigrations`` first for now.
+ 6. Run ``./manage.py migrate`` to create the tables for our database.
 
  7. Create a directory to hold the model zips: ``mkdir ~/models``.
     Configure the repository to use this directory in ``mainapp/utils.py``, at the end of the file: ``MODEL_DIR = '/home/tdmr/models'``.
