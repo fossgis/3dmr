@@ -1,0 +1,16 @@
+{% extends "mainapp/layout.html" %}
+{% block pagename %}Revise Model{% endblock %}
+{% block body %}
+<div class="container">
+	<div class="col-12">
+		<h1>Revise Model "{{ model.title }}"</h1>
+		<p>Here, you can upload a new revision of a model to the repository.</p>
+		<p>Make sure to package your model correctly: make sure it's in the OBJ format, includes an MTL file, then zip these files, along with their textures. Make sure every file is in the root directory of the zip.</p>
+		{% with revise=True %}
+		{% with form_file=True %}
+		{% include 'mainapp/modelform.html' %}
+		{% endwith %}
+		{% endwith %}
+	</div>
+</div>
+{% endblock %}

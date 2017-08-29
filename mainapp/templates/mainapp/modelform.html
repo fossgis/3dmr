@@ -1,0 +1,166 @@
+<form action="{% if revise %}{% url 'revise' model.model_id %}{% elif edit %}{% url 'edit' model.model_id model.revision %}{% else %}{% url 'upload' %}{% endif %}" method="post" enctype="multipart/form-data"{% if form_metadata %} onsubmit="return checkNumbers();"{% endif %}>
+	{% csrf_token %}
+	{% if form_metadata %}
+	<div class="form-group required">
+		<label for="{{ form.title.id_for_label }}">{{ form.title.label }}:</label>
+		{% for error in form.title.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+		{{ form.title }}
+	</div>
+	<div class="form-group">
+		<label for="{{ form.description.id_for_label }}">{{ form.description.label }}:</label>
+		{% for error in form.description.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+		{{ form.description }}
+	</div>
+	<div class="form-group">
+		<label for="{{ form.tags.id_for_label }}">{{ form.tags.label }}:</label>
+		{% for error in form.tags.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+		{{ form.tags }}
+	</div>
+	<div class="form-group">
+		<label for="{{ form.categories.id_for_label }}">{{ form.categories.label }}:</label>
+		{% for error in form.categories.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+		{{ form.categories }}
+	</div>
+	<div id="map"></div>
+	<p id="map-descriptor"></p>
+	<div class="form-group">
+		<label for="{{ form.latitude.id_for_label }}">{{ form.latitude.label }}:</label>
+		{% for error in form.latitude.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+		<div class="alert alert-danger" role="alert" id="latitude-error" style="display: none;"></div>
+		{{ form.latitude }}
+	</div>
+	<div class="form-group">
+		<label for="{{ form.longitude.id_for_label }}">{{ form.longitude.label }}:</label>
+		{% for error in form.longitude.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+		<div class="alert alert-danger" role="alert" id="longitude-error" style="display: none;"></div>
+		{{ form.longitude }}
+	</div>
+	<div class="form-group">
+		<label for="{{ form.translation.id_for_label }}">{{ form.translation.label }}:</label>
+		{% for error in form.translation.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+		{{ form.translation }}
+		<span id="translation-help" class="help-block">Specifies the origin of the model, in model units.</span>
+	</div>
+	<div class="form-group">
+		<label for="{{ form.rotation.id_for_label }}">{{ form.rotation.label }}:</label>
+		{% for error in form.rotation.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+		<div class="alert alert-danger" role="alert" id="rotation-error" style="display: none;"></div>
+		{{ form.rotation }}
+		<span id="rotation-help" class="help-block">Specifies the rotation of the model, in the vertical axis. In degrees, clockwise</span>
+	</div>
+	<div class="form-group">
+		<label for="{{ form.scale.id_for_label }}">{{ form.scale.label }}:</label>
+		{% for error in form.scale.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+		<div class="alert alert-danger" role="alert" id="scale-error" style="display: none;"></div>
+		{{ form.scale }}
+		<span id="scaling-help" class="help-block">Specifies the scaling of the model. '2' here would mean that each unit in the model corresponds to 2 meters.</span>
+	</div>
+	<div class="form-group required">
+		<label>License</label>
+		{% for error in form.license.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+		{% for radio in form.license %}
+		<div class="radio">
+			<label>{{ radio.tag}}{{ radio.choice_label }}</label>
+		</div>
+		{% endfor %}
+	</div>
+	{% endif %}
+	{% if form_file %}
+	<div class="form-group required">
+		<label for="{{ form.model_file.id_for_label }}">{{ form.model_file.label }}</label>
+		{% for error in form.model_file.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+		{{ form.model_file }}
+	</div>
+	{% endif %}
+	<div class="alert alert-danger" role="alert" id="form-error" style="display: none;"></div>
+	<button type="submit" class="btn btn-default">{% if revise %}Revise Model{% elif edit %}Edit Metadata{% else %}Upload Model{% endif %}</button>
+</form>
+{% if form_metadata %}
+<script>
+	function updateLatLon(e) {
+		document.getElementById('id_latitude').value = e.latlng.lat;
+		document.getElementById('id_longitude').value = ((e.latlng.lng - 180) % 360) + 180;
+	}
+
+	var map = L.map('map');
+	map.on('load', function() {
+		var descriptor = document.getElementById('map-descriptor');
+		descriptor.innerHTML = 'Click anywhere on the map to set longitude/latitude values.';
+	});
+	map.setView([51.505, -0.09], 3);
+
+	L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+		attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+		minZoom: 2,
+		maxZoom: 18
+	}).addTo(map);
+
+	var marker = undefined;
+
+	map.on('click', function(e) {
+		if(marker)
+			marker.remove(map);
+		
+		updateLatLon(e);
+
+		marker = new L.marker(e.latlng, {draggable: true}).addTo(map);
+		marker.on('drag', updateLatLon);
+	});
+
+	function displayError(name, message) {
+		var errorAlert = document.getElementById(name + "-error");
+		errorAlert.innerHTML = message;
+		errorAlert.style.display = 'block';
+	}
+
+	function checkNumbers() {
+		var data = {
+			{% comment %}
+			each array consists of:
+			[elementName, min_value, max_value]
+			{% endcomment %}
+			latitude: ['{{ form.latitude.id_for_label }}', -90, 90],
+			longitude: ['{{ form.longitude.id_for_label }}',-180, 180],
+			rotation: ['{{ form.rotation.id_for_label }}', 0, 360],
+			scale: ['{{ form.scale.id_for_label }}', 0.0001, 10000]
+		}
+
+		ok = true;
+
+		for(k in data) {
+			var arr = data[k];
+			var element = document.getElementById(arr[0]);
+			var valueString = element.value;
+
+			if(valueString == '')
+				continue;
+
+			var value = parseFloat(valueString.replace(',', '.'));
+			console.log(value);
+			if(isNaN(value)) {
+				displayError(k, "Must be a number.");
+				ok = false;
+				continue;
+			}
+
+			{% comment %}value below minimum{% endcomment %}
+			if(value < arr[1]) {
+				displayError(k, 'Number is too low.');
+				ok = false;
+				continue;
+			}
+			{% comment %}value above maximum{% endcomment %}
+			if(value > arr[2]) {
+				displayError(k, 'Number is too high.');
+				ok = false;
+				continue;
+			}
+		}
+
+		if(!ok)
+			displayError('form', 'Recheck the form for errors.');
+
+		return ok;
+	}
+</script>
+{% endif %}

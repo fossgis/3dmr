@@ -22,6 +22,7 @@ LICENSES = {
 # The possible changes users can make to the repository
 CHANGES = {
     0: 'Upload',
+    1: 'Revise',
 }
 
 # The directory the models will be stored in

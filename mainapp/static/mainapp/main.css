@@ -1,3 +1,7 @@
+body {
+	padding-bottom: 50px;
+}
+
 .col-md-4.col-sm-6 .panel-body div:first-of-type {
 	text-align: center;
 	margin-bottom: 10px;
@@ -79,4 +83,20 @@ canvas {
 	margin-bottom: 30px;
 	text-align: center;
 	clear: both;
+}
+
+/* Specific to model upload page */
+form > #map {
+	margin: 0px auto;
+	width: 450px;
+	height: 300px;
+}
+
+form > #map-descriptor {
+	margin-top: 5px;
+	text-align: center;
+}
+
+.panel-body > a.btn-default  {
+	margin-bottom: 10px;
 }
