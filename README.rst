@@ -1,7 +1,7 @@
 ===================
 3D Model Repository
 ===================
-This is a temporary name for the model repository I am developing as part of GSoC.
+This project is a repository for 3D models, and their metadata, for use by the OpenStreetMap community for improving the quality of 3D rendering of maps, developed as part of Google Summer of Code 2017 by Pedro Amaro, with Jan Marsch and Tobias Knerr as mentors.
 
 Development Server Instructions
 ===============================
