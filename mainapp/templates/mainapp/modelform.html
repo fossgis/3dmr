@@ -35,7 +35,7 @@
 		<div class="alert alert-danger" role="alert" id="longitude-error" style="display: none;"></div>
 		{{ form.longitude }}
 	</div>
-	<span class="help-block">The origin, rotation and scale fields should probably be left as their defaults, especially if it's your first time uploading a model.</span>
+	<span class="help-block">It's preferable to change the transformations of your model instead of using these fields.</span>
 	<div class="form-group">
 		<label for="{{ form.translation.id_for_label }}">{{ form.translation.label }}:</label>
 		{% for error in form.translation.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
