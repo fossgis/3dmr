@@ -178,7 +178,7 @@ def edit(request, model_id, revision):
                 return redirect(model, model_id=m.model_id, revision=m.revision)
             else:
                 messages.error(request, 'Server error. Try again later.')
-                return redirect(revise, model_id=model_id, revision=m.revision)
+                return redirect(edit, model_id=model_id, revision=m.revision)
     else:
         if not request.user.is_authenticated():
             return redirect(index)
