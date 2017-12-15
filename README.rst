@@ -65,11 +65,9 @@ Deployment Instructions
 
   5. You should also use your own OpenStreetMap OAuth key and secret, replacing ``SOCIAL_AUTH_OPENSTREETMAP_KEY`` and ``SOCIAL_AUTH_OPENSTREETMAP_SECRET``.
 
-  6. Configure the ``DATABASES`` entry: change ``n42k`` to ``3dmr``, and the password ``carrots``, to the one set in 2.3.
+  6. Finally, configure the ``DATABASES`` entry: change the password ``123123``, to the one set in 2.3.
 
-  7. Finally, add the directory where we'll hold the static files, by appending at the end of this file ``STATIC_ROOT = 'home/tdmr/static/'``.
-
-  8. You can now save and close this file.
+  7. You can now save and close this file.
 
  6. Run ``./manage.py migrate`` to create the tables for our database.
 
@@ -78,7 +76,7 @@ Deployment Instructions
 
  8. Create a directory to hold the static files: ``mkdir ~/static`` and run ``./manage.py collectstatic`` to place the static files there.
 
- 9. Set up the nightlies task, by placing the following script in ``/home/3dmr/nightly.sh``:
+ 9. Set up the nightlies task, by placing the following script in ``/home/tdmr/nightly.sh``:
 
     | #!/bin/bash
     | cd /home/tdmr/3dmr/

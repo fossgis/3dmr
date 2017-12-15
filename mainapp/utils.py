@@ -26,4 +26,4 @@ CHANGES = {
 }
 
 # The directory the models will be stored in
-MODEL_DIR = 'mainapp/static/mainapp/models'
+MODEL_DIR = '/home/tdmr/models'
