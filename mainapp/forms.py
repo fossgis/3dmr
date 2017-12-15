@@ -1,5 +1,5 @@
 from django import forms
-from .utils import get_kv, LICENSES
+from .utils import get_kv, LICENSES_FORM
 
 class TagField(forms.CharField):
     def __init__(self, *args, **kwargs):
@@ -153,7 +153,7 @@ class MetadataForm(forms.Form):
         attrs={'placeholder': '1.2', 'value': '1.0', 'aria-describedby': 'scaling-help'})
 
     license = forms.ChoiceField(
-        label='License', required=False, choices=LICENSES.items(), initial=0,
+        label='License', required=False, choices=LICENSES_FORM.items(), initial=0,
         widget=forms.RadioSelect)
 
     def __init__(self, *args, **kwargs):

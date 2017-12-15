@@ -79,6 +79,7 @@
 					<p>Description:</p>
 					<p>{{ model.rendered_description|safe }}</p>
 					<p>Uploaded by <a href="{% url 'user' model.author.username %}"><span class="label label-default">{{ model.author.username }}</span></a> on {{ model.upload_date|date:"c" }}</p>
+					<p>{{ license }}</p>
 					{% if user.is_authenticated and model.author == user %}
 					<a href="{% url 'edit' model.model_id model.revision %}" class="btn btn-default" role="button">Edit Metadata</a>
 					<a href="{% url 'revise' model.model_id %}" class="btn btn-default" role="button">Revise</a>

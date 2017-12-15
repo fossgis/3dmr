@@ -11,7 +11,7 @@ from django.contrib import messages
 
 from .models import Model, LatestModel, Comment, Category, Change, Ban, Location
 from .forms import UploadFileForm, UploadFileMetadataForm, MetadataForm
-from .utils import get_kv, update_last_page, get_last_page, MODEL_DIR, CHANGES, admin
+from .utils import get_kv, update_last_page, get_last_page, MODEL_DIR, CHANGES, admin, LICENSES_DISPLAY
 import mainapp.database as database
 
 logger = logging.getLogger(__name__)
@@ -69,7 +69,8 @@ def model(request, model_id, revision=None):
     context = {
         'model': model,
         'comments': comments.order_by('-datetime'),
-        'old_comment': request.session.get('comment', '')
+        'old_comment': request.session.get('comment', ''),
+        'license': LICENSES_DISPLAY[model.license]
     }
 
     return render(request, 'mainapp/model.html', context)
