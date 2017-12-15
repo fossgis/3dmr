@@ -158,7 +158,7 @@ def edit(options):
                     )
                     location.save()
                     m.location = location
-            else:
+            elif m.location:
                 location = m.location
                 m.location = None
                 location.delete()
