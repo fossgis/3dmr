@@ -18,9 +18,10 @@ def upload(model_file, options={}):
                 m = Model.objects.get(model_id=lm.model_id, revision=lm.revision)
 
                 location = m.location
-                location.pk = None
-                location.id = None
-                location.save()
+                if location is not None:
+                    location.pk = None
+                    location.id = None
+                    location.save()
 
                 m.pk = None
                 m.id = None
