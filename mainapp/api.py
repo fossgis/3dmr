@@ -27,8 +27,16 @@ def api_paginate(models, page_id):
 
     return JsonResponse(results, safe=False)
 
+# decorator for returning 'Access-Control-Allow-Origin' header
+def any_origin(f):
+    def request(*args, **kwargs):
+        response = f(*args, **kwargs)
+        response['Access-Control-Allow-Origin'] = '*'
+        return response
+    return request
 
 # Create your views here.
+@any_origin
 def get_info(request, model_id):
     model = get_object_or_404(LatestModel, model_id=model_id)
 
@@ -68,6 +76,7 @@ def get_info(request, model_id):
 
     return JsonResponse(result)
 
+@any_origin
 def get_model(request, model_id, revision=None):
     if not revision:
         revision = get_object_or_404(LatestModel, model_id=model_id).revision
@@ -84,6 +93,7 @@ def get_model(request, model_id, revision=None):
     response['Cache-Control'] = 'public, max-age=86400'
     return response
 
+@any_origin
 def get_filelist(request, model_id, revision=None):
     if not revision:
         revision = get_object_or_404(LatestModel, model_id=model_id).revision
@@ -99,6 +109,7 @@ def get_filelist(request, model_id, revision=None):
     response['Cache-Control'] = 'public, max-age=86400';
     return response
 
+@any_origin
 def get_file(request, filename, model_id, revision=None):
     if not revision:
         revision = get_object_or_404(LatestModel, model_id=model_id).revision
@@ -116,6 +127,7 @@ def get_file(request, filename, model_id, revision=None):
     response['Cache-Control'] = 'public, max-age=86400'
     return response
 
+@any_origin
 def lookup_tag(request, tag, page_id=1):
     key, value = get_kv(tag)
     models = LatestModel.objects.filter(tags__contains={key: value}).order_by('model_id')
@@ -125,6 +137,7 @@ def lookup_tag(request, tag, page_id=1):
 
     return api_paginate(models, page_id)
 
+@any_origin
 def lookup_category(request, category, page_id=1):
     models = LatestModel.objects.filter(categories__name=category)
 
@@ -133,6 +146,7 @@ def lookup_category(request, category, page_id=1):
 
     return api_paginate(models, page_id)
 
+@any_origin
 def lookup_author(request, username, page_id=1):
     models = LatestModel.objects.filter(author__username=username)
 
@@ -185,6 +199,7 @@ def range_filter(models, latitude, longitude, distance):
             location__longitude__gte=min_longitude,
             location__longitude__lte=max_longitude)
 
+@any_origin
 def search_range(request, latitude, longitude, distance, page_id=1):
     # convert parameters to floats
     latitude = float(latitude)
@@ -200,6 +215,7 @@ def search_range(request, latitude, longitude, distance, page_id=1):
 
     return api_paginate(models, page_id)
 
+@any_origin
 def search_title(request, title, page_id=1):
     models = LatestModel.objects.filter(title__icontains=title)
 
@@ -209,6 +225,7 @@ def search_title(request, title, page_id=1):
     return api_paginate(models, page_id)
 
 @csrf_exempt # there's no need for this, since no data is modified
+@any_origin
 def search_full(request):
     body = request.body.decode('UTF-8')
     data = json.loads(body)
@@ -285,6 +302,5 @@ def search_full(request):
         results = [result(model) for model in model_results]
     except:
         return HttpResponseBadRequest('Invalid format specifier')
-
 
     return JsonResponse(results, safe=False)
