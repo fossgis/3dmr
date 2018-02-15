@@ -1,5 +1,6 @@
 from django import forms
 from .utils import get_kv, LICENSES_FORM
+from zipfile import ZipFile, BadZipFile
 
 class TagField(forms.CharField):
     def __init__(self, *args, **kwargs):
@@ -99,6 +100,20 @@ class CompatibleFloatField(forms.CharField):
 
         return number
 
+class ModelField(forms.FileField):
+    def validate(self, model):
+        super().validate(model)
+        try:
+            zip_file = ZipFile(model)
+            found_objs = 0 # files with the .obj extension found
+            for name in zip_file.namelist():
+                if name.endswith('.obj'):
+                    found_objs += 1
+            if found_objs != 1:
+                raise forms.ValidationError('No single .obj file found in your uploaded zip file.', code='invalid')
+        except BadZipFile:
+            raise forms.ValidationError('Uploaded file was not a valid zip file.', code='invalid')
+
 # This function adds the 'form-control' class to all fields, with possible exceptions
 def init_bootstrap_form(fields, exceptions=[]):
     # add class="form-control" to all fields
@@ -109,9 +124,8 @@ def init_bootstrap_form(fields, exceptions=[]):
     for field in exceptions:
         del fields[field].widget.attrs['class']
 
-
 class UploadFileForm(forms.Form):
-    model_file = forms.FileField(
+    model_file = ModelField(
         label='Model File', required=True, allow_empty_file=False)
 
     def __init__(self, *args, **kwargs):
@@ -162,7 +176,7 @@ class MetadataForm(forms.Form):
 
 # This class represents a mix of the UploadFileForm and the MetadataForm
 class UploadFileMetadataForm(MetadataForm):
-    model_file = forms.FileField(
+    model_file = ModelField(
         label='Model File', required=True, allow_empty_file=False)
 
     def __init__(self, *args, **kwargs):
