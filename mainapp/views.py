@@ -21,7 +21,7 @@ def index(request):
     update_last_page(request)
 
     MODELS_IN_INDEX_PAGE = 6
-    models = Model.objects.order_by('-pk')
+    models = LatestModel.objects.order_by('-pk')
 
     if not admin(request):
         models = models.filter(is_hidden=False)
@@ -331,7 +331,7 @@ def user(request, username):
     user = get_object_or_404(User, username=username)
     oauth_user = get_object_or_404(UserSocialAuth, user=user)
 
-    models = user.model_set.order_by('-pk')
+    models = user.latestmodel_set.order_by('-pk')
 
     if not admin(request):
         models = models.filter(is_hidden=False)
