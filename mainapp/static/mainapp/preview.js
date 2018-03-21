@@ -114,6 +114,9 @@ function onLoad(objText, mtlText, textures, options, three) {
 	var controls = three['controls'];
 
 	var mtlLoader = new THREE.MTLLoader();
+    mtlLoader.setMaterialOptions({
+        side: THREE.DoubleSide
+    });
 	var materialCreator = mtlLoader.parse(mtlText);
 
 	// turn each loaded texture from the material definitions
@@ -125,7 +128,7 @@ function onLoad(objText, mtlText, textures, options, three) {
 		if(!material.map_kd)
 			continue;
 
-		var splits = material.map_kd.split('/');
+		var splits = material.map_kd.split(/[\/]/);
 		var filename = splits[splits.length - 1];
 
 		material.map_kd = textures[filename];
