@@ -329,7 +329,6 @@ def user(request, username):
             pass # redirect to index, no user to load
 
     user = get_object_or_404(User, username=username)
-    oauth_user = get_object_or_404(UserSocialAuth, user=user)
 
     models = user.latestmodel_set.order_by('-pk')
 
@@ -352,7 +351,7 @@ def user(request, username):
     context = {
         'owner': {
             'username': user.username,
-            'avatar': oauth_user.extra_data['avatar'],
+            'avatar': user.profile.avatar,
             'profile': user.profile,
             'models': results,
             'changes': changes,

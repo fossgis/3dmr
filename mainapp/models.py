@@ -19,6 +19,10 @@ class Profile(models.Model):
     def is_banned(self):
         return self.user.ban_set.all().first() != None
 
+    @property
+    def avatar(self):
+        return self.user.social_auth.first().extra_data['avatar'].replace('http://', 'https://', 1)
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
