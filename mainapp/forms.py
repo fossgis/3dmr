@@ -47,7 +47,7 @@ class CategoriesField(forms.CharField):
 
         return value.strip().split(', ')
 
-class TranslationField(forms.CharField):
+class OriginField(forms.CharField):
     def __init__(self, *args, **kwargs):
         if not kwargs.get('widget'):
             kwargs['widget'] = forms.TextInput(
@@ -58,14 +58,14 @@ class TranslationField(forms.CharField):
                     'aria-describedby': 'translation-help'
                 })
 
-            super(TranslationField, self).__init__(*args, **kwargs)
+            super(OriginField, self).__init__(*args, **kwargs)
     
     def to_python(self, value):
         # Normalize string to a list of 3 ints
         if not value:
             return [0, 0, 0] # default value
 
-        numbers = list(map(float, value.replace(',', '.').split(' ')))
+        numbers = list(map(lambda x: -float(x), value.replace(',', '.').split(' ')))
 
         if len(numbers) != 3:
             raise forms.ValidationError('Too many values', code='invalid')
@@ -155,7 +155,7 @@ class MetadataForm(forms.Form):
     tags = TagField(
         label='Tags', max_length=1024, required=False)
 
-    translation = TranslationField(
+    translation = OriginField(
         label='Origin', max_length=100, required=False)
 
     rotation = CompatibleFloatField(
