@@ -144,7 +144,7 @@ def search(request):
     return render(request, 'mainapp/search.html', context)
 
 def edit(request, model_id, revision):
-    if request.user.is_authenticated() and request.user.profile.is_banned:
+    if request.user.is_authenticated and request.user.profile.is_banned:
         messages.error(request, 'You are banned. Editing models is not permitted.')
         return redirect(index)
 
@@ -153,7 +153,7 @@ def edit(request, model_id, revision):
     if request.method == 'POST':
         form = MetadataForm(request.POST, request.FILES)
 
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             messages.error(request, 'You must be logged in to use this feature.')
             return redirect(index)
         elif request.user != m.author:
@@ -181,7 +181,7 @@ def edit(request, model_id, revision):
                 messages.error(request, 'Server error. Try again later.')
                 return redirect(edit, model_id=model_id, revision=m.revision)
     else:
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return redirect(index)
         elif request.user != m.author:
             messages.error(request, 'You must be the author of the model to edit it.')
@@ -216,7 +216,7 @@ def edit(request, model_id, revision):
 
 
 def revise(request, model_id):
-    if request.user.is_authenticated() and request.user.profile.is_banned:
+    if request.user.is_authenticated and request.user.profile.is_banned:
         messages.error(request, 'You are banned. Revising models is not permitted.')
         return redirect(index)
 
@@ -225,7 +225,7 @@ def revise(request, model_id):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
 
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             messages.error(request, 'You must be logged in to use this feature.')
             return redirect(index)
         elif request.user != m.author:
@@ -246,7 +246,7 @@ def revise(request, model_id):
                 messages.error(request, 'Server error. Try again later.')
                 return redirect(revise, model_id=model_id)
     else:
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return redirect(index)
         elif request.user != m.author:
             messages.error(request, 'You must be the author of the model to revise it.')
@@ -262,14 +262,14 @@ def revise(request, model_id):
 def upload(request):
     update_last_page(request)
 
-    if request.user.is_authenticated() and request.user.profile.is_banned:
+    if request.user.is_authenticated and request.user.profile.is_banned:
         messages.error(request, 'You are banned. Uploading models is not permitted.')
         return redirect(index)
 
     if request.method == 'POST':
         form = UploadFileMetadataForm(request.POST, request.FILES)
 
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             # Show error in form, but don't redirect anywhere
             messages.error(request, 'You must be logged in to use this feature.')
 
@@ -299,7 +299,7 @@ def upload(request):
                 request.session['post_data'] = request.POST
                 return redirect(upload)
     else:
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return redirect(index)
 
         post_data = request.session.get('post_data', None)
@@ -370,7 +370,7 @@ def modelmap(request):
     return render(request, 'mainapp/map.html')
 
 def editprofile(request):
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return redirect(index)
 
     if request.user.profile.is_banned:
@@ -397,7 +397,7 @@ def addcomment(request):
             }
             return JsonResponse(response)
 
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return redirect(index)
 
     ajax = request.POST.get('ajax')

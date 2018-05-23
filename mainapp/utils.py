@@ -13,7 +13,7 @@ def get_last_page(request):
 
 # Checks that the user that made a request is an admin
 def admin(request):
-    return request.user.is_authenticated() and request.user.profile.is_admin
+    return request.user.is_authenticated and request.user.profile.is_admin
 
 # The avaiable licenses, to be displayed in the model upload form
 LICENSES_FORM = {
