@@ -1,5 +1,4 @@
 import logging
-import mistune
 
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
@@ -13,6 +12,7 @@ from .models import Model, LatestModel, Comment, Category, Change, Ban, Location
 from .forms import UploadFileForm, UploadFileMetadataForm, MetadataForm
 from .utils import get_kv, update_last_page, get_last_page, MODEL_DIR, CHANGES, admin, LICENSES_DISPLAY
 import mainapp.database as database
+from mainapp.markdown import markdown
 
 logger = logging.getLogger(__name__)
 
@@ -380,7 +380,7 @@ def editprofile(request):
     description = request.POST.get('desc')
 
     request.user.profile.description = description
-    request.user.profile.rendered_description = mistune.markdown(description)
+    request.user.profile.rendered_description = markdown(description)
     request.user.save()
 
     return redirect(user, username='')
@@ -416,7 +416,7 @@ def addcomment(request):
         return error(ajax, 'Comment too long.', model, model_id=model_id, revision=revision)
 
     author = request.user
-    rendered_comment = mistune.markdown(comment)
+    rendered_comment = markdown(comment)
     model_obj = get_object_or_404(Model, model_id=model_id, revision=revision)
 
     obj = Comment(

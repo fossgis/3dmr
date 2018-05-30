@@ -8,6 +8,8 @@ from django.contrib import messages
 from .models import Model, LatestModel, Change, Category, Location
 from .utils import MODEL_DIR
 
+from mainapp.markdown import markdown
+
 logger = logging.getLogger(__name__)
 
 def upload(model_file, options={}):
@@ -39,7 +41,7 @@ def upload(model_file, options={}):
                 except LatestModel.DoesNotExist:
                     next_model_id = 1 # no models in db
 
-                rendered_description = mistune.markdown(options['description'])
+                rendered_description = markdown(options['description'])
 
                 latitude = options['latitude']
                 longitude = options['longitude']
@@ -131,7 +133,7 @@ def edit(options):
             m.scale = options['scale']
             m.license = options['license']
 
-            rendered_description = mistune.markdown(options['description'])
+            rendered_description = markdown(options['description'])
             m.rendered_description = rendered_description
 
             m.categories.clear()
