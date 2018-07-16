@@ -4,25 +4,21 @@ zip.workerScriptsPath = "/static/mainapp/lib/";
 function displayPreview(elementId, model_id, revision, options) {
 	var url = "/api/model/" + model_id + "/" + revision;
 
+	if(typeof options === 'undefined')
+		options = {};
+
 	var three = initTHREE(elementId, options);
 	loadObjFromZip(url, options, three, onLoad);
 }
 
 function initTHREE(elementId, options) {
-	if(typeof options === "undefined")
-		options = {};
-
 	var renderPane = document.getElementById(elementId);
 
-	if(typeof options["width"] === "undefined")
-		var width = renderPane.clientWidth;
-	else
-		var width = options["width"];
+	if(typeof options['width'] === 'undefined')
+		options['width'] = renderPane.clientWidth;
 
-	if(typeof options["height"] === "undefined")
-		var height = renderPane.clientHeight;
-	else
-		var height = options["height"];
+	if(typeof options['height'] === 'undefined')
+		options['height'] = renderPane.clientHeight;
 
 	var renderer = new THREE.WebGLRenderer();
 
@@ -31,7 +27,7 @@ function initTHREE(elementId, options) {
 	var scene = new THREE.Scene();
 	scene.background = new THREE.Color(0x87cefa);
 
-	var camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+	var camera = new THREE.PerspectiveCamera(75, options['width'] / options['height'], 0.1, 1000);
 	resizeCanvas(renderer, camera, options);
 
 	var controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -189,14 +185,8 @@ function animate(renderer, scene, camera, controls, options) {
 function resizeCanvas(renderer, camera, options) {
 	var canvas = renderer.domElement;
 
-	var width = canvas.clientWidth;
-	var height = canvas.clientHeight;
-
-	if(options['width'])
-		width = options['width'];
-
-	if(options['height'])
-		height = options['height'];
+    var width = options['width'];
+    var height = options['height'];
 
 	if(canvas.width != width || canvas.height != height) {
 		renderer.setSize(width, height, false);
@@ -204,3 +194,14 @@ function resizeCanvas(renderer, camera, options) {
 		camera.updateProjectionMatrix();
 	}
 }
+
+function setupRenderPanes() {
+    var elems = document.querySelectorAll('div.render-pane');
+
+    for(var elem of elems) {
+        var properties = elem.id.match(/render-pane(\d).(\d)/);
+        displayPreview(elem.id, properties[1], properties[2]);
+    }
+}
+
+setupRenderPanes();

@@ -7,7 +7,7 @@
 		<div class="panel-heading">
 			<h3 class="panel-title"><a href="{% url 'model' model_id=model.model_id revision=model.revision %}">{{ model.title }}</a></h3>
 		</div>
-		<div id="render-pane{{ model.model_id }}.{{ model.revision }}">
+		<div class="render-pane" id="render-pane{{ model.model_id }}.{{ model.revision }}">
 		</div>
 		<div class="panel-body">
 			<p>Categories:
