@@ -6,6 +6,11 @@
     min-height: 256px;
 }
 </style>
+{% for model in models %}
+<link rel="preload" href="/api/model/{{ model.model_id }}/{{ model.revision }}" as="fetch">
+{% endfor %}
+<link rel="preload" href="/static/mainapp/lib/z-worker.js" as="script">
+<link rel="preload" href="/static/mainapp/lib/inflate.js" as="script">
 {% endblock %}
 {% block body %}
 <div class="container">
