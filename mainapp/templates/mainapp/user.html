@@ -10,6 +10,10 @@
 	.col-md-4 > table {
 		width: 100%;
 	}
+
+    .render-pane {
+        min-height: 200px;
+    }
 </style>
 <script>
 function enableEdit() {
@@ -17,14 +21,11 @@ function enableEdit() {
 	document.getElementById("editButton").style.display = "none";
 }
 </script>
-{% load static %}
-<script src="{% static 'mainapp/lib/three.js' %}"></script>
-<script src="{% static 'mainapp/lib/OBJLoader.js' %}"></script>
-<script src="{% static 'mainapp/lib/MTLLoader.js' %}"></script>
-<script src="{% static 'mainapp/lib/OrbitControls.js' %}"></script>
-<script src="{% static 'mainapp/lib/zip.js' %}"></script>
-<script src="{% static 'mainapp/lib/zip-ext.js' %}"></script>
-<script src="{% static 'mainapp/preview.js' %}"></script>
+{% for model in models %}
+<link rel="preload" href="/api/model/{{ model.model_id }}/{{ model.revision }}" as="fetch">
+{% endfor %}
+<link rel="preload" href="/static/mainapp/lib/z-worker.js" as="script">
+<link rel="preload" href="/static/mainapp/lib/inflate.js" as="script">
 {% endblock %}
 {% block body %}
 <div class="container">
@@ -76,9 +77,6 @@ function enableEdit() {
 			{% with hide_user=True %}
 			{% for model in owner.models %}
 			{% include "mainapp/modelpanel.html" %}
-			<script>
-			displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {height: 200});
-			</script>
 			{% endfor %}
 			{% endwith %}
 		</div>
@@ -115,4 +113,14 @@ function enableEdit() {
 		</table>
 	</div>
 </div>
+{% endblock %}
+{% block footeradditions %}
+{% load static %}
+<script src="{% static 'mainapp/lib/three.js' %}"></script>
+<script src="{% static 'mainapp/lib/OBJLoader.js' %}"></script>
+<script src="{% static 'mainapp/lib/MTLLoader.js' %}"></script>
+<script src="{% static 'mainapp/lib/OrbitControls.js' %}"></script>
+<script src="{% static 'mainapp/lib/zip.js' %}"></script>
+<script src="{% static 'mainapp/lib/zip-ext.js' %}"></script>
+<script src="{% static 'mainapp/preview.js' %}"></script>
 {% endblock %}

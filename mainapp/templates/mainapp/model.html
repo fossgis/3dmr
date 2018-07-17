@@ -5,25 +5,21 @@
 <link rel="stylesheet" href="{% static 'mainapp/lib/leaflet.css' %}">
 <script src="{% static 'mainapp/lib/leaflet.js' %}"></script>
 <style>
-#mapdiv {
-	width: 750px;
-	height: 480px;
-}
+    #mapdiv {
+        width: 750px;
+        height: 480px;
+    }
+    .render-pane {
+        min-height: 480px;
+    }
 </style>
-{% load static %}
 <script>
 	var model_id = {{ model.model_id }};
 	var revision = {{ model.revision }};
 </script>
-<script src="{% static 'mainapp/comment.js' %}"></script>
-<script src="{% static 'mainapp/lib/three.js' %}"></script>
-<script src="{% static 'mainapp/lib/OBJLoader.js' %}"></script>
-<script src="{% static 'mainapp/lib/MTLLoader.js' %}"></script>
-<script src="{% static 'mainapp/lib/OrbitControls.js' %}"></script>
-<script src="{% static 'mainapp/lib/zip.js' %}"></script>
-<script src="{% static 'mainapp/lib/zip-ext.js' %}"></script>
-<script src="{% static 'mainapp/preview.js' %}"></script>
-<script src="{% static 'mainapp/map.js' %}"></script>
+<link rel="preload" href="/api/model/{{ model.model_id }}/{{ model.revision }}" as="fetch">
+<link rel="preload" href="/static/mainapp/lib/z-worker.js" as="script">
+<link rel="preload" href="/static/mainapp/lib/inflate.js" as="script">
 {% endblock %}
 {% block body %}
 <div class="container">
@@ -41,11 +37,8 @@
 			<div>
 				<div class="tab-content" style="overflow: hidden;">
 					<div class="tab-pane active" id="view" role="tabpanel">
-						<div id="render-pane" style="height: 480px;">
+                        <div class="render-pane" id="render-pane{{ model.model_id }}.{{ model.revision }}" style="height: 480px;">
 						</div>
-						<script>
-							displayPreview("render-pane", {{ model.model_id }}, {{ model.revision }}, {height: 480});
-						</script>
 					</div>
 					{% if model.location %}
 					<div class="tab-pane" id="map" role="tabpanel">
@@ -172,4 +165,16 @@
 initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }}, 750, 480);
 {% endif %}
 </script>
+{% endblock %}
+{% block footeradditions %}
+{% load static %}
+<script src="{% static 'mainapp/comment.js' %}"></script>
+<script src="{% static 'mainapp/lib/three.js' %}"></script>
+<script src="{% static 'mainapp/lib/OBJLoader.js' %}"></script>
+<script src="{% static 'mainapp/lib/MTLLoader.js' %}"></script>
+<script src="{% static 'mainapp/lib/OrbitControls.js' %}"></script>
+<script src="{% static 'mainapp/lib/zip.js' %}"></script>
+<script src="{% static 'mainapp/lib/zip-ext.js' %}"></script>
+<script src="{% static 'mainapp/preview.js' %}"></script>
+<script src="{% static 'mainapp/map.js' %}"></script>
 {% endblock %}
