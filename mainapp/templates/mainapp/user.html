@@ -22,10 +22,8 @@ function enableEdit() {
 }
 </script>
 {% for model in models %}
-<link rel="preload" href="/api/model/{{ model.model_id }}/{{ model.revision }}" as="fetch">
+<link rel="preload" href="/api/model/{{ model.model_id }}/{{ model.revision }}" as="fetch" crossorigin>
 {% endfor %}
-<link rel="preload" href="/static/mainapp/lib/z-worker.js" as="script">
-<link rel="preload" href="/static/mainapp/lib/inflate.js" as="script">
 {% endblock %}
 {% block body %}
 <div class="container">

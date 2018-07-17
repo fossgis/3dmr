@@ -1,14 +1,14 @@
 {% extends "mainapp/layout.html" %}
 {% block pagename %}Search Results{% endblock %}
 {% block headadditions %}
-{% load static %}
-<script src="{% static 'mainapp/lib/three.js' %}"></script>
-<script src="{% static 'mainapp/lib/OBJLoader.js' %}"></script>
-<script src="{% static 'mainapp/lib/MTLLoader.js' %}"></script>
-<script src="{% static 'mainapp/lib/OrbitControls.js' %}"></script>
-<script src="{% static 'mainapp/lib/zip.js' %}"></script>
-<script src="{% static 'mainapp/lib/zip-ext.js' %}"></script>
-<script src="{% static 'mainapp/preview.js' %}"></script>
+<style>
+    .render-pane {
+        min-height: 256px;
+    }
+</style>
+{% for model in models %}
+<link rel="preload" href="/api/model/{{ model.model_id }}/{{ model.revision }}" as="fetch" crossorigin>
+{% endfor %}
 {% endblock %}
 {% block body %}
 <div class="container">
@@ -31,9 +31,6 @@
 	<div class="row flex">
 		{% for model in models %}
 			{% include "mainapp/modelpanel.html" %}
-			<script>
-				displayPreview("render-pane{{ model.model_id }}.{{ model.revision }}", {{ model.model_id }}, {{ model.revision }}, {height: 256});
-			</script>
 		{% endfor %}
 	</div>
 	{% endif %}
@@ -53,4 +50,14 @@
 	<p>No models were found with those parameters.</p>
 	{% endif %}
 </div>
+{% endblock %}
+{% block footeradditions %}
+{% load static %}
+<script src="{% static 'mainapp/lib/three.js' %}"></script>
+<script src="{% static 'mainapp/lib/OBJLoader.js' %}"></script>
+<script src="{% static 'mainapp/lib/MTLLoader.js' %}"></script>
+<script src="{% static 'mainapp/lib/OrbitControls.js' %}"></script>
+<script src="{% static 'mainapp/lib/zip.js' %}"></script>
+<script src="{% static 'mainapp/lib/zip-ext.js' %}"></script>
+<script src="{% static 'mainapp/preview.js' %}"></script>
 {% endblock %}

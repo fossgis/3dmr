@@ -17,9 +17,7 @@
 	var model_id = {{ model.model_id }};
 	var revision = {{ model.revision }};
 </script>
-<link rel="preload" href="/api/model/{{ model.model_id }}/{{ model.revision }}" as="fetch">
-<link rel="preload" href="/static/mainapp/lib/z-worker.js" as="script">
-<link rel="preload" href="/static/mainapp/lib/inflate.js" as="script">
+<link rel="preload" href="/api/model/{{ model.model_id }}/{{ model.revision }}" as="fetch" crossorigin>
 {% load static %}
 <script src="{% static 'mainapp/comment.js' %}"></script>
 <script src="{% static 'mainapp/map.js' %}"></script>
