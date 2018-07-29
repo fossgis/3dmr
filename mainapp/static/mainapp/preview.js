@@ -199,7 +199,7 @@ function setupRenderPanes() {
 	var elems = document.querySelectorAll('div.render-pane');
 
 	for(var elem of elems) {
-		var properties = elem.id.match(/render-pane(\d).(\d)/);
+		var properties = elem.id.match(/render-pane(\d+).(\d+)/);
 		displayPreview(elem.id, properties[1], properties[2]);
 	}
 }
