@@ -9,7 +9,6 @@ idna==2.6
 mccabe==0.6.1
 mistune==0.8.3
 oauthlib==2.1.0
-pkg-resources==0.0.0
 psycopg2-binary==2.7.4
 pycodestyle==2.4.0
 pyflakes==2.0.0
