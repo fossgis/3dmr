@@ -141,5 +141,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = '/home/tdmr/static/'
 
 STATICFILES_FINDERS = (
+        'django.contrib.staticfiles.finders.AppDirectoriesFinder',
         'compressor.finders.CompressorFinder',
 )
