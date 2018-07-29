@@ -2,9 +2,9 @@
 {% block pagename %}Homepage{% endblock %}
 {% block headadditions %}
 <style>
-.render-pane {
-    min-height: 256px;
-}
+	.render-pane {
+		min-height: 256px;
+	}
 </style>
 {% for model in models %}
 <link rel="preload" href="/api/model/{{ model.model_id }}/{{ model.revision }}" as="fetch" crossorigin>

@@ -185,8 +185,8 @@ function animate(renderer, scene, camera, controls, options) {
 function resizeCanvas(renderer, camera, options) {
 	var canvas = renderer.domElement;
 
-    var width = options['width'];
-    var height = options['height'];
+	var width = options['width'];
+	var height = options['height'];
 
 	if(canvas.width != width || canvas.height != height) {
 		renderer.setSize(width, height, false);
@@ -196,12 +196,12 @@ function resizeCanvas(renderer, camera, options) {
 }
 
 function setupRenderPanes() {
-    var elems = document.querySelectorAll('div.render-pane');
+	var elems = document.querySelectorAll('div.render-pane');
 
-    for(var elem of elems) {
-        var properties = elem.id.match(/render-pane(\d).(\d)/);
-        displayPreview(elem.id, properties[1], properties[2]);
-    }
+	for(var elem of elems) {
+		var properties = elem.id.match(/render-pane(\d).(\d)/);
+		displayPreview(elem.id, properties[1], properties[2]);
+	}
 }
 
 setupRenderPanes();

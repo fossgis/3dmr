@@ -5,13 +5,13 @@
 <link rel="stylesheet" href="{% static 'mainapp/lib/leaflet.css' %}">
 <script src="{% static 'mainapp/lib/leaflet.js' %}"></script>
 <style>
-    #mapdiv {
-        width: 750px;
-        height: 480px;
-    }
-    .render-pane {
-        min-height: 480px;
-    }
+	#mapdiv {
+		width: 750px;
+		height: 480px;
+	}
+	.render-pane {
+		min-height: 480px;
+	}
 </style>
 <script>
 	var model_id = {{ model.model_id }};
@@ -38,7 +38,7 @@
 			<div>
 				<div class="tab-content" style="overflow: hidden;">
 					<div class="tab-pane active" id="view" role="tabpanel">
-                        <div class="render-pane" id="render-pane{{ model.model_id }}.{{ model.revision }}" style="height: 480px;">
+						<div class="render-pane" id="render-pane{{ model.model_id }}.{{ model.revision }}" style="height: 480px;">
 						</div>
 					</div>
 					{% if model.location %}
