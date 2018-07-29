@@ -9,8 +9,11 @@
 	<title>3D Model Repository - {% block pagename %}{% endblock %}</title>
 	{% load static %}
 	<link rel="stylesheet" href="{% static 'mainapp/lib/bootstrap.min.css' %}">
+	{% load compress %}
+	{% compress css inline %}
 	<link rel="stylesheet" href="{% static 'mainapp/lib/bootstrap-theme.min.css' %}">
 	<link rel="stylesheet" href="{% static 'mainapp/main.css' %}">
+	{% endcompress %}
 	{% block headadditions %}
 	{% endblock %}
 	{% endblock %}

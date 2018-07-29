@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'mainapp',
     'social_django',
     'django_pgviews',
+    'compressor',
 ]
 
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
@@ -138,3 +139,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = '/home/tdmr/static/'
+
+STATICFILES_FINDERS = (
+        'compressor.finders.CompressorFinder',
+)
