@@ -71,7 +71,7 @@ function addPin(model) {
 function initMap(id, latitude, longitude, width, height) {
 	map = L.map(id, {
 		'worldCopyJump': true,
-		'zoom': 17
+		'zoom': 3
 	});
 
 	if(width && height) {
