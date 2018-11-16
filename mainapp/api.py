@@ -242,7 +242,9 @@ def search_full(request):
     latitude = data.get('lat')
     longitude = data.get('lon')
     distance = data.get('range')
-    if latitude and longitude and distance:
+    if latitude is not None and \
+       longitude is not None and \
+       distance is not None:
         models = range_filter(models, latitude, longitude, distance)
 
     title = data.get('title')
