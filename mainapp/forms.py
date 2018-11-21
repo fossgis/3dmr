@@ -1,6 +1,8 @@
 from django import forms
 from .utils import get_kv, LICENSES_FORM
 from zipfile import ZipFile, BadZipFile
+from mainapp.model_extractor import ModelExtractor
+from pywavefront import Wavefront
 
 class TagField(forms.CharField):
     def __init__(self, *args, **kwargs):
@@ -111,6 +113,12 @@ class ModelField(forms.FileField):
                     found_objs += 1
             if found_objs != 1:
                 raise forms.ValidationError('No single .obj file found in your uploaded zip file.', code='invalid')
+
+            with ModelExtractor(zip_file) as extracted_location:
+                try:
+                    scene = Wavefront(extracted_location['obj'])
+                except:
+                    raise forms.ValidationError('Error parsing OBJ/MTL files.', code='invalid')
         except BadZipFile:
             raise forms.ValidationError('Uploaded file was not a valid zip file.', code='invalid')
 
