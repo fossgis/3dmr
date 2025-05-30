@@ -1,3 +1,5 @@
+import os
+
 from django.utils.safestring import mark_safe
 
 # Gets the key and value of an OSM tag from a string
@@ -34,4 +36,4 @@ CHANGES = {
 }
 
 # The directory the models will be stored in
-MODEL_DIR = '/home/tdmr/models'
+MODEL_DIR = os.environ.get('MODEL_DIR', '/home/tdmr/models')
