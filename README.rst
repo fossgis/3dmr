@@ -1,22 +1,24 @@
 ===================
 3D Model Repository
 ===================
-This project is a repository for 3D models, and their metadata, for use by the OpenStreetMap community for improving the quality of 3D rendering of maps, developed as part of Google Summer of Code 2017 by Pedro Amaro, with Jan Marsch and Tobias Knerr as mentors.
+This is a repository for 3D models and their metadata, for use by the community for improving the quality of 3D rendering of maps. The deployed version of the project can be experienced at `3dmr <https://3dmr.eu/>`_.
+
+Project History
+======================
+This project was `originally developed <https://gitlab.com/n42k/3dmr>`_ as part of Google Summer of Code 2017 by `Pedro Amaro <https://github.com/n42k>`_, under the mentorship of the OpenStreetMap community with `Jan Marsch <https://github.com/kekscom>`_ and `Tobias Knerr <https://github.com/tordanik>`_ as mentors. The project was aimed at creating a repository for 3D models and their metadata, for use by the community for improving the quality of 3D rendering of maps.
 
 Development Server Instructions
 ===============================
-Firstly, install ``python3`` and ``pip3``. You also need the ``virtualenv`` python package, you can install it with ``sudo pip3 install virtualenv``.
-Then, to get a development server running from this repository:
+The project requires Docker to be installed on the system. The following steps will guide you through setting up the development server.
 
-1. Clone the repository, ``git clone https://gitlab.com/n42k/3dmr.git``.
+1. Clone the repository, ``git clone https://github.com/fossgis/3dmr.git``.
 2. Move inside the directory that was created, ``cd 3dmr``.
-3. Set up the virtualenv, ``virtualenv .env``.
-4. Activate the virtualenv, ``source .env/bin/activate``.
-5. Install the required packages, ``pip3 install -r requirements.txt``.
-6. Set up the PostgreSQL database, configure it in ``modelrepository/settings.py``, and run ``./manage.py makemigrations`` and ``./manage.py migrate``.
-7. Run the server! ``./manage.py runserver 8080``.
+3. Create `.env` file by copying the example file, ``cp .env.example .env``.
+4. Make necessary changes in the `.env` file to set your environment variables.
+5. Make `setup.sh` executable, ``chmod +x ./setup.sh``.
+6. Set up the container with ``./setup.sh``.
 
-Your development server should now be running on port 8080.
+Your development server should now be running on port 8000.
 
 Deployment Instructions
 =======================
@@ -47,32 +49,33 @@ Deployment Instructions
 
  2. Switch to the newly created user: ``su - tdmr``. The next commands will be run as this user.
 
- 3. In the home directory of this user, run ``git clone https://gitlab.com/n42k/3dmr.git``, then move inside it: ``cd 3dmr``.
+ 3. In the home directory of this user, run ``git clone https://github.com/fossgis/3dmr.git``, then move inside it: ``cd 3dmr``.
 
- 4. Setup the virtualenv: ``virtualenv -p python3 .env``, and activate it: ``source .env/bin/activate``, and install the required Python packages: ``pip3 install -r requirements.txt``.
+ 4. Setup the virtualenv: ``virtualenv -p python3 .venv``, and activate it: ``source .venv/bin/activate``, and install the required Python packages: ``pip3 install -r requirements.txt``.
 
  5. We must now configure the model repository.
 
-  1. With your favourite text editor, begin editing ``modelrepository/settings.py``. Then, in order, edit the folllowing variables:
+  1. With your favourite text editor, begin editing ``.env`` file. Then, in order, edit the folllowing variables:
 
   2. Generate a new random ``SECRET_KEY``. This should be generated randomly, by a computer. One quick way to do this is running
      ``import binascii;import os;binascii.hexlify(os.urandom(50))`` in a Python shell.
 
   3. Set ``DEBUG`` to ``False``, as we're now in production.
 
-  4. Set ``ALLOWED_HOSTS`` to ``['*']``. *IMPORTANT*: You should replace this with ``['www.yourdomain.com']`` when you host it on a domain, or your public IP,
+  4. You should also add your own OpenStreetMap OAuth key and secret, replacing ``SOCIAL_AUTH_OPENSTREETMAP_KEY`` and ``SOCIAL_AUTH_OPENSTREETMAP_SECRET``.
+   If you do not have one, you can create it at https://www.openstreetmap.org/oauth2/applications.
+
+  5. Configure the ``POSTGRES_...`` entries: change the credentials as per the ones set in 2.3.
+
+  6. Finally, in  ``modelrepository/settings.py``. Set ``ALLOWED_HOSTS`` to ``['*']``. *IMPORTANT*: You should replace this with ``['www.yourdomain.com']`` when you host it on a domain, or your public IP,
      according to https://docs.djangoproject.com/en/1.11/ref/settings/#allowed-hosts .
 
-  5. You should also use your own OpenStreetMap OAuth key and secret, replacing ``SOCIAL_AUTH_OPENSTREETMAP_KEY`` and ``SOCIAL_AUTH_OPENSTREETMAP_SECRET``.
-
-  6. Finally, configure the ``DATABASES`` entry: change the password ``123123``, to the one set in 2.3.
-
-  7. You can now save and close this file.
+  7. You can now save and close both the files.
 
  6. Run ``./manage.py migrate`` to create the tables for our database.
 
  7. Create a directory to hold the model zips: ``mkdir ~/models``.
-    Configure the repository to use this directory in ``mainapp/utils.py``, at the end of the file: ``MODEL_DIR = '/home/tdmr/models'``.
+    Configure the .env file, add at the end of the file: ``MODEL_DIR = '/home/tdmr/models'``.
 
  8. Create a directory to hold the static files: ``mkdir ~/static`` and run ``./manage.py collectstatic`` to place the static files there.
 
@@ -80,7 +83,7 @@ Deployment Instructions
 
     | #!/bin/bash
     | cd /home/tdmr/3dmr/
-    | source .env/bin/activate
+    | source .venv/bin/activate
     | ./manage.py nightly
     | mv 3dmr-nightly.zip /home/tdmr/static/mainapp
 
