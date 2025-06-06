@@ -26,19 +26,14 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    container:
-      image: python:3.6.15
-      env:
-        POSTGRES_HOST: postgres
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # - name: Set up Python
-    #   uses: actions/setup-python@v5
-    #   with:
-    #     python-version: '3.6.15'
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
 
     - name: Install dependencies
       run: |
