@@ -56,7 +56,7 @@ class OriginField(forms.CharField):
                 attrs={
                     'value': '0.0 0.0 0.0',
                     'placeholder': '3 -4.5 1.03',
-                    'pattern': '^(\+|-)?[0-9]+((\.|,)[0-9]+)? (\+|-)?[0-9]+((\.|,)[0-9]+) (\+|-)?[0-9]+((\.|,)[0-9]+)$',
+                    'pattern': r'^(\+|-)?[0-9]+((\.|,)[0-9]+)? (\+|-)?[0-9]+((\.|,)[0-9]+) (\+|-)?[0-9]+((\.|,)[0-9]+)$',
                     'aria-describedby': 'translation-help'
                 })
 
@@ -81,7 +81,7 @@ class CompatibleFloatField(forms.CharField):
                 attrs = kwargs['attrs']
             else:
                 attrs = {}
-            attrs['pattern'] = '^(\+|-)?[0-9]+((\.|,)[0-9]+)?$'
+            attrs['pattern'] = r'^(\+|-)?[0-9]+((\.|,)[0-9]+)?$'
 
             kwargs['widget'] = forms.TextInput(attrs)
 
