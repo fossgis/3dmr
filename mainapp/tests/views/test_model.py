@@ -122,8 +122,9 @@ class UploadModelViewTest(BaseViewTestMixin, TestCase):
         upload_data = {"title": "", "license": "0"}  # Missing description, file etc.
         response = self.client.post(reverse("upload"), data=upload_data)
         self.assertEqual(response.status_code, 200)  # Stays on page
-        self.assertFormError(response, "form", "title", "This field is required.")
-        self.assertFormError(response, "form", "model_file", "This field is required.")
+        form = response.context["form"]
+        self.assertFormError(form, "title", "This field is required.")
+        self.assertFormError(form, "model_file", "This field is required.")
 
 
 class ModelViewTests(BaseViewTestMixin, TestCase):
@@ -284,7 +285,8 @@ class EditModelViewTest(BaseViewTestMixin, TestCase):
             data=edit_data,
         )
         self.assertEqual(response.status_code, 200)
-        self.assertFormError(response, "form", "title", "This field is required.")
+        form = response.context["form"]
+        self.assertFormError(form, "title", "This field is required.")
 
 
 class ReviseModelViewTest(BaseViewTestMixin, TestCase):
@@ -351,7 +353,8 @@ class ReviseModelViewTest(BaseViewTestMixin, TestCase):
             reverse("revise", args=[self.latest_model3.model_id]), data={}
         )
         self.assertEqual(response.status_code, 200)
-        self.assertFormError(response, "form", "model_file", "This field is required.")
+        form = response.context["form"]
+        self.assertFormError(form, "model_file", "This field is required.")
 
     # def test_revise_non_existent_model_id(self):
     #     response = self.client.get(reverse('revise', args=[99999999]))
