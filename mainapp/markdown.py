@@ -1,17 +1,18 @@
 import mistune
 
-class CustomMarkdownRenderer(mistune.Renderer):
-    def autolink(self, link, is_email=False):
-        text = link = mistune.escape_link(link)
+
+class CustomMarkdownRenderer(mistune.HTMLRenderer):
+    def autolink(self, url, is_email=False):
+        text = url
         if is_email:
-            link= 'mailto:%s' % link
-        return '<a href="%s" rel="nofollow">%s</a>' % (link, text)
+            url = 'mailto:%s' % url
+        return '<a href="%s" rel="nofollow">%s</a>' % (url, text)
 
-    def link(self, link, title, text):
-        link = mistune.escape_link(link)
+    def link(self, text, url, title=None):
         if not title:
-            return '<a href="%s" rel="nofollow">%s</a>' % (link, text)
+            return '<a href="%s" rel="nofollow">%s</a>' % (url, text)
         title = escape(title, quote=True)
-        return '<a href="%s" title="%s" rel="nofollow">%s</a>' % (link, title, text)
+        return '<a href="%s" title="%s" rel="nofollow">%s</a>' % (url, title, text)
 
-markdown = mistune.Markdown(renderer=CustomMarkdownRenderer())
+
+markdown = mistune.create_markdown(renderer=CustomMarkdownRenderer())
