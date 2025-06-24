@@ -6,12 +6,13 @@
 <script src="{% static 'mainapp/lib/leaflet.js' %}"></script>
 <script type="importmap">
 {
-  "imports": {
-	"three": "{% static '/mainapp/lib/three/three.module.js' %}",
-    "three/addons/": "{% static 'mainapp/lib/three/' %}"
-  }
+	"imports": {
+		"three": "{% static '/mainapp/lib/three/three.module.js' %}",
+		"three/addons/": "{% static 'mainapp/lib/three/' %}"
+	}
 }
 </script>
+<script type="module" src="{% static 'mainapp/preview.js' %}"></script>
 <style>
 	#mapdiv {
 		width: 750px;
@@ -176,8 +177,24 @@ initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }},
 </script>
 {% endblock %}
 {% block footeradditions %}
-{% load compress %}
-{% compress js %}
-<script type="module" src="{% static 'mainapp/preview.js' %}"></script>
-{% endcompress %}
+<script>
+	function displayPreview(elementId, model_id, revision, options) {
+		var url = "/api/model/" + model_id + "/" + revision;
+
+		if(typeof options === 'undefined')
+			options = {};
+
+		var three = initTHREE(elementId, options);
+		loadGLB(url, options, three);
+	}
+
+	window.addEventListener("load", function() {
+		var elems = document.querySelectorAll('div.render-pane');
+		
+		for(var elem of elems) {
+			var properties = elem.id.match(/render-pane(\d+).(\d+)/);
+			displayPreview(elem.id, properties[1], properties[2]);
+		}
+	});
+</script>
 {% endblock %}
