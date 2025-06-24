@@ -1,8 +1,5 @@
 from django import forms
-from .utils import get_kv, LICENSES_FORM
-from zipfile import ZipFile, BadZipFile
-from mainapp.model_extractor import ModelExtractor
-from pywavefront import Wavefront
+from .utils import get_kv, LICENSES_FORM, validate_glb_file
 
 class TagField(forms.CharField):
     def __init__(self, *args, **kwargs):
@@ -105,22 +102,8 @@ class CompatibleFloatField(forms.CharField):
 class ModelField(forms.FileField):
     def validate(self, model):
         super().validate(model)
-        try:
-            zip_file = ZipFile(model)
-            found_objs = 0 # files with the .obj extension found
-            for name in zip_file.namelist():
-                if name.endswith('.obj'):
-                    found_objs += 1
-            if found_objs != 1:
-                raise forms.ValidationError('No single .obj file found in your uploaded zip file.', code='invalid')
+        validate_glb_file(model)
 
-            with ModelExtractor(zip_file) as extracted_location:
-                try:
-                    scene = Wavefront(extracted_location['obj'])
-                except:
-                    raise forms.ValidationError('Error parsing OBJ/MTL files.', code='invalid')
-        except BadZipFile:
-            raise forms.ValidationError('Uploaded file was not a valid zip file.', code='invalid')
 
 # This function adds the 'form-control' class to all fields, with possible exceptions
 def init_bootstrap_form(fields, exceptions=[]):

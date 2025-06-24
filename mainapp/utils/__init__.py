@@ -3,6 +3,8 @@ import os
 from django.conf import settings
 from django.utils.safestring import mark_safe
 
+from .model_validator import validate_glb_file
+
 # Gets the key and value of an OSM tag from a string
 # Note: any extra '=' chars other than the first will be included in the value.
 def get_kv(string):
