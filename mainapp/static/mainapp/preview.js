@@ -2,16 +2,6 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-function displayPreview(elementId, model_id, revision, options) {
-	var url = "/api/model/" + model_id + "/" + revision;
-
-	if(typeof options === 'undefined')
-		options = {};
-
-	var three = initTHREE(elementId, options);
-	loadGLB(url, options, three);
-}
-
 function initTHREE(elementId, options) {
 	var renderPane = document.getElementById(elementId);
 
@@ -136,13 +126,5 @@ function resizeCanvas(renderer, camera, options) {
 	}
 }
 
-function setupRenderPanes() {
-	var elems = document.querySelectorAll('div.render-pane');
-
-	for(var elem of elems) {
-		var properties = elem.id.match(/render-pane(\d+).(\d+)/);
-		displayPreview(elem.id, properties[1], properties[2]);
-	}
-}
-
-setupRenderPanes();
+window.initTHREE = initTHREE;
+window.loadGLB = loadGLB;
