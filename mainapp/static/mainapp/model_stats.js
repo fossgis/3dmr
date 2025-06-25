@@ -1,39 +1,42 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
-function initTHREE(file) {
-    const fileURL = URL.createObjectURL(file);
+function initTHREE(fileURL) {
     const loader = new GLTFLoader();
 
     loader.load(
         fileURL,
         function (gltf) {
             console.log("Model loaded successfully:", gltf.scene);
-            URL.revokeObjectURL(fileURL);
-            document.getElementById("model-status").style.display = "none";
-            processModel(gltf, file);
+            if (document.getElementById("model-status")){
+                document.getElementById("model-status").style.display = "none";
+            }
+            processModel(gltf);
         },
         function (progress) {
             const percent = progress.total > 0
                 ? (progress.loaded / progress.total * 100).toFixed(1)
                 : "0";
-            document.getElementById("model-content").style.display = "block";
-            document.getElementById("model-status").textContent =
-                `Loading model... ${percent}%`;
+            if (document.getElementById("model-status")){
+                document.getElementById("model-content").style.display = "block";
+                document.getElementById("model-status").textContent =
+                    `Loading model... ${percent}%`;
+            }
         },
         function (error) {
             console.error("Error loading model:", error);
-            URL.revokeObjectURL(fileURL);
-            document.getElementById("model-status").textContent = "Error loading model: " + error.message;
-            document.getElementById("model-status").style.display = "block";
-            document.getElementById("model-content").style.display = "none";
+            if (document.getElementById("model-status")){
+                document.getElementById("model-status").textContent = "Error loading model: " + error.message;
+                document.getElementById("model-status").style.display = "block";
+                document.getElementById("model-content").style.display = "none";
+            }
         }
     );
 }
 
-function processModel(gltf, file) {
+function processModel(gltf) {
     const stats = calculateModelStats(gltf.scene);
-    updateModelStats(stats, file);
+    updateModelStats(stats);
 }
 
 function calculateModelStats(model) {
@@ -62,6 +65,8 @@ function calculateModelStats(model) {
     return {
         vertices: Math.floor(vertexCount),
         faces: Math.floor(faceCount),
+        volume: size.x * size.y * size.z,
+
         boundingBox: {
             width: size.x.toFixed(2),
             height: size.y.toFixed(2),
@@ -78,7 +83,6 @@ function calculateModelStats(model) {
 function updateModelStats(stats, file) {
     document.getElementById("vertexCount").textContent = stats.vertices.toLocaleString();
     document.getElementById("faceCount").textContent = stats.faces.toLocaleString();
-    document.getElementById("fileSize").textContent = (file.size / 1024).toFixed(1) + " KB";
     document.getElementById("boundingBox").textContent =
         `${stats.boundingBox.width} × ${stats.boundingBox.height} × ${stats.boundingBox.depth}`;
     document.getElementById("modelScale").textContent =
