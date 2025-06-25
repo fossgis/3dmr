@@ -94,7 +94,7 @@ def upload(model_file, options={}):
 
             change.save()
 
-            filepath = '{}/{}/{}.zip'.format(MODEL_DIR, m.model_id, m.revision)
+            filepath = '{}/{}/{}.glb'.format(MODEL_DIR, m.model_id, m.revision)
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             with open(filepath, 'wb+') as destination:
                 for chunk in model_file.chunks():
