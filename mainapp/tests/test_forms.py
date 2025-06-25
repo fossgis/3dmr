@@ -1,5 +1,3 @@
-import io
-import zipfile
 from unittest.mock import patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -16,15 +14,6 @@ from mainapp.forms import (
     UploadFileForm,
     UploadFileMetadataForm,
 )
-
-
-def _make_zip(files):
-    buffer = io.BytesIO()
-    with zipfile.ZipFile(buffer, "w") as zf:
-        for name, content in files.items():
-            zf.writestr(name, content)
-    buffer.seek(0)
-    return buffer.read()
 
 
 class TagFieldTests(SimpleTestCase):
@@ -110,56 +99,10 @@ class CompatibleFloatFieldTests(SimpleTestCase):
 
 
 class ModelFieldTests(TestCase):
-
-    @patch("mainapp.forms.ModelExtractor")
-    @patch("mainapp.forms.Wavefront")
-    def test_valid_zip_single_obj(self, mock_wavefront, mock_extractor):
-        files = {"model.obj": "o Cube\nv 0 0 0"}
-        data = _make_zip(files)
-        uploaded = SimpleUploadedFile("model.zip", data, content_type="application/zip")
+    def test_bad_glb_file(self):
+        data = b"not a glb"
+        uploaded = SimpleUploadedFile("bad.glb", data, content_type="model/gltf-binary")
         instance = ModelField()
-        mock_cm = mock_extractor.return_value.__enter__.return_value
-        mock_cm.__getitem__.return_value = "path/to/model.obj"
-        mock_wavefront.return_value = object()
-        cleaned = instance.validate(uploaded)
-        self.assertIsNone(cleaned)
-
-    @patch("mainapp.forms.ModelExtractor")
-    def test_no_obj_in_zip(self, mock_extractor):
-        files = {"readme.txt": "no model here"}
-        data = _make_zip(files)
-        uploaded = SimpleUploadedFile("noobj.zip", data, content_type="application/zip")
-        instance = ModelField()
-        with self.assertRaises(ValidationError):
-            instance.clean(uploaded)
-
-    @patch("mainapp.forms.ModelExtractor")
-    def test_multiple_objs_in_zip(self, mock_extractor):
-        files = {"a.obj": "o A", "b.obj": "o B"}
-        data = _make_zip(files)
-        uploaded = SimpleUploadedFile("multi.zip", data, content_type="application/zip")
-        instance = ModelField()
-        with self.assertRaises(ValidationError):
-            instance.clean(uploaded)
-
-    def test_bad_zip_file(self):
-        data = b"not a zip"
-        uploaded = SimpleUploadedFile("bad.zip", data, content_type="application/zip")
-        instance = ModelField()
-        with self.assertRaises(ValidationError):
-            instance.clean(uploaded)
-
-    @patch("mainapp.forms.ModelExtractor")
-    @patch("mainapp.forms.Wavefront", side_effect=Exception("parse error"))
-    def test_invalid_obj_parsing(self, mock_wavefront, mock_extractor):
-        files = {"model.obj": "corrupt content"}
-        data = _make_zip(files)
-        uploaded = SimpleUploadedFile(
-            "corrupt.zip", data, content_type="application/zip"
-        )
-        instance = ModelField()
-        mock_cm = mock_extractor.return_value.__enter__.return_value
-        mock_cm.__getitem__.return_value = "path/to/model.obj"
         with self.assertRaises(ValidationError):
             instance.clean(uploaded)
 
@@ -169,16 +112,10 @@ class FormIntegrationTests(SimpleTestCase):
         form = UploadFileForm(data={})
         self.assertFalse(form.is_valid())
 
-    @patch("mainapp.forms.ModelExtractor")
-    @patch("mainapp.forms.Wavefront")
-    def test_upload_file_form_valid(self, mock_wavefront, mock_extractor):
-        files = {"model.obj": "o Cube\nv 0 0 0"}
-        data = _make_zip(files)
-        uploaded = SimpleUploadedFile("model.zip", data, content_type="application/zip")
-
-        mock_cm = mock_extractor.return_value.__enter__.return_value
-        mock_cm.__getitem__.return_value = "mock/path/to/model.obj"
-        mock_wavefront.return_value = object()
+    def test_upload_file_form_valid(self):
+        with open("mainapp/tests/test_files/test_model.glb", "rb") as f:
+            data = f.read()
+        uploaded = SimpleUploadedFile("model.glb", data, content_type="model/gltf-binary")
 
         form = UploadFileForm(files={"model_file": uploaded})
         self.assertTrue(form.is_valid())
@@ -207,12 +144,10 @@ class FormIntegrationTests(SimpleTestCase):
         form = UploadFileMetadataForm(data={})
         self.assertFalse(form.is_valid())
 
-    @patch("mainapp.forms.ModelExtractor")
-    @patch("mainapp.forms.Wavefront")
-    def test_upload_file_metadata_form_valid(self, mock_wavefront, mock_extractor):
-        files = {"model.obj": "o Cube\nv 0 0 0"}
-        data = _make_zip(files)
-        uploaded = SimpleUploadedFile("model.zip", data, content_type="application/zip")
+    def test_upload_file_metadata_form_valid(self):
+        with open("mainapp/tests/test_files/test_model.glb", "rb") as f:
+            data = f.read()
+        uploaded = SimpleUploadedFile("model.glb", data, content_type="model/gltf-binary")
         form_data = {
             "title": "Test",
             "description": "",
@@ -226,9 +161,7 @@ class FormIntegrationTests(SimpleTestCase):
             "license": "0",
         }
 
-        mock_cm = mock_extractor.return_value.__enter__.return_value
-        mock_cm.__getitem__.return_value = "mock/path/to/model.obj"
-        mock_wavefront.return_value = object()
-
         form = UploadFileMetadataForm(data=form_data, files={"model_file": uploaded})
+        if not form.is_valid():
+            print(form.errors)
         self.assertTrue(form.is_valid())

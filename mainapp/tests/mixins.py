@@ -16,7 +16,7 @@ class BaseViewTestMixin:
     """
 
     def setUp(self) -> None:
-        with open("mainapp/tests/models/test_model.zip", "rb") as f:
+        with open("mainapp/tests/test_files/test_model.glb", "rb") as f:
             self.model_file = f.read()
 
         self.user = User.objects.create_user(
@@ -94,7 +94,7 @@ class BaseViewTestMixin:
         self.model_dirs = []
 
         for model in [self.model1, self.model2, self.model3]:
-            filepath = f"{MODEL_DIR}/{model.model_id}/{model.revision}.zip"
+            filepath = f"{MODEL_DIR}/{model.model_id}/{model.revision}.glb"
             self.model_dirs.append(os.path.dirname(filepath))
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             with open(filepath, "wb+") as destination:

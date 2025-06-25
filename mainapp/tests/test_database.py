@@ -25,14 +25,14 @@ class DatabaseTests(TestCase):
 
     def tearDown(self):
         for model in LatestModel.objects.all():
-            filepath = f"{MODEL_DIR}/{model.model_id}/{model.revision}.zip"
+            filepath = f"{MODEL_DIR}/{model.model_id}/{model.revision}.glb"
             if os.path.exists(filepath):
                 shutil.rmtree(os.path.dirname(filepath))
 
-    def _create_dummy_file(self, name="test_model.zip"):
-        with open("mainapp/tests/models/test_model.zip", "rb") as f:
+    def _create_dummy_file(self, name="test_model.glb"):
+        with open("mainapp/tests/test_files/test_model.glb", "rb") as f:
             self.model_file = f.read()
-        return SimpleUploadedFile(name, self.model_file, content_type="application/zip")
+        return SimpleUploadedFile(name, self.model_file, content_type="model/gltf-binary")
 
     def test_upload_new_model_first_ever(self):
         model_file = self._create_dummy_file()
@@ -85,7 +85,7 @@ class DatabaseTests(TestCase):
         self.assertEqual(created_model.location.longitude, options["longitude"])
 
         expected_filepath = os.path.join(
-            MODEL_DIR, str(created_model.model_id), f"{created_model.revision}.zip"
+            MODEL_DIR, str(created_model.model_id), f"{created_model.revision}.glb"
         )
         self.assertTrue(os.path.exists(expected_filepath))
 
@@ -104,7 +104,7 @@ class DatabaseTests(TestCase):
             "scale": 1,
             "revision": False,
         }
-        m1 = database.upload(self._create_dummy_file(name="a.zip"), opts1)
+        m1 = database.upload(self._create_dummy_file(name="a.glb"), opts1)
         self.assertEqual(m1.model_id, 1)
 
         opts2 = {
@@ -121,7 +121,7 @@ class DatabaseTests(TestCase):
             "scale": 1,
             "revision": False,
         }
-        m2 = database.upload(self._create_dummy_file(name="b.zip"), opts2)
+        m2 = database.upload(self._create_dummy_file(name="b.glb"), opts2)
         self.assertEqual(
             m2.model_id, 2, "Model ID should increment for the second model"
         )
@@ -172,7 +172,7 @@ class DatabaseTests(TestCase):
             "scale": 1,
             "revision": False,
         }
-        initial_file = self._create_dummy_file(name="initial.zip")
+        initial_file = self._create_dummy_file(name="initial.glb")
         initial_model = database.upload(initial_file, initial_options)
 
         self.assertIsNotNone(initial_model)
@@ -184,7 +184,7 @@ class DatabaseTests(TestCase):
         revision_author = User.objects.create_user(
             username="revised_author", password="password123"
         )
-        revision_file = self._create_dummy_file(name="revision.zip")
+        revision_file = self._create_dummy_file(name="revision.glb")
         revision_options = {
             "model_id": initial_model.model_id,
             "author": revision_author,
@@ -230,7 +230,7 @@ class DatabaseTests(TestCase):
         self.assertEqual(Location.objects.count(), 2)
 
         expected_filepath_rev = os.path.join(
-            MODEL_DIR, str(revised_model.model_id), f"{revised_model.revision}.zip"
+            MODEL_DIR, str(revised_model.model_id), f"{revised_model.revision}.glb"
         )
         self.assertTrue(os.path.exists(expected_filepath_rev))
 
