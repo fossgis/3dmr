@@ -148,8 +148,9 @@ STATICFILES_FINDERS = (
 
 MODEL_DIR = os.environ.get('MODEL_DIR', BASE_DIR / "models")
 
-GLTF_VALIDATOR_PATH = os.environ.get(
-    'GLTF_VALIDATOR_PATH'
+GLTF_VALIDATOR = os.environ.get(
+    'GLTF_VALIDATOR_PATH',
+    'gltf_validator' # assume global installation in $PATH
 )
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

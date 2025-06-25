@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import subprocess
 import tempfile
 
@@ -35,7 +36,7 @@ def validate_glb_file(file_field):
             temp_file.flush()
 
             result = subprocess.run(
-                [settings.GLTF_VALIDATOR_PATH, temp_file.name, "-o"],
+                [settings.GLTF_VALIDATOR, temp_file.name, "-o"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             )
@@ -48,8 +49,11 @@ def validate_glb_file(file_field):
 
     except FileNotFoundError:
         logger.exception(
-            f"gltf-validator CLI not found at {settings.GLTF_VALIDATOR_PATH}."
+            f"gltf-validator CLI not found at {settings.GLTF_VALIDATOR}."
         )
+        raise ValidationError("Internal server error.")
+    except json.JSONDecodeError:
+        logger.exception("Validator returned invalid JSON output.")
         raise ValidationError("Internal server error.")
     except Exception as e:
         logger.exception(f"Error during GLB validation: {str(e)}")
