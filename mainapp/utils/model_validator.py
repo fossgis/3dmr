@@ -42,6 +42,13 @@ def validate_glb_file(file_field):
             )
             output = json.loads(result.stdout.decode("utf-8"))
 
+            # Ensures the model has some shape. At least a cube.
+            if output["info"]["totalVertexCount"] < 8 or \
+               output["info"]["totalTriangleCount"] < 12:
+                raise ValidationError(
+                    "GLB file must have some valid shape."
+                )
+
             if output["issues"]["numErrors"]:
                 raise ValidationError(
                     f"GLB validation failed with {output['issues']['numErrors']} errors: {output['issues']['errors']}"
