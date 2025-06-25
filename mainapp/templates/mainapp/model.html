@@ -13,6 +13,7 @@
 }
 </script>
 <script type="module" src="{% static 'mainapp/preview.js' %}"></script>
+<script type="module" src="{% static 'mainapp/model_stats.js' %}"></script>
 <style>
 	#mapdiv {
 		width: 750px;
@@ -59,6 +60,7 @@
 				</div>
 			</div>
 		</div>
+		<div>
 		<div class="col-md-4">
 			{% if model.is_hidden %}
 			<div class="panel panel-danger">
@@ -108,6 +110,28 @@
 					{% endif %}
 				</div>
 			</div>
+		</div>
+		<div class="col-md-4">
+			{% if model.is_hidden %}
+			<div class="panel panel-danger">
+			{% else %}
+			<div class="panel panel-primary">
+			{% endif %}
+				<div class="panel-heading">
+					<h3 class="panel-title">Model Stats</h3>
+				</div>
+				<div class="panel-body">
+					<p>Vertices: <span id="vertexCount" class="stat-neutral">-</span></p>
+					<p>Faces: <span id="faceCount" class="stat-neutral">-</span></p>
+					<p>Meshes: <span id="meshCount" class="stat-neutral">-</span></p>
+					<p>Triangle Density: <span id="triangleDensity" class="stat-neutral">-</span></p>
+					<p>Materials: <span id="materialCount" class="stat-neutral">-</span></p>
+					<p>Bounding Box (W × H × D): <span id="boundingBox" class="stat-neutral">-</span></p>
+					<p>Model Scale (X × Y × Z): <span id="modelScale" class="stat-neutral">-</span></p>
+					<p>Animations Present: <span id="hasAnimations" class="stat-neutral">-</span></p>
+				</div>
+			</div>
+		</div>
 		</div>
 	</div>
 	<br>
@@ -186,6 +210,7 @@ initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }},
 
 		var three = initTHREE(elementId, options);
 		loadGLB(url, options, three);
+		initStatsTHREE(url);
 	}
 
 	window.addEventListener("load", function() {
@@ -196,5 +221,6 @@ initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }},
 			displayPreview(elem.id, properties[1], properties[2]);
 		}
 	});
+
 </script>
 {% endblock %}
