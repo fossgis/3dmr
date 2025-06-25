@@ -40,11 +40,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
       
-    - name: Set MODEL_DIR to /tmp
-      run: echo "MODEL_DIR=/tmp/models" >> $GITHUB_ENV
 
-    - name: Create the model directory
-      run: mkdir -p /tmp/models
 
     - name: Collect static files
       run: |
