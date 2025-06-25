@@ -35,16 +35,22 @@ function initTHREE(fileURL) {
 }
 
 function processModel(gltf) {
-    const stats = calculateModelStats(gltf.scene);
+    const stats = calculateModelStats(gltf.scene, gltf.animations);
     updateModelStats(stats);
 }
 
-function calculateModelStats(model) {
+function calculateModelStats(model, animations) {
     let vertexCount = 0;
     let faceCount = 0;
+    let meshCount = 0;
+    let materialCount = 0;
+    const seenMaterials = new Set();
     const boundingBox = new THREE.Box3().setFromObject(model);
 
     model.traverse(function (child) {
+        if (child.isMesh) {
+            meshCount++;
+        }
         if (child.isMesh && child.geometry) {
             if (child.geometry.attributes.position) {
                 vertexCount += child.geometry.attributes.position.count;
@@ -55,17 +61,31 @@ function calculateModelStats(model) {
                 faceCount += child.geometry.attributes.position.count / 3;
             }
         }
+        if (child.isMesh && child.material){
+            const materials = Array.isArray(child.material)
+                ? child.material
+                : [child.material];
+            materials.forEach((mat) => {
+                if (!seenMaterials.has(mat.uuid)) {
+                    seenMaterials.add(mat.uuid);
+                    materialCount += 1;
+                }
+            });
+        }
     });
 
     const size = boundingBox.getSize(new THREE.Vector3());
 
     // we will need to enforce scale=1
     const scale = model.scale;
+    const hasAnimations = Array.isArray(animations) && animations.length > 0;
+    const triangleDensity = faceCount / (size.x * size.y * size.z || 1);
 
     return {
         vertices: Math.floor(vertexCount),
         faces: Math.floor(faceCount),
         volume: size.x * size.y * size.z,
+        triangleDensity: triangleDensity.toFixed(2),
 
         boundingBox: {
             width: size.x.toFixed(2),
@@ -76,22 +96,76 @@ function calculateModelStats(model) {
             x: scale.x.toFixed(2),
             y: scale.y.toFixed(2),
             z: scale.z.toFixed(2)
-        }
+        },
+
+        materials: materialCount,
+        meshes: meshCount,
+        hasAnimations,
     };
 }
 
-function updateModelStats(stats, file) {
-    document.getElementById("vertexCount").textContent = stats.vertices.toLocaleString();
-    document.getElementById("faceCount").textContent = stats.faces.toLocaleString();
+function setStatQualityClass(id, quality) {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const classList = ["stat-good", "stat-warning", "stat-bad", "stat-neutral"];
+    el.classList.remove(...classList);
+
+    if (quality && classList.includes("stat-" + quality)) {
+        el.classList.add("stat-" + quality);
+    }
+}
+
+function updateModelStats(stats) {
+    const vc = stats.vertices;
+    document.getElementById("vertexCount").textContent = vc.toLocaleString();
+    setStatQualityClass("vertexCount", 
+        vc >= 300 ? "good" :
+        vc >= 100 ? "warning" : "bad"
+    );
+
+    const fc = stats.faces;
+    document.getElementById("faceCount").textContent = fc.toLocaleString();
+    setStatQualityClass("faceCount", 
+        fc >= 200 ? "good" :
+        fc >= 50 ? "warning" : "bad"
+    );
+
+    const mc = stats.materials;
+    document.getElementById("materialCount").textContent = mc.toLocaleString();
+    setStatQualityClass("materialCount", mc >= 1 ? "good" : "bad");
+
+    const mesh = stats.meshes;
+    document.getElementById("meshCount").textContent = mesh.toLocaleString();
+    setStatQualityClass("meshCount", mesh >= 1 ? "good" : "bad");
+
+    const density = stats.triangleDensity;
+    document.getElementById("triangleDensity").textContent = density.toLocaleString();
+    setStatQualityClass("triangleDensity", 
+        density > 0 && density <= 500 ? "good" :
+        density <= 1000 ? "warning" : "bad"
+    );
+
+    const scale = stats.scale;
+    document.getElementById("modelScale").textContent =
+        `${scale.x} × ${scale.y} × ${scale.z}`;
+    const isScaleOk = 
+        Math.abs(scale.x - 1) <= 0.05 &&
+        Math.abs(scale.y - 1) <= 0.05 &&
+        Math.abs(scale.z - 1) <= 0.05;
+    setStatQualityClass("modelScale", isScaleOk ? "good" : "warning");
+
     document.getElementById("boundingBox").textContent =
         `${stats.boundingBox.width} × ${stats.boundingBox.height} × ${stats.boundingBox.depth}`;
-    document.getElementById("modelScale").textContent =
-        `${stats.scale.x} × ${stats.scale.y} × ${stats.scale.z}`;
-    if (stats.scale.x !== "1.00" || stats.scale.y !== "1.00" || stats.scale.z !== "1.00") {
-        document.getElementById("modelScale").style.color = "red";
-    } else {
-        document.getElementById("modelScale").style.color = "inherit";
-    }
+    const volume = stats.volume;
+    setStatQualityClass("boundingBox", 
+        volume > 0.01 ? "good" :
+        volume > 0.001 ? "warning" : "bad"
+    );
+
+    document.getElementById("hasAnimations").textContent = stats.hasAnimations ? "Yes" : "No";
+    setStatQualityClass("hasAnimations", stats.hasAnimations ? "good" : "neutral");
+
 }
 
 window.initStatsTHREE = initTHREE;
