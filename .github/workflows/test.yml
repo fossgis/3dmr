@@ -40,7 +40,15 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
       
-
+    - name: Download glTF Validator
+      run: |
+        curl -L -o gltf_validator.tar.xz https://github.com/KhronosGroup/glTF-Validator/releases/download/2.0.0-dev.3.10/gltf_validator-2.0.0-dev.3.10-linux64.tar.xz
+        mkdir gltf_validator
+        tar -xf gltf_validator.tar.xz -C gltf_validator
+        chmod +x gltf_validator/gltf_validator
+    
+    - name: Add validator to PATH
+      run: echo "${{ github.workspace }}/gltf_validator" >> $GITHUB_PATH
 
     - name: Collect static files
       run: |
