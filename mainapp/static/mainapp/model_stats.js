@@ -83,6 +83,11 @@ function updateModelStats(stats, file) {
         `${stats.boundingBox.width} × ${stats.boundingBox.height} × ${stats.boundingBox.depth}`;
     document.getElementById("modelScale").textContent =
         `${stats.scale.x} × ${stats.scale.y} × ${stats.scale.z}`;
+    if (stats.scale.x !== "1.00" || stats.scale.y !== "1.00" || stats.scale.z !== "1.00") {
+        document.getElementById("modelScale").style.color = "red";
+    } else {
+        document.getElementById("modelScale").style.color = "inherit";
+    }
 }
 
 window.initStatsTHREE = initTHREE;
