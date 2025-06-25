@@ -1,15 +1,11 @@
 import math
 import json
-from collections import defaultdict
-from zipfile import ZipFile
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.models import User
-from django.http import JsonResponse, FileResponse, Http404, HttpResponseBadRequest, HttpResponse
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse, FileResponse, Http404, HttpResponseBadRequest
 from django.core.paginator import Paginator, EmptyPage
 from .models import LatestModel, Comment, Model
 from .utils import get_kv, MODEL_DIR, admin
-from django.db.models import Max
 from django.views.decorators.csrf import csrf_exempt
 
 RESULTS_PER_API_CALL= 20
@@ -87,43 +83,9 @@ def get_model(request, model_id, revision=None):
         raise Http404('Model does not exist.')
 
 
-    response = FileResponse(open('{}/{}/{}.zip'.format(MODEL_DIR, model_id, revision), 'rb'))
-    response['Content-Disposition'] = 'attachment; filename={}.zip'.format(revision)
-    response['Content-Type'] = 'application/zip'
-    response['Cache-Control'] = 'public, max-age=86400'
-    return response
-
-@any_origin
-def get_filelist(request, model_id, revision=None):
-    if not revision:
-        revision = get_object_or_404(LatestModel, model_id=model_id).revision
-
-    model = get_object_or_404(Model, model_id=model_id, revision=revision)
-
-    if model.is_hidden and not admin(request):
-        raise Http404('Model does not exist.')
-
-    zip_file = ZipFile('{}/{}/{}.zip'.format(MODEL_DIR, model_id, revision))
-
-    response = HttpResponse('\n'.join(zip_file.namelist()), content_type='text/plain')
-    response['Cache-Control'] = 'public, max-age=86400';
-    return response
-
-@any_origin
-def get_file(request, filename, model_id, revision=None):
-    if not revision:
-        revision = get_object_or_404(LatestModel, model_id=model_id).revision
-
-    model = get_object_or_404(Model, model_id=model_id, revision=revision)
-
-    if model.is_hidden and not admin(request):
-        raise Http404('Model does not exist.')
-
-    zip_file = ZipFile('{}/{}/{}.zip'.format(MODEL_DIR, model_id, revision))
-
-    response = FileResponse(zip_file.open(filename))
-    response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
-    response['Content-Type'] = 'application/zip'
+    response = FileResponse(open('{}/{}/{}.glb'.format(MODEL_DIR, model_id, revision), 'rb'))
+    response['Content-Disposition'] = 'attachment; filename={}_{}.glb'.format(model_id, revision)
+    response['Content-Type'] = 'model/gltf-binary'
     response['Cache-Control'] = 'public, max-age=86400'
     return response
 
