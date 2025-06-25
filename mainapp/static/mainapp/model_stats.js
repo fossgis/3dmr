@@ -40,7 +40,6 @@ function processModel(gltf) {
 }
 
 function calculateModelStats(model, animations) {
-    let vertexCount = 0;
     let faceCount = 0;
     let meshCount = 0;
     let materialCount = 0;
@@ -52,9 +51,6 @@ function calculateModelStats(model, animations) {
             meshCount++;
         }
         if (child.isMesh && child.geometry) {
-            if (child.geometry.attributes.position) {
-                vertexCount += child.geometry.attributes.position.count;
-            }
             if (child.geometry.index) {
                 faceCount += child.geometry.index.count / 3;
             } else if (child.geometry.attributes.position) {
@@ -82,7 +78,6 @@ function calculateModelStats(model, animations) {
     const triangleDensity = faceCount / (size.x * size.y * size.z || 1);
 
     return {
-        vertices: Math.floor(vertexCount),
         faces: Math.floor(faceCount),
         volume: size.x * size.y * size.z,
         triangleDensity: triangleDensity.toFixed(2),
@@ -117,13 +112,6 @@ function setStatQualityClass(id, quality) {
 }
 
 function updateModelStats(stats) {
-    const vc = stats.vertices;
-    document.getElementById("vertexCount").textContent = vc.toLocaleString();
-    setStatQualityClass("vertexCount", 
-        vc >= 300 ? "good" :
-        vc >= 100 ? "warning" : "bad"
-    );
-
     const fc = stats.faces;
     document.getElementById("faceCount").textContent = fc.toLocaleString();
     setStatQualityClass("faceCount", 
