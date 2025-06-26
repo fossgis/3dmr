@@ -4,6 +4,16 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'mainapp/lib/leaflet.css' %}">
 <script src="{% static 'mainapp/lib/leaflet.js' %}"></script>
+<script type="importmap">
+{
+	"imports": {
+		"three": "{% static '/mainapp/lib/three/three.module.js' %}",
+		"three/addons/": "{% static 'mainapp/lib/three/' %}"
+	}
+}
+</script>
+<script type="module" src="{% static 'mainapp/preview.js' %}"></script>
+<script type="module" src="{% static 'mainapp/model_stats.js' %}"></script>
 <style>
 	#mapdiv {
 		width: 750px;
@@ -50,6 +60,7 @@
 				</div>
 			</div>
 		</div>
+		<div>
 		<div class="col-md-4">
 			{% if model.is_hidden %}
 			<div class="panel panel-danger">
@@ -99,6 +110,27 @@
 					{% endif %}
 				</div>
 			</div>
+		</div>
+		<div class="col-md-4">
+			{% if model.is_hidden %}
+			<div class="panel panel-danger">
+			{% else %}
+			<div class="panel panel-primary">
+			{% endif %}
+				<div class="panel-heading">
+					<h3 class="panel-title">Model Stats</h3>
+				</div>
+				<div class="panel-body">
+					<p>Faces: <span id="faceCount" class="stat-neutral">-</span></p>
+					<p>Meshes: <span id="meshCount" class="stat-neutral">-</span></p>
+					<p>Triangle Density: <span id="triangleDensity" class="stat-neutral">-</span></p>
+					<p>Materials: <span id="materialCount" class="stat-neutral">-</span></p>
+					<p>Bounding Box (W × H × D): <span id="boundingBox" class="stat-neutral">-</span></p>
+					<p>Model Scale (X × Y × Z): <span id="modelScale" class="stat-neutral">-</span></p>
+					<p>Animations Present: <span id="hasAnimations" class="stat-neutral">-</span></p>
+				</div>
+			</div>
+		</div>
 		</div>
 	</div>
 	<br>
@@ -168,14 +200,26 @@ initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }},
 </script>
 {% endblock %}
 {% block footeradditions %}
-{% load compress %}
-{% compress js %}
-<script src="{% static 'mainapp/lib/three.js' %}"></script>
-<script src="{% static 'mainapp/lib/OBJLoader.js' %}"></script>
-<script src="{% static 'mainapp/lib/MTLLoader.js' %}"></script>
-<script src="{% static 'mainapp/lib/OrbitControls.js' %}"></script>
-<script src="{% static 'mainapp/lib/zip.js' %}"></script>
-<script src="{% static 'mainapp/lib/zip-ext.js' %}"></script>
-<script src="{% static 'mainapp/preview.js' %}"></script>
-{% endcompress %}
+<script>
+	function displayPreview(elementId, model_id, revision, options) {
+		var url = "/api/model/" + model_id + "/" + revision;
+
+		if(typeof options === 'undefined')
+			options = {};
+
+		var three = initTHREE(elementId, options);
+		loadGLB(url, options, three);
+		initStatsTHREE(url);
+	}
+
+	window.addEventListener("load", function() {
+		var elems = document.querySelectorAll('div.render-pane');
+		
+		for(var elem of elems) {
+			var properties = elem.id.match(/render-pane(\d+).(\d+)/);
+			displayPreview(elem.id, properties[1], properties[2]);
+		}
+	});
+
+</script>
 {% endblock %}
