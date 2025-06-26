@@ -27,10 +27,6 @@ urlpatterns = [
 
     re_path(r'^api/model/(?P<model_id>[0-9]+)/(?P<revision>[0-9]+)$', api.get_model, name='get_model'),
     re_path(r'^api/model/(?P<model_id>[0-9]+)$', api.get_model, name='get_model'),
-    re_path(r'^api/filelist/(?P<model_id>[0-9]+)/(?P<revision>[0-9]+)$', api.get_filelist, name='get_list'),
-    re_path(r'^api/filelist/(?P<model_id>[0-9]+)$', api.get_filelist, name='get_list'),
-    re_path(r'^api/file/(?P<model_id>[0-9]+)/(?P<revision>[0-9]+)/(?P<filename>.+)$', api.get_file, name='get_file'),
-    re_path(r'^api/filelatest/(?P<model_id>[0-9]+)/(?P<filename>.+)$', api.get_file, name='get_file'),
 
     re_path(r'^api/tag/(?P<tag>.*)/(?P<page_id>[0-9]+)$', api.lookup_tag, name='lookup_tag'),
     re_path(r'^api/tag/(?P<tag>.*)$', api.lookup_tag, name='lookup_tag'),
