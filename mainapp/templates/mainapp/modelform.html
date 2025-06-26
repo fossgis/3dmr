@@ -9,8 +9,6 @@
   }
 }
 </script>
-<script type="module" src="{% static 'mainapp/preview.js' %}"></script>
-<script type="module" src="{% static 'mainapp/model_stats.js' %}"></script>
 {% endblock %}
 {% endif %}
 
@@ -218,6 +216,8 @@
 {% endif %}
 
 {% if form_file %}
+<script type="module" src="{% static 'mainapp/preview.js' %}"></script>
+<script type="module" src="{% static 'mainapp/model_stats.js' %}"></script>
 <script type="module">
 	document.getElementById('{{ form.model_file.id_for_label }}').addEventListener("change", function (event) {
 		const file = event.target.files[0];

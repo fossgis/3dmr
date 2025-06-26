@@ -12,8 +12,6 @@
 	}
 }
 </script>
-<script type="module" src="{% static 'mainapp/preview.js' %}"></script>
-<script type="module" src="{% static 'mainapp/model_stats.js' %}"></script>
 <style>
 	#mapdiv {
 		width: 750px;
@@ -200,6 +198,8 @@ initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }},
 </script>
 {% endblock %}
 {% block footeradditions %}
+<script type="module" src="{% static 'mainapp/preview.js' %}"></script>
+<script type="module" src="{% static 'mainapp/model_stats.js' %}"></script>
 <script>
 	function displayPreview(elementId, model_id, revision, options) {
 		var url = "/api/model/" + model_id + "/" + revision;

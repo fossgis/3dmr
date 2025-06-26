@@ -24,7 +24,6 @@
 		}
 	}
 </script>
-<script type="module" src="{% static 'mainapp/preview.js' %}"></script>
 <script>
 function enableEdit() {
 	document.getElementById("editForm").style.display = "block";
@@ -123,6 +122,7 @@ function enableEdit() {
 </div>
 {% endblock %}
 {% block footeradditions %}
+<script type="module" src="{% static 'mainapp/preview.js' %}"></script>
 <script>
 	function displayPreview(elementId, model_id, revision, options) {
 		var url = "/api/model/" + model_id + "/" + revision;

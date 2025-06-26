@@ -15,7 +15,6 @@
 		}
 	}
 </script>
-<script type="module" src="{% static 'mainapp/preview.js' %}"></script>
 {% for model in models %}
 <link rel="preload" href="/api/model/{{ model.model_id }}/{{ model.revision }}" as="fetch" crossorigin>
 {% endfor %}
@@ -62,6 +61,7 @@
 </div>
 {% endblock %}
 {% block footeradditions %}
+<script type="module" src="{% static 'mainapp/preview.js' %}"></script>
 <script>
 	function displayPreview(elementId, model_id, revision, options) {
 		var url = "/api/model/" + model_id + "/" + revision;
