@@ -86,13 +86,7 @@
 
 			<div id="model-stats" role="tabpanel">
 				<b style="margin: 0 0 8px 0;">Model Stats</b>
-				<p>Faces: <span id="faceCount" class="stat-neutral">-</span></p>
-				<p>Meshes: <span id="meshCount" class="stat-neutral">-</span></p>
-				<p>Triangle Density: <span id="triangleDensity" class="stat-neutral">-</span></p>
-				<p>Materials: <span id="materialCount" class="stat-neutral">-</span></p>
-				<p>Bounding Box (W × H × D): <span id="boundingBox" class="stat-neutral">-</span></p>
-				<p>Model Scale (X × Y × Z): <span id="modelScale" class="stat-neutral">-</span></p>
-				<p>Animations Present: <span id="hasAnimations" class="stat-neutral">-</span></p>
+				{% include 'mainapp/model_stats.html' %}
 			</div>
 
 		</div>
