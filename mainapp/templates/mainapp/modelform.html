@@ -76,7 +76,7 @@
 		{% for error in form.model_file.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
 		{{ form.model_file }}
 	</div>
-	<div id="model-content" style="margin-bottom: 15px; display: none;">
+	<div id="model-preview" style="margin-bottom: 15px; display: none;">
 		<div class="tab-content" style="overflow: hidden; display: flex; align-items: flex-start;">
 			
 			<div id="view" role="tabpanel" style="margin-right: 20px;">
@@ -220,7 +220,7 @@
 			const three = initTHREE("render-pane", options);
 			loadGLB(fileURL, options, three);
 		} else {
-			document.getElementById("model-content").style.display = "none";
+			document.getElementById("model-preview").style.display = "none";
 		}
 	});
 </script>

@@ -8,28 +8,22 @@ function initTHREE(fileURL) {
         fileURL,
         function (gltf) {
             console.log("Model loaded successfully:", gltf.scene);
-            if (document.getElementById("model-status")){
-                document.getElementById("model-status").style.display = "none";
-            }
+            document.getElementById("model-status").style.display = "none";
             processModel(gltf);
         },
         function (progress) {
             const percent = progress.total > 0
                 ? (progress.loaded / progress.total * 100).toFixed(1)
                 : "0";
-            if (document.getElementById("model-status")){
-                document.getElementById("model-content").style.display = "block";
-                document.getElementById("model-status").textContent =
-                    `Loading model... ${percent}%`;
-            }
+            document.getElementById("model-preview").style.display = "block";
+            document.getElementById("model-status").textContent =
+                `Loading model... ${percent}%`;
         },
         function (error) {
             console.error("Error loading model:", error);
-            if (document.getElementById("model-status")){
                 document.getElementById("model-status").textContent = "Error loading model: " + error.message;
                 document.getElementById("model-status").style.display = "block";
-                document.getElementById("model-content").style.display = "none";
-            }
+                document.getElementById("model-preview").style.display = "none";
         }
     );
 }
