@@ -26,6 +26,8 @@
 </div>
 {% endblock %}
 {% block footeradditions %}
+{% load compress %}
+{% compress js %}
 <script type="module" src="{% static 'mainapp/preview.js' %}"></script>
 <script>
 	function displayPreview(elementId, model_id, revision, options) {
@@ -48,4 +50,5 @@
 		}
 	});
 </script>
+{% endcompress %}
 {% endblock %}

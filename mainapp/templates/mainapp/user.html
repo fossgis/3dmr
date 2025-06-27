@@ -114,6 +114,8 @@ function enableEdit() {
 </div>
 {% endblock %}
 {% block footeradditions %}
+{% load compress %}
+{% compress js %}
 <script type="module" src="{% static 'mainapp/preview.js' %}"></script>
 <script>
 	function displayPreview(elementId, model_id, revision, options) {
@@ -136,4 +138,5 @@ function enableEdit() {
 		}
 	});
 </script>
+{% endcompress %}
 {% endblock %}

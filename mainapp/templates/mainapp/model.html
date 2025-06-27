@@ -185,6 +185,8 @@ initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }},
 </script>
 {% endblock %}
 {% block footeradditions %}
+{% load compress %}
+{% compress js %}
 <script type="module" src="{% static 'mainapp/preview.js' %}"></script>
 <script type="module" src="{% static 'mainapp/model_stats.js' %}"></script>
 <script>
@@ -210,4 +212,5 @@ initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }},
 	});
 
 </script>
+{% endcompress %}
 {% endblock %}

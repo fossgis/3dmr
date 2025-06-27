@@ -200,6 +200,8 @@
 {% endif %}
 
 {% if form_file %}
+{% load compress %}
+{% compress js %}
 <script type="module" src="{% static 'mainapp/preview.js' %}"></script>
 <script type="module" src="{% static 'mainapp/model_stats.js' %}"></script>
 <script type="module">
@@ -224,4 +226,5 @@
 		}
 	});
 </script>
+{% endcompress %}
 {% endif %}
