@@ -46,7 +46,7 @@
 			<div>
 				<div class="tab-content" style="overflow: hidden;">
 					<div class="tab-pane active" id="view" role="tabpanel">
-						<div class="render-pane" id="render-pane{{ model.model_id }}.{{ model.revision }}" style="height: 480px;">
+						<div class="render-pane" data-model="{{ model.model_id }}" data-revision="{{ model.revision }}" id="render-pane{{ model.model_id }}.{{ model.revision }}" style="height: 480px;">
 						</div>
 					</div>
 					{% if model.location %}
@@ -216,8 +216,9 @@ initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }},
 		const elems = document.querySelectorAll('div.render-pane');
 		
 		for(const elem of elems) {
-			const properties = elem.id.match(/render-pane(\d+).(\d+)/);
-			displayPreview(elem.id, properties[1], properties[2]);
+			const model_id = elem.dataset.model;
+			const revision = elem.dataset.revision;
+			displayPreview(elem.id, model_id, revision);
 		}
 	});
 

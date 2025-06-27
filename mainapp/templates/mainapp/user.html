@@ -138,8 +138,9 @@ function enableEdit() {
 		const elems = document.querySelectorAll('div.render-pane');
 		
 		for(const elem of elems) {
-			const properties = elem.id.match(/render-pane(\d+).(\d+)/);
-			displayPreview(elem.id, properties[1], properties[2]);
+			const model_id = elem.dataset.model;
+			const revision = elem.dataset.revision;
+			displayPreview(elem.id, model_id, revision);
 		}
 	});
 </script>
