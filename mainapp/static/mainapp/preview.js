@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 function initTHREE(elementId, options) {
-	var renderPane = document.getElementById(elementId);
+	const renderPane = document.getElementById(elementId);
 
 	if(typeof options['width'] === 'undefined')
 		options['width'] = renderPane.clientWidth;
@@ -11,7 +11,7 @@ function initTHREE(elementId, options) {
 	if(typeof options['height'] === 'undefined')
 		options['height'] = renderPane.clientHeight;
 
-	var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+	const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
 	renderer.setPixelRatio(window.devicePixelRatio);
 	renderer.setSize(options['width'], options['height']);
 	renderer.outputEncoding = THREE.sRGBEncoding;
@@ -23,15 +23,15 @@ function initTHREE(elementId, options) {
 
 	renderPane.appendChild(renderer.domElement);
 
-	var scene = new THREE.Scene();
+	const scene = new THREE.Scene();
 	scene.background = new THREE.Color(0x87cefa);
 
-	var camera = new THREE.PerspectiveCamera(75, options['width'] / options['height'], 0.1, 1000);
+	const camera = new THREE.PerspectiveCamera(75, options['width'] / options['height'], 0.1, 1000);
 	resizeCanvas(renderer, camera, options);
 
-	var controls = new OrbitControls(camera, renderer.domElement);
+	const controls = new OrbitControls(camera, renderer.domElement);
 
-	var ambLight = new THREE.AmbientLight(0xffffff, 0.4);
+	const ambLight = new THREE.AmbientLight(0xffffff, 0.4);
 	scene.add(ambLight);
 
 	const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
@@ -114,10 +114,10 @@ function animate(renderer, scene, camera, controls, options) {
 }
 
 function resizeCanvas(renderer, camera, options) {
-	var canvas = renderer.domElement;
+	const canvas = renderer.domElement;
 
-	var width = options['width'];
-	var height = options['height'];
+	const width = options['width'];
+	const height = options['height'];
 
 	if(canvas.width != width || canvas.height != height) {
 		renderer.setSize(width, height, false);

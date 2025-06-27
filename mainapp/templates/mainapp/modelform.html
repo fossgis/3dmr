@@ -233,7 +233,7 @@
 				renderPane.removeChild(renderPane.firstChild);
 			}
 
-			var three = initTHREE("render-pane", options);
+			const three = initTHREE("render-pane", options);
 			loadGLB(fileURL, options, three);
 		} else {
 			document.getElementById("model-content").style.display = "none";

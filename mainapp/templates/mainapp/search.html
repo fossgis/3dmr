@@ -64,20 +64,20 @@
 <script type="module" src="{% static 'mainapp/preview.js' %}"></script>
 <script>
 	function displayPreview(elementId, model_id, revision, options) {
-		var url = "/api/model/" + model_id + "/" + revision;
+		const url = "/api/model/" + model_id + "/" + revision;
 
 		if(typeof options === 'undefined')
 			options = {};
 
-		var three = initTHREE(elementId, options);
+		const three = initTHREE(elementId, options);
 		loadGLB(url, options, three);
 	}
 
 	window.addEventListener("load", function() {
-		var elems = document.querySelectorAll('div.render-pane');
+		const elems = document.querySelectorAll('div.render-pane');
 		
-		for(var elem of elems) {
-			var properties = elem.id.match(/render-pane(\d+).(\d+)/);
+		for(const elem of elems) {
+			const properties = elem.id.match(/render-pane(\d+).(\d+)/);
 			displayPreview(elem.id, properties[1], properties[2]);
 		}
 	});
