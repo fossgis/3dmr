@@ -1,15 +1,5 @@
 {% load static %}
 {% if form_file %}
-{% block headaddition %}
-<script type="importmap">
-{
-  "imports": {
-	"three": "{% static '/mainapp/lib/three/three.module.js' %}",
-    "three/addons/": "{% static 'mainapp/lib/three/' %}"
-  }
-}
-</script>
-{% endblock %}
 {% endif %}
 
 <form action="{% if revise %}{% url 'revise' model.model_id %}{% elif edit %}{% url 'edit' model.model_id model.revision %}{% else %}{% url 'upload' %}{% endif %}" method="post" enctype="multipart/form-data"{% if form_metadata %} onsubmit="return checkNumbers();"{% endif %}>

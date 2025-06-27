@@ -1,4 +1,4 @@
-{% extends "mainapp/layout.html" %}
+{% extends "mainapp/layout_3d.html" %}
 {% block pagename %}Search Results{% endblock %}
 {% load static %}
 {% block headadditions %}
@@ -7,14 +7,6 @@
 		min-height: 256px;
 	}
 </style>
-<script type="importmap">
-	{
-		"imports": {
-			"three": "{% static '/mainapp/lib/three/three.module.js' %}",
-			"three/addons/": "{% static 'mainapp/lib/three/' %}"
-		}
-	}
-</script>
 {% for model in models %}
 <link rel="preload" href="/api/model/{{ model.model_id }}/{{ model.revision }}" as="fetch" crossorigin>
 {% endfor %}

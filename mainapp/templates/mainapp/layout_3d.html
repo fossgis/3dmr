@@ -1,0 +1,12 @@
+{% extends "mainapp/layout.html" %}
+{% block importmap %}
+{% load static %}
+<script type="importmap">
+	{
+		"imports": {
+			"three": "{% static 'mainapp/lib/three/three.module.js' %}",
+			"three/addons/": "{% static 'mainapp/lib/three/' %}"
+		}
+	}
+</script>
+{% endblock %}

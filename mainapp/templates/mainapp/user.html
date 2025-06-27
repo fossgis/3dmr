@@ -1,4 +1,4 @@
-{% extends "mainapp/layout.html" %}
+{% extends "mainapp/layout_3d.html" %}
 {% block pagename %}Userpage{% endblock %}
 {% load static %}
 {% block headadditions %}
@@ -16,14 +16,6 @@
 		min-height: 200px;
 	}
 </style>
-<script type="importmap">
-	{
-		"imports": {
-			"three": "{% static '/mainapp/lib/three/three.module.js' %}",
-			"three/addons/": "{% static 'mainapp/lib/three/' %}"
-		}
-	}
-</script>
 <script>
 function enableEdit() {
 	document.getElementById("editForm").style.display = "block";

@@ -1,17 +1,9 @@
-{% extends "mainapp/layout.html" %}
+{% extends "mainapp/layout_3d.html" %}
 {% block pagename %}{{ model.title }}{% endblock %}
 {% block headadditions %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'mainapp/lib/leaflet.css' %}">
 <script src="{% static 'mainapp/lib/leaflet.js' %}"></script>
-<script type="importmap">
-{
-	"imports": {
-		"three": "{% static '/mainapp/lib/three/three.module.js' %}",
-		"three/addons/": "{% static 'mainapp/lib/three/' %}"
-	}
-}
-</script>
 <style>
 	#mapdiv {
 		width: 750px;
