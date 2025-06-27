@@ -208,7 +208,7 @@
 	document.getElementById('{{ form.model_file.id_for_label }}').addEventListener("change", function (event) {
 		const file = event.target.files[0];
 		if (file) {
-    		const fileURL = URL.createObjectURL(file);
+			const fileURL = URL.createObjectURL(file);
 
 			initStatsTHREE(fileURL);
 			
