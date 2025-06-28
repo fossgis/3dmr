@@ -21,9 +21,9 @@ function initTHREE(fileURL) {
         },
         function (error) {
             console.error("Error loading model:", error);
-                document.getElementById("model-status").textContent = "Error loading model: " + error.message;
-                document.getElementById("model-status").style.display = "block";
-                document.getElementById("model-preview").style.display = "none";
+            document.getElementById("model-status").textContent = "Error loading model: " + error.message;
+            document.getElementById("model-status").style.display = "block";
+            document.getElementById("model-preview").style.display = "none";
         }
     );
 }
