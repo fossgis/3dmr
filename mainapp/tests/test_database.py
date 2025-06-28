@@ -9,7 +9,7 @@ from django.test import TestCase
 from mainapp import database
 from mainapp.markdown import markdown
 from mainapp.models import Category, Change, LatestModel, Location, Model
-from mainapp.utils import MODEL_DIR
+from django.conf import settings
 
 User = get_user_model()
 
@@ -25,7 +25,7 @@ class DatabaseTests(TestCase):
 
     def tearDown(self):
         for model in LatestModel.objects.all():
-            filepath = f"{MODEL_DIR}/{model.model_id}/{model.revision}.zip"
+            filepath = f"{settings.MODEL_DIR}/{model.model_id}/{model.revision}.zip"
             if os.path.exists(filepath):
                 shutil.rmtree(os.path.dirname(filepath))
 
@@ -85,7 +85,7 @@ class DatabaseTests(TestCase):
         self.assertEqual(created_model.location.longitude, options["longitude"])
 
         expected_filepath = os.path.join(
-            MODEL_DIR, str(created_model.model_id), f"{created_model.revision}.zip"
+            settings.MODEL_DIR, str(created_model.model_id), f"{created_model.revision}.zip"
         )
         self.assertTrue(os.path.exists(expected_filepath))
 
@@ -230,7 +230,7 @@ class DatabaseTests(TestCase):
         self.assertEqual(Location.objects.count(), 2)
 
         expected_filepath_rev = os.path.join(
-            MODEL_DIR, str(revised_model.model_id), f"{revised_model.revision}.zip"
+            settings.MODEL_DIR, str(revised_model.model_id), f"{revised_model.revision}.zip"
         )
         self.assertTrue(os.path.exists(expected_filepath_rev))
 

@@ -35,6 +35,3 @@ CHANGES = {
     0: 'Upload',
     1: 'Revise',
 }
-
-# The directory the models will be stored in
-MODEL_DIR = settings.MODEL_DIR

@@ -3,13 +3,12 @@ import json
 from collections import defaultdict
 from zipfile import ZipFile
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.models import User
-from django.http import JsonResponse, FileResponse, Http404, HttpResponseBadRequest, HttpResponse
+from django.conf import settings
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse, FileResponse, Http404, HttpResponseBadRequest
 from django.core.paginator import Paginator, EmptyPage
 from .models import LatestModel, Comment, Model
-from .utils import get_kv, MODEL_DIR, admin
-from django.db.models import Max
+from .utils import get_kv, admin
 from django.views.decorators.csrf import csrf_exempt
 
 RESULTS_PER_API_CALL= 20
@@ -87,7 +86,7 @@ def get_model(request, model_id, revision=None):
         raise Http404('Model does not exist.')
 
 
-    response = FileResponse(open('{}/{}/{}.zip'.format(MODEL_DIR, model_id, revision), 'rb'))
+    response = FileResponse(open('{}/{}/{}.zip'.format(settings.MODEL_DIR, model_id, revision), 'rb'))
     response['Content-Disposition'] = 'attachment; filename={}.zip'.format(revision)
     response['Content-Type'] = 'application/zip'
     response['Cache-Control'] = 'public, max-age=86400'

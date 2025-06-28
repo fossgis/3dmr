@@ -1,11 +1,11 @@
 import os
 import shutil
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from social_django.models import UserSocialAuth
 
 from mainapp.models import Category, LatestModel, Location, Model
-from mainapp.utils import MODEL_DIR
 
 
 class BaseViewTestMixin:
@@ -94,7 +94,7 @@ class BaseViewTestMixin:
         self.model_dirs = []
 
         for model in [self.model1, self.model2, self.model3]:
-            filepath = f"{MODEL_DIR}/{model.model_id}/{model.revision}.zip"
+            filepath = f"{settings.MODEL_DIR}/{model.model_id}/{model.revision}.zip"
             self.model_dirs.append(os.path.dirname(filepath))
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             with open(filepath, "wb+") as destination:
