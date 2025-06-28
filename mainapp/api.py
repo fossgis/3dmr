@@ -1,7 +1,5 @@
 import math
 import json
-from collections import defaultdict
-from zipfile import ZipFile
 
 from django.conf import settings
 from django.shortcuts import get_object_or_404
@@ -86,9 +84,9 @@ def get_model(request, model_id, revision=None):
         raise Http404('Model does not exist.')
 
 
-    response = FileResponse(open('{}/{}/{}.zip'.format(settings.MODEL_DIR, model_id, revision), 'rb'))
-    response['Content-Disposition'] = 'attachment; filename={}.zip'.format(revision)
-    response['Content-Type'] = 'application/zip'
+    response = FileResponse(open('{}/{}/{}.glb'.format(settings.MODEL_DIR, model_id, revision), 'rb'))
+    response['Content-Disposition'] = 'attachment; filename={}_{}.glb'.format(model_id, revision)
+    response['Content-Type'] = 'model/gltf-binary'
     response['Cache-Control'] = 'public, max-age=86400'
     return response
 

@@ -55,7 +55,7 @@ class Command(BaseCommand):
             })
 
             info_file.write('"{}": {}\n'.format(model_id, output))
-            zip_file.write('{}/{}/{}.zip'.format(settings.MODEL_DIR, model_id, model.revision), 'models/{}.zip'.format(model_id))
+            zip_file.write('{}/{}/{}.glb'.format(settings.MODEL_DIR, model_id, model.revision), 'models/{}.glb'.format(model_id))
 
         info_file.write('}')
         info_file.close()
