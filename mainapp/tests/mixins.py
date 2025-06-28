@@ -1,14 +1,19 @@
 import os
 import shutil
+import tempfile
 
 from django.conf import settings
+from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 from social_django.models import UserSocialAuth
 
 from mainapp.models import Category, LatestModel, Location, Model
 
 
-class BaseViewTestMixin:
+@override_settings(
+    MODEL_DIR=tempfile.mkdtemp(prefix="3dmr_")
+)
+class BaseViewTestMixin(TestCase):
     """
     A mixin to set up a base test environment with a user,
     admin user, and models. This mixin creates a user and an admin user, along with some models and categories.
@@ -101,9 +106,7 @@ class BaseViewTestMixin:
                 destination.write(self.model_file)
 
     def tearDown(self) -> None:
-        for dir_path in set(self.model_dirs):
-            if os.path.exists(dir_path):
-                shutil.rmtree(dir_path)
+        shutil.rmtree(settings.MODEL_DIR)
 
     def login_user(self, user_type="user"):
         """

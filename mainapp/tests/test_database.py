@@ -1,7 +1,9 @@
 import os
 import shutil
+import tempfile
 from unittest.mock import MagicMock, patch
 
+from django.test import override_settings
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
@@ -14,6 +16,9 @@ from django.conf import settings
 User = get_user_model()
 
 
+@override_settings(
+    MODEL_DIR=tempfile.mkdtemp(prefix="3dmr_", )
+)
 class DatabaseTests(TestCase):
 
     def setUp(self):
@@ -24,10 +29,7 @@ class DatabaseTests(TestCase):
         Category.objects.create(name="ExistingCategory1")
 
     def tearDown(self):
-        for model in LatestModel.objects.all():
-            filepath = f"{settings.MODEL_DIR}/{model.model_id}/{model.revision}.zip"
-            if os.path.exists(filepath):
-                shutil.rmtree(os.path.dirname(filepath))
+        shutil.rmtree(settings.MODEL_DIR)
 
     def _create_dummy_file(self, name="test_model.zip"):
         with open("mainapp/tests/models/test_model.zip", "rb") as f:
