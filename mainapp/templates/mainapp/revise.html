@@ -4,8 +4,11 @@
 <div class="container">
 	<div class="col-12">
 		<h1>Revise Model "{{ model.title }}"</h1>
-		<p>Here, you can upload a new revision of a model to the repository.</p>
-		<p>Make sure to package your model correctly: make sure it's in the OBJ format, includes an MTL file, then zip these files, along with their textures. Make sure every file is in the root directory of the zip.</p>
+		<p>Here, you can upload a model to the repository.</p>
+		<p>Please upload your 3D model as a single <strong>GLB</strong> file. </p>
+		<p>Ensure your model is fully packaged as a <code>.glb</code> file before uploading, meaning it should include all textures and resources embedded within the file.</p>
+		<p>Also, make sure the file size is within the allowed limit and that the model is valid and not empty.</p>
+		<p>Then, simply fill the fields below and upload your model!</p>
 		{% with revise=True %}
 		{% with form_file=True %}
 		{% include 'mainapp/modelform.html' %}
