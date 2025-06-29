@@ -110,3 +110,19 @@ form > #map-descriptor {
 .panel-body.panel-hidden {
 	background-color: #faf0f0;
 }
+
+.stat-good {
+	color: #4CAF50;
+}
+
+.stat-warning {
+	color: #FFC107;
+}
+
+.stat-bad {
+	color: #F44336;
+}
+
+.stat-neutral {
+  color: gray;
+}

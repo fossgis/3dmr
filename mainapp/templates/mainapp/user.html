@@ -1,5 +1,6 @@
-{% extends "mainapp/layout.html" %}
+{% extends "mainapp/layout_3d.html" %}
 {% block pagename %}Userpage{% endblock %}
+{% load static %}
 {% block headadditions %}
 <style>
 	.col-md-4 > img {
@@ -113,15 +114,13 @@ function enableEdit() {
 </div>
 {% endblock %}
 {% block footeradditions %}
-{% load static %}
 {% load compress %}
 {% compress js %}
-<script src="{% static 'mainapp/lib/three.js' %}"></script>
-<script src="{% static 'mainapp/lib/OBJLoader.js' %}"></script>
-<script src="{% static 'mainapp/lib/MTLLoader.js' %}"></script>
-<script src="{% static 'mainapp/lib/OrbitControls.js' %}"></script>
-<script src="{% static 'mainapp/lib/zip.js' %}"></script>
-<script src="{% static 'mainapp/lib/zip-ext.js' %}"></script>
-<script src="{% static 'mainapp/preview.js' %}"></script>
+<script type="module" src="{% static 'mainapp/preview.js' %}"></script>
+<script>
+	window.addEventListener("load", function() {
+		setUpRenderPane();
+	});
+</script>
 {% endcompress %}
 {% endblock %}
