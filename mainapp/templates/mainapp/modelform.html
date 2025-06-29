@@ -205,7 +205,8 @@
 <script type="module" src="{% static 'mainapp/preview.js' %}"></script>
 <script type="module" src="{% static 'mainapp/model_stats.js' %}"></script>
 <script type="module">
-	document.getElementById('{{ form.model_file.id_for_label }}').addEventListener("change", function (event) {
+	document.getElementById('{{ form.model_file.id_for_label }}')
+	.addEventListener("change", function (event) {
 		const file = event.target.files[0];
 		if (file) {
 			const fileURL = URL.createObjectURL(file);
@@ -218,9 +219,8 @@
 			while (renderPane.firstChild) {
 				renderPane.removeChild(renderPane.firstChild);
 			}
-
-			const three = initTHREE("render-pane", options);
-			loadGLB(fileURL, options, three);
+			
+			displayPreview("render-pane", fileURL, options);
 		} else {
 			document.getElementById("model-preview").style.display = "none";
 		}

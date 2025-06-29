@@ -1,6 +1,18 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
+function setUpStats() {
+    const elems = document.querySelectorAll('div.render-pane');
+
+	for(const elem of elems) {
+		const model_id = elem.dataset.model;
+		const revision = elem.dataset.revision;
+        const url = "/api/model/" + model_id + "/" + revision;
+        
+        initTHREE(url);
+	}
+}
+
 function initTHREE(fileURL) {
     const loader = new GLTFLoader();
 
@@ -151,3 +163,4 @@ function updateModelStats(stats) {
 }
 
 window.initStatsTHREE = initTHREE;
+window.setUpStats = setUpStats;

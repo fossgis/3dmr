@@ -57,24 +57,8 @@
 {% compress js %}
 <script type="module" src="{% static 'mainapp/preview.js' %}"></script>
 <script>
-	function displayPreview(elementId, model_id, revision, options) {
-		const url = "/api/model/" + model_id + "/" + revision;
-
-		if(typeof options === 'undefined')
-			options = {};
-
-		const three = initTHREE(elementId, options);
-		loadGLB(url, options, three);
-	}
-
 	window.addEventListener("load", function() {
-		const elems = document.querySelectorAll('div.render-pane');
-		
-		for(const elem of elems) {
-			const model_id = elem.dataset.model;
-			const revision = elem.dataset.revision;
-			displayPreview(elem.id, model_id, revision);
-		}
+		setUpRenderPane();
 	});
 </script>
 {% endcompress %}
