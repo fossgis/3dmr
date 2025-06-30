@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.postgres import fields
 from django.contrib.auth.models import User
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -21,7 +22,10 @@ class Profile(models.Model):
 
     @property
     def avatar(self):
-        return self.user.social_auth.first().extra_data['avatar'].replace('http://', 'https://', 1)
+        avatar = self.user.social_auth.first().extra_data.get('avatar')
+        if avatar is None:
+            avatar = staticfiles_storage.url('mainapp/images/default_avatar.svg')
+        return avatar
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
