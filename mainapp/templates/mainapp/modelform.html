@@ -1,3 +1,7 @@
+{% load static %}
+{% if form_file %}
+{% endif %}
+
 <form action="{% if revise %}{% url 'revise' model.model_id %}{% elif edit %}{% url 'edit' model.model_id model.revision %}{% else %}{% url 'upload' %}{% endif %}" method="post" enctype="multipart/form-data"{% if form_metadata %} onsubmit="return checkNumbers();"{% endif %}>
 	{% csrf_token %}
 	{% if form_metadata %}
@@ -72,6 +76,22 @@
 		{% for error in form.model_file.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
 		{{ form.model_file }}
 	</div>
+	<div id="model-preview" style="margin-bottom: 15px; display: none;">
+		<div class="tab-content" style="overflow: hidden; display: flex; align-items: flex-start;">
+			
+			<div id="view" role="tabpanel" style="margin-right: 20px;">
+				<b style="margin: 0 0 8px 0;">3D Preview</b>
+				<div class="render-pane" id="render-pane" style="height: 240px;"></div>
+			</div>
+
+			<div id="model-stats" role="tabpanel">
+				<b style="margin: 0 0 8px 0;">Model Stats</b>
+				{% include 'mainapp/model_stats.html' %}
+			</div>
+
+		</div>
+	</div>
+	<div id="model-status"></div>
 	{% endif %}
 	<div class="alert alert-danger" role="alert" id="form-error" style="display: none;"></div>
 	<button type="submit" class="btn btn-default">{% if revise %}Revise Model{% elif edit %}Edit Metadata{% else %}Upload Model{% endif %}</button>
@@ -177,4 +197,34 @@
 		return ok;
 	}
 </script>
+{% endif %}
+
+{% if form_file %}
+{% load compress %}
+{% compress js %}
+<script type="module" src="{% static 'mainapp/preview.js' %}"></script>
+<script type="module" src="{% static 'mainapp/model_stats.js' %}"></script>
+<script type="module">
+	document.getElementById('{{ form.model_file.id_for_label }}')
+	.addEventListener("change", function (event) {
+		const file = event.target.files[0];
+		if (file) {
+			const fileURL = URL.createObjectURL(file);
+
+			initStatsTHREE(fileURL);
+			
+			const options = {"width": "240", "height": "240"}
+			
+			const renderPane = document.getElementById("render-pane");
+			while (renderPane.firstChild) {
+				renderPane.removeChild(renderPane.firstChild);
+			}
+			
+			displayPreview("render-pane", fileURL, options);
+		} else {
+			document.getElementById("model-preview").style.display = "none";
+		}
+	});
+</script>
+{% endcompress %}
 {% endif %}

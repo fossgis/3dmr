@@ -1,4 +1,4 @@
-{% extends "mainapp/layout.html" %}
+{% extends "mainapp/layout_3d.html" %}
 {% block pagename %}{{ model.title }}{% endblock %}
 {% block headadditions %}
 {% load static %}
@@ -35,10 +35,11 @@
 			</ul>
 		</div>
 		<div class="col-md-8" style="margin-bottom: 20px;">
-			<div>
+			<div id="model-status"></div>
+			<div id="model-preview">
 				<div class="tab-content" style="overflow: hidden;">
 					<div class="tab-pane active" id="view" role="tabpanel">
-						<div class="render-pane" id="render-pane{{ model.model_id }}.{{ model.revision }}" style="height: 480px;">
+						<div class="render-pane" data-model="{{ model.model_id }}" data-revision="{{ model.revision }}" id="render-pane{{ model.model_id }}.{{ model.revision }}" style="height: 480px;">
 						</div>
 					</div>
 					{% if model.location %}
@@ -50,6 +51,7 @@
 				</div>
 			</div>
 		</div>
+		<div>
 		<div class="col-md-4">
 			{% if model.is_hidden %}
 			<div class="panel panel-danger">
@@ -99,6 +101,21 @@
 					{% endif %}
 				</div>
 			</div>
+		</div>
+		<div class="col-md-4">
+			{% if model.is_hidden %}
+			<div class="panel panel-danger">
+			{% else %}
+			<div class="panel panel-primary">
+			{% endif %}
+				<div class="panel-heading">
+					<h3 class="panel-title">Model Stats</h3>
+				</div>
+				<div class="panel-body">
+					{% include 'mainapp/model_stats.html' %}
+				</div>
+			</div>
+		</div>
 		</div>
 	</div>
 	<br>
@@ -170,12 +187,13 @@ initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }},
 {% block footeradditions %}
 {% load compress %}
 {% compress js %}
-<script src="{% static 'mainapp/lib/three.js' %}"></script>
-<script src="{% static 'mainapp/lib/OBJLoader.js' %}"></script>
-<script src="{% static 'mainapp/lib/MTLLoader.js' %}"></script>
-<script src="{% static 'mainapp/lib/OrbitControls.js' %}"></script>
-<script src="{% static 'mainapp/lib/zip.js' %}"></script>
-<script src="{% static 'mainapp/lib/zip-ext.js' %}"></script>
-<script src="{% static 'mainapp/preview.js' %}"></script>
+<script type="module" src="{% static 'mainapp/preview.js' %}"></script>
+<script type="module" src="{% static 'mainapp/model_stats.js' %}"></script>
+<script>
+	window.addEventListener("load", function() {
+		setUpRenderPane();
+		setUpStats();
+	});
+</script>
 {% endcompress %}
 {% endblock %}
