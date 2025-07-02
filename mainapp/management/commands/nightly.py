@@ -1,8 +1,8 @@
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.dateformat import format
 from mainapp.models import LatestModel
 from json import dumps
-from mainapp.utils import MODEL_DIR
 from zipfile import ZipFile
 
 class Command(BaseCommand):
@@ -55,7 +55,7 @@ class Command(BaseCommand):
             })
 
             info_file.write('"{}": {}\n'.format(model_id, output))
-            zip_file.write('{}/{}/{}.zip'.format(MODEL_DIR, model_id, model.revision), 'models/{}.zip'.format(model_id))
+            zip_file.write('{}/{}/{}.zip'.format(settings.MODEL_DIR, model_id, model.revision), 'models/{}.zip'.format(model_id))
 
         info_file.write('}')
         info_file.close()

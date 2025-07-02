@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.db import transaction
 from .models import Model, LatestModel, Comment, Category, Change, Ban, Location
 from .forms import UploadFileForm, UploadFileMetadataForm, MetadataForm
-from .utils import get_kv, update_last_page, get_last_page, MODEL_DIR, CHANGES, admin, LICENSES_DISPLAY
+from .utils import get_kv, update_last_page, get_last_page, CHANGES, admin, LICENSES_DISPLAY
 import mainapp.database as database
 from mainapp.markdown import markdown
 

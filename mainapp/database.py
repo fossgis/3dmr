@@ -3,10 +3,10 @@ import logging
 import mistune
 
 from django.db import transaction
+from django.conf import settings
 from django.contrib import messages
 
 from .models import Model, LatestModel, Change, Category, Location
-from .utils import MODEL_DIR
 
 from mainapp.markdown import markdown
 
@@ -94,7 +94,7 @@ def upload(model_file, options={}):
 
             change.save()
 
-            filepath = '{}/{}/{}.zip'.format(MODEL_DIR, m.model_id, m.revision)
+            filepath = '{}/{}/{}.zip'.format(settings.MODEL_DIR, m.model_id, m.revision)
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             with open(filepath, 'wb+') as destination:
                 for chunk in model_file.chunks():
