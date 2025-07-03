@@ -29,7 +29,7 @@ def validate_glb_file(file_field):
 
     try:
         file_field.seek(0)
-        with tempfile.NamedTemporaryFile(suffix=".glb", delete=True) as temp_file:
+        with tempfile.NamedTemporaryFile(suffix=".glb") as temp_file:
             for chunk in file_field.chunks():
                 temp_file.write(chunk)
             temp_file.flush()
