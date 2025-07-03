@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 import subprocess
 import tempfile
 
@@ -27,23 +26,33 @@ def validate_glb_file(file_field):
             "The uploaded file does not appear to be a valid GLB file."
         )
 
-    try:
-        file_field.seek(0)
-        with tempfile.NamedTemporaryFile(suffix=".glb") as temp_file:
-            for chunk in file_field.chunks():
-                temp_file.write(chunk)
-            temp_file.flush()
+    with tempfile.NamedTemporaryFile(suffix=".glb") as temp_file:
+        for chunk in file_field.chunks():
+            temp_file.write(chunk)
+        temp_file.flush()
 
+        try:
             result = subprocess.run(
                 [settings.GLTF_VALIDATOR, temp_file.name, "-o"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             )
-            output = json.loads(result.stdout.decode("utf-8"))
+        except FileNotFoundError:
+            logger.exception(
+                f"gltf-validator CLI not found at {settings.GLTF_VALIDATOR}."
+            )
+            raise ValidationError("Internal server error.")
 
+        try:
+            output = json.loads(result.stdout.decode("utf-8"))
+        except json.JSONDecodeError:
+            logger.exception("Validator returned invalid JSON output.")
+            raise ValidationError("Internal server error.")
+
+        try:
             # Ensures the model has some shape. At least a cube.
             if output["info"]["totalVertexCount"] < 8 or \
-               output["info"]["totalTriangleCount"] < 12:
+                output["info"]["totalTriangleCount"] < 12:
                 raise ValidationError(
                     "GLB file must have some valid shape."
                 )
@@ -62,12 +71,8 @@ def validate_glb_file(file_field):
                     raise ValidationError(
                         f"GLB validation failed with {output['issues']['numErrors']} errors: {messages}"
                     )
+        except KeyError:
+            logger.exception("Invalid gltf_validator output!\
+                            It seems gltf_validator's 'validation.schema.json' file has been modified.")
+            raise ValidationError("Internal server error.")
 
-    except FileNotFoundError:
-        logger.exception(
-            f"gltf-validator CLI not found at {settings.GLTF_VALIDATOR}."
-        )
-        raise ValidationError("Internal server error.")
-    except json.JSONDecodeError:
-        logger.exception("Validator returned invalid JSON output.")
-        raise ValidationError("Internal server error.")
