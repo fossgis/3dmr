@@ -210,6 +210,7 @@ These are step-by-step instructions to deploy the 3DMR repository using **Gunico
    Download the appropriate binary release from the `KhronosGroup glTF-Validator releases <https://github.com/KhronosGroup/glTF-Validator/releases/>`_ page:
 
    .. code-block:: bash
+
       mkdir ~/gltf_validator
       cd ~/gltf_validator
       wget https://github.com/KhronosGroup/glTF-Validator/releases/download/2.0.0-dev.3.10/gltf_validator-2.0.0-dev.3.10-linux64.tar.xz
