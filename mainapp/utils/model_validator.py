@@ -51,8 +51,8 @@ def validate_glb_file(file_field):
 
         try:
             # Ensures the model has some shape. At least a cube.
-            if output["info"]["totalVertexCount"] < 8 or \
-                output["info"]["totalTriangleCount"] < 12:
+            if output["info"]["totalVertexCount"] < 3 or \
+                output["info"]["totalTriangleCount"] < 1:
                 raise ValidationError(
                     "GLB file must have some valid shape."
                 )
