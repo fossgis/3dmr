@@ -23,10 +23,6 @@ Prerequisites
 
    Download the appropriate binary release from the `KhronosGroup glTF-Validator releases <https://github.com/KhronosGroup/glTF-Validator/releases/>`_ page and extract the .tar.xz release into a dedicated folder.
 
-   Then either:
-
-   Add the directory containing the binary release to your `PATH`, or
-
    .. code-block:: bash
 
       mkdir /path/to/gltf_validator
@@ -35,6 +31,11 @@ Prerequisites
       tar -xf gltf_validator-2.0.0-dev.3.10-linux64.tar.xz
    
    The binary should now be at /path/to/gltf_validator/gltf_validator
+
+   Then either:
+
+   Add the directory containing the binary release to your `PATH`, or
+
    Set the path in the `.env` file:
 
    .. code-block:: bash
