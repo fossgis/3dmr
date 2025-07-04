@@ -121,8 +121,8 @@ function updateModelStats(stats) {
     const fc = stats.faces;
     document.getElementById("faceCount").textContent = fc.toLocaleString();
     setStatQualityClass("faceCount", 
-        fc >= 200 ? "good" :
-        fc >= 50 ? "warning" : "bad"
+        fc <= 5000 ? "good" :
+        fc <= 100000 ? "warning" : "bad"
     );
 
     const mc = stats.materials;
@@ -144,9 +144,9 @@ function updateModelStats(stats) {
     document.getElementById("modelScale").textContent =
         `${scale.x} × ${scale.y} × ${scale.z}`;
     const isScaleOk = 
-        Math.abs(scale.x - 1) <= 0.05 &&
-        Math.abs(scale.y - 1) <= 0.05 &&
-        Math.abs(scale.z - 1) <= 0.05;
+        scale.x === 1 &&
+        scale.y === 1 &&
+        scale.z === 1;
     setStatQualityClass("modelScale", isScaleOk ? "good" : "warning");
 
     document.getElementById("boundingBox").textContent =
