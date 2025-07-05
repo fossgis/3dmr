@@ -114,22 +114,41 @@ function loadGLB(url, options, three) {
 		camera.position.set(center.x, center.y, cameraZ * 1.5);
 		camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-		animate(renderer, scene, camera, controls, options);
+		let mixer = null;
+	
+		if (gltf.animations && gltf.animations.length > 0) {
+			mixer = new THREE.AnimationMixer(object);
+			gltf.animations.forEach((clip) => {
+				mixer.clipAction(clip).play();
+			});
+		}
+
+		animate(renderer, scene, camera, controls, options, mixer);
 	}, undefined, function(error) {
 		console.error("Error loading GLB:", error);
 	});
 }
 
-function animate(renderer, scene, camera, controls, options) {
-	requestAnimationFrame(function() {
-		animate(renderer, scene, camera, controls, options);
-	});
+function animate(renderer, scene, camera, controls, options, mixer) {
+	// clock instance needs to be outside the animation
+	// loop to ensure consistency with the mixer 
+	const clock = new THREE.Clock();
 
-	resizeCanvas(renderer, camera, options);
-	controls.update();
+	function loop() {
+		requestAnimationFrame(loop);
 
-	renderer.render(scene, camera);
+		const delta = clock.getDelta();
+
+		if (mixer) mixer.update(delta);
+
+		resizeCanvas(renderer, camera, options);
+		controls.update();
+		renderer.render(scene, camera);
+	}
+
+	loop();
 }
+
 
 function resizeCanvas(renderer, camera, options) {
 	const canvas = renderer.domElement;
