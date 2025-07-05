@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+from dotenv import load_dotenv
 from pathlib import Path
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +29,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '!@#secretkey@#!')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
 # Application definition
@@ -148,4 +151,11 @@ STATICFILES_FINDERS = (
 
 MODEL_DIR = os.environ.get('MODEL_DIR', BASE_DIR / "models")
 
+GLTF_VALIDATOR = os.environ.get(
+    'GLTF_VALIDATOR_PATH',
+    'gltf_validator' # assume global installation in $PATH
+)
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MAX_MODEL_SIZE = int(os.environ.get('MAX_MODEL_SIZE', 10 * 1024 * 1024))

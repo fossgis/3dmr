@@ -54,7 +54,7 @@ class UploadModelViewTest(BaseViewTestMixin, TestCase):
             "license": "0",
         }
         dummy_file = SimpleUploadedFile(
-            "unauth_test.zip", b"content", "application/zip"
+            "unauth_test.glb", b"content", "model/gltf-binary"
         )
         upload_data["model_file"] = dummy_file
 
@@ -73,9 +73,9 @@ class UploadModelViewTest(BaseViewTestMixin, TestCase):
         self.login_user()
 
         dummy_file = SimpleUploadedFile(
-            name="test_model.zip",
+            name="test_model.glb",
             content=self.model_file,
-            content_type="application/zip",
+            content_type="model/gltf-binary",
         )
         upload_data = {
             "title": "My New Model",
@@ -104,7 +104,7 @@ class UploadModelViewTest(BaseViewTestMixin, TestCase):
         self.login_user()
 
         dummy_file = SimpleUploadedFile(
-            "fail_model.zip", b"corrupt content", "application/zip"
+            "fail_model.glb", b"corrupt content", "model/gltf-binary"
         )
         upload_data = {
             "title": "Fail Model",
@@ -308,7 +308,7 @@ class ReviseModelViewTest(BaseViewTestMixin, TestCase):
         mock_db_upload.return_value = mock_new_revision_model
 
         dummy_file = SimpleUploadedFile(
-            "test_revision.zip", self.model_file, content_type="application/zip"
+            "test_revision.glb", self.model_file, content_type="model/gltf-binary"
         )
 
         response = self.client.post(
@@ -337,7 +337,7 @@ class ReviseModelViewTest(BaseViewTestMixin, TestCase):
     def test_revise_view_post_db_error(self, mock_db_upload):
         mock_db_upload.return_value = None
         dummy_file = SimpleUploadedFile(
-            "test_rev_fail.zip", self.model_file, content_type="application/zip"
+            "test_rev_fail.glb", self.model_file, content_type="model/gltf-binary"
         )
 
         response = self.client.post(

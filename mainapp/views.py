@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage
@@ -256,7 +257,8 @@ def revise(request, model_id):
 
     return render(request, 'mainapp/revise.html', {
         'form': form,
-        'model': m
+        'model': m,
+        'max_model_size': settings.MAX_MODEL_SIZE / (1024 * 1024)
     })
 
 def upload(request):
@@ -315,7 +317,10 @@ def upload(request):
         else: # otherwise
             form = UploadFileMetadataForm()
 
-    return render(request, 'mainapp/upload.html', {'form': form})
+    return render(request, 'mainapp/upload.html', {
+        'form': form,
+        'max_model_size': settings.MAX_MODEL_SIZE / (1024 * 1024)
+    })
 
 def user(request, username):
     update_last_page(request)

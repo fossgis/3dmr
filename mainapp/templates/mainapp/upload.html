@@ -12,8 +12,7 @@
 		<p>Here, you can upload a model to the repository.</p>
 		<p>Please upload your 3D model as a single <strong>GLB</strong> file. </p>
 		<p>Ensure your model is fully packaged as a <code>.glb</code> file before uploading, meaning it should include all textures and resources embedded within the file.</p>
-		<p>Also, make sure the file size is within the allowed limit and that the model is valid and not empty.</p>
-		<p>Then, simply fill the fields below and upload your model!</p>
+		<p>Also, make sure the file size is less than {{ max_model_size }} MB and that the glTF binary is a valid model and not empty.</p>
 		{% with form_metadata=True %}
 		{% with form_file=True %}
 		{% include 'mainapp/modelform.html' %}

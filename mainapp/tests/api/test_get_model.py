@@ -12,16 +12,16 @@ class GetModelAPIViewTest(BaseViewTestMixin, TestCase):
     def test_get_model_success_latest_revision(self):
         response = self.client.get(reverse("get_model", args=[self.model1.model_id]))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Type"], "application/zip")
+        self.assertEqual(response["Content-Type"], "model/gltf-binary")
         self.assertEqual(
             response["Content-Disposition"],
-            f"attachment; filename={self.model1.revision}.zip",
+            f"attachment; filename={self.model1.model_id}_{self.model1.revision}.glb",
         )
 
     def test_get_model_success_specific_revision(self):
         response = self.client.get(reverse("get_model", args=[self.model1.model_id, 1]))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Disposition"], "attachment; filename=1.zip")
+        self.assertEqual(response["Content-Disposition"], f"attachment; filename={self.model1.model_id}_{self.model1.revision}.glb")
 
     def test_get_model_hidden_non_admin(self):
         response = self.client.get(reverse("get_model", args=[self.model2.model_id]))

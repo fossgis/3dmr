@@ -9,118 +9,359 @@ This project was `originally developed <https://gitlab.com/n42k/3dmr>`_ as part 
 
 Development Server Instructions
 ===============================
-The project requires Docker to be installed on the system. The following steps will guide you through setting up the development server.
 
-1. Clone the repository, ``git clone https://github.com/fossgis/3dmr.git``.
-2. Move inside the directory that was created, ``cd 3dmr``.
-3. Create `.env` file by copying the example file, ``cp .env.example .env``.
-4. Make necessary changes in the `.env` file to set your environment variables.
-5. Make `setup.sh` executable, ``chmod +x ./setup.sh``.
-6. Set up the container with ``./setup.sh``.
+This project requires **PostgreSQL**, the `KhronosGroup glTF-Validator <https://github.com/KhronosGroup/glTF-Validator/>`_, **Python 3**, and **pip** to be installed on your system. It uses **Django** as the web framework, and it is recommended to use a Python virtual environment for development.
 
-Your development server should now be running on port 8000.
+Prerequisites
+-------------
+
+1. Install Python 3 (version 3.13 recommended) and `pip3`.
+
+2. Install PostgreSQL and ensure the server is running. You’ll also need to create a database and user for local development.
+
+3. Install the glTF Validator:
+
+   Download the appropriate binary release from the `KhronosGroup glTF-Validator releases <https://github.com/KhronosGroup/glTF-Validator/releases/>`_ page and extract the .tar.xz release into a dedicated folder.
+
+   .. code-block:: bash
+
+      mkdir /path/to/gltf_validator
+      cd /path/to/gltf_validator
+      wget https://github.com/KhronosGroup/glTF-Validator/releases/download/2.0.0-dev.3.10/gltf_validator-2.0.0-dev.3.10-linux64.tar.xz
+      tar -xf gltf_validator-2.0.0-dev.3.10-linux64.tar.xz
+   
+   The binary should now be at /path/to/gltf_validator/gltf_validator
+
+   Then either:
+
+   Add the directory containing the binary release to your `PATH`, or
+
+   Set the path in the `.env` file:
+
+   .. code-block:: bash
+
+      GLTF_VALIDATOR_PATH=/path/to/gltf_validator/gltf_validator
+
+   Replace `/path/to/` with the actual path where you want to store the gltf_validator. This is required for model validation to work.
+
+Setting Up the Development Server
+---------------------------------
+
+Follow these steps to get the project running locally:
+
+1. Clone the repository:
+
+   .. code-block:: bash
+
+      git clone https://github.com/fossgis/3dmr.git
+
+2. Navigate into the project directory:
+
+   .. code-block:: bash
+
+      cd 3dmr
+
+3. Set up a virtual environment:
+
+   .. code-block:: bash
+
+      python3 -m venv .venv
+
+4. Activate the virtual environment:
+
+   .. code-block:: bash
+
+      source .venv/bin/activate
+
+5. Install Python dependencies:
+
+   .. code-block:: bash
+
+      pip3 install -r requirements.txt
+
+6. Copy the example environment file:
+
+   .. code-block:: bash
+
+      cp .env.example .env
+
+7. Open the `.env` file and populate the environment variables as needed:
+
+   .. list-table::
+      :header-rows: 1
+
+      * - Variable
+        - Description
+      * - ``POSTGRES_DB``
+        - Name of your PostgreSQL database (e.g., ``3dmr_dev``).
+      * - ``POSTGRES_USER``
+        - PostgreSQL user with access to the database. It's highly recommended to create a separate unprivileged user with access restricted to only required database(s).
+      * - ``POSTGRES_PASSWORD``
+        - Password for the POSTGRES_USER user.
+      * - ``POSTGRES_HOST``
+        - Host where PostgreSQL is running (default is ``localhost``).
+      * - ``POSTGRES_PORT``
+        - Port for PostgreSQL (default is ``5432``).
+      * - ``OSM_CLIENT_ID``
+        - Your OpenStreetMap OAuth Application client ID.
+      * - ``OSM_CLIENT_SECRET``
+        - Your OSM OAuth Application client secret.
+      * - ``DEBUG``
+        - Set to ``True`` for development, ``False`` for production (default is ``True``). 
+      * - ``DJANGO_SECRET_KEY``
+        - A secret key for Django. Generate one using:
+          ``python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'``
+      * - ``MODEL_DIR``
+        - Path to the directory where 3D models will be stored.
+      * - ``STATIC_ROOT``
+        - Path to the directory where static files will be collected.
+      * - ``GLTF_VALIDATOR_PATH``
+        - Path to the directory containing the `gltf_validator` binary.
+      * - ``ALLOWED_HOSTS``
+        - A comma-separated list of allowed hostnames for the Django application (e.g., ``localhost,127.0.0.1``).
+
+8. Apply database migrations:
+
+   .. code-block:: bash
+
+      ./manage.py migrate
+
+9. Run the development server:
+
+   .. code-block:: bash
+
+      ./manage.py runserver
+
+Access your development server at: http://127.0.0.1:8000/
 
 Deployment Instructions
 =======================
-1. These are a set of simple step-by-step deployment instructions for 3dmr, to get the repository running on a server quickly. These steps have been tested in a fresh Debian 9 installation.
 
- 1. Starting off, make sure to update your current packages: ``# apt-get update`` and ``# apt-get upgrade``.
+These are step-by-step instructions to deploy the 3DMR repository using **Gunicorn** as the WSGI server and **Nginx** as the reverse proxy. These steps have been tested on a fresh Debian 13 installation.
 
- 2. Download the required packages, in one go: ``# apt-get install postgresql postgresql-client git python3 python3-pip apache2 libapache2-mod-wsgi-py3 python-virtualenv``.
-    Note: do not install python3-virtualenv, it won't work, python-virtualenv will work for both major versions of Python.
 
-2. Let's now set up PostgreSQL.
+1. System Setup
+---------------
 
- 1. Edit the file ``/etc/postgresql/9.6/main/pg_hba.conf``, adding ``local all 3dmr password``, after ``local all postgres peer``, and then restart its service: ``service postgresql restart``.
+1. Update packages:
 
- 2. Switch to the postgres user: ``su - postgres``. The next few steps will be done in this user.
+   .. code-block:: bash
 
- 3. Create an user to use with the repository: ``createuser -d -P 3dmr``. Remember the password you enter here.
+      sudo apt update && sudo apt upgrade -y
 
- 4. Create a new database for the repository, as the 3dmr user: ``createdb -O 3dmr 3dmr``.
+2. Install required packages:
 
- 5. Run ``psql -d 3dmr -c "create extension hstore;"`` to activate the hstore extension on the database.
+   .. code-block:: bash
 
- 6. The database setup is now finished! Make sure to get back to the root user with ``exit``.
+      sudo apt install postgresql postgresql-client git python3 python3-pip nginx python3-venv
 
-3. We will now acquire the project from the git repository. This should be done with a separate user.
 
- 1. Let's create it now: ``# adduser tdmr`` (t stands for the t in three, as there can be no names starting with a digit).
+2. PostgreSQL Setup
+-------------------
 
- 2. Switch to the newly created user: ``su - tdmr``. The next commands will be run as this user.
+1. Switch to the `postgres` user:
 
- 3. In the home directory of this user, run ``git clone https://github.com/fossgis/3dmr.git``, then move inside it: ``cd 3dmr``.
+   .. code-block:: bash
 
- 4. Setup the virtualenv: ``virtualenv -p python3 .venv``, and activate it: ``source .venv/bin/activate``, and install the required Python packages: ``pip3 install -r requirements.txt``.
+      sudo -u postgres -i
 
- 5. We must now configure the model repository.
+2. Create a PostgreSQL user and database:
 
-  1. With your favourite text editor, begin editing ``.env`` file. Then, in order, edit the folllowing variables:
+   .. code-block:: bash
 
-  2. Generate a new random ``SECRET_KEY``. This should be generated randomly, by a computer. One quick way to do this is running
-     ``import binascii;import os;binascii.hexlify(os.urandom(50))`` in a Python shell.
+      createuser -d -P 3dmr
+      createdb -O 3dmr 3dmr
 
-  3. Set ``DEBUG`` to ``False``, as we're now in production.
+3. Exit back to your original user:
 
-  4. You should also add your own OpenStreetMap OAuth key and secret, replacing ``SOCIAL_AUTH_OPENSTREETMAP_KEY`` and ``SOCIAL_AUTH_OPENSTREETMAP_SECRET``.
-   If you do not have one, you can create it at https://www.openstreetmap.org/oauth2/applications.
+   .. code-block:: bash
 
-  5. Configure the ``POSTGRES_...`` entries: change the credentials as per the ones set in 2.3.
+      exit
 
-  6. Finally, in  ``modelrepository/settings.py``. Set ``ALLOWED_HOSTS`` to ``['*']``. *IMPORTANT*: You should replace this with ``['www.yourdomain.com']`` when you host it on a domain, or your public IP,
-     according to https://docs.djangoproject.com/en/1.11/ref/settings/#allowed-hosts .
 
-  7. You can now save and close both the files.
+3. Application Setup
+--------------------
 
- 6. Run ``./manage.py migrate`` to create the tables for our database.
+1. Create a system user to run the app:
 
- 7. Create a directory to hold the model zips: ``mkdir ~/models``.
-    Configure the .env file, add at the end of the file: ``MODEL_DIR = '/home/tdmr/models'``.
+   .. code-block:: bash
 
- 8. Create a directory to hold the static files: ``mkdir ~/static`` and run ``./manage.py collectstatic`` to place the static files there.
+      sudo adduser tdmr
+      sudo usermod -aG www-data tdmr
 
- 9. Set up the nightlies task, by placing the following script in ``/home/tdmr/nightly.sh``:
+2. Switch to that user:
 
-    | #!/bin/bash
-    | cd /home/tdmr/3dmr/
-    | source .venv/bin/activate
-    | ./manage.py nightly
-    | mv 3dmr-nightly.zip /home/tdmr/static/mainapp
+   .. code-block:: bash
 
-    and give it executable permissions: ``chmod +x nightly.sh``, and run it once, to set up an initial, empty, nightly zip: ``./nightly.sh``.
+      su - tdmr
 
- 10. You should now be able to connect on port 8080 to the development server after running ``./manage.py runserver 0.0.0.0:8080``.
-     Note that this will not yet work fully: static files will 404 (explaining the big avatar in the navbar if you login, or the missing model previews).
-     Do not use this in production.
+3. Clone the repository and set up environment:
 
-4. Now, let's set up Apache.
+   .. code-block:: bash
 
- 1. Edit, as the root user, ``/etc/apache2/sites-available/000-default.conf``, adding at the end of the VirtualHost section:
+      git clone https://github.com/fossgis/3dmr.git
+      cd 3dmr
+      python3 -m venv .venv
+      source .venv/bin/activate
+      pip install -r requirements.txt
 
-    | <VirtualHost \*:80>
-    |         Alias /static/ /home/tdmr/static/
-    |         <Directory /home/tdmr/static>
-    |                 Require all granted
-    |         </Directory>
-    |         <Directory /home/tdmr/3dmr/modelrepository>
-    |                 <Files wsgi.py>
-    |                         Require all granted
-    |                 </Files>
-    |         </Directory>
-    |
-    |         WSGIDaemonProcess 3dmr python-path=/home/tdmr/3dmr:/home/tdmr/3dmr/.env/lib/python3.5/site-packages
-    |         WSGIProcessGroup 3dmr
-    |         WSGIScriptAlias / /home/tdmr/3dmr/modelrepository/wsgi.py
-    | </VirtualHost>
+4. Install the glTF Validator:
 
- 2. Give Apache write permission to the model directory, by running ``# chmod -R 0775 /home/tdmr/models`` and ``# chown -R :www-data /home/tdmr/models``.
+   Download the appropriate binary release from the `KhronosGroup glTF-Validator releases <https://github.com/KhronosGroup/glTF-Validator/releases/>`_ page:
 
- 3. Finally, restart Apache to update its settings: ``# service apache2 restart``
+   .. code-block:: bash
 
-5. The last remaining step is to set up the nightly script to run as a cronjob.
+      mkdir ~/gltf_validator
+      cd ~/gltf_validator
+      wget https://github.com/KhronosGroup/glTF-Validator/releases/download/2.0.0-dev.3.10/gltf_validator-2.0.0-dev.3.10-linux64.tar.xz
+      tar -xf gltf_validator-2.0.0-dev.3.10-linux64.tar.xz
+   
+   The binary should now be at ~/gltf_validator/gltf_validator
 
- 1. Open the crontab, as the user ``tdmr``: ``# crontab -u tdmr -e``.
+5. Configure `.env` file:
 
- 2. Create an entry in the crontab for the nightly script, to run every day, at 4 AM: ``0 4 * * * /home/tdmr/nightly.sh``.
+   .. code-block:: bash
 
- 3. The 3D model repository has been successfully deployed!
+      cp .env.example .env
+      nano .env
+
+   Update the following fields:
+
+   - Set `DEBUG=False`
+   - Generate a `DJANGO_SECRET_KEY` (see dev instructions)
+   - Fill in PostgreSQL credentials
+   - Add OSM OAuth client ID and secret
+   - Set `MODEL_DIR=/home/tdmr/models`
+   - Set `STATIC_ROOT=/home/tdmr/staticfiles`
+   - Set `GLTF_VALIDATOR_PATH=/home/tdmr/gltf_validator/gltf_validator`
+   - Set `ALLOWED_HOSTS=your.domain.com`
+
+6. Migrate database and collect static files:
+
+   .. code-block:: bash
+
+      ./manage.py migrate
+      mkdir ~/models
+      mkdir ~/staticfiles
+      ./manage.py collectstatic
+
+
+4. Gunicorn Setup
+-----------------
+
+Create a `gunicorn.service` file for systemd:
+
+.. code-block:: bash
+
+   sudo nano /etc/systemd/system/3dmr.service
+
+.. code-block:: ini
+
+   # /etc/systemd/system/3dmr.service
+   [Unit]
+   Description=3DMR Gunicorn daemon
+   After=network.target
+
+   [Service]
+   User=tdmr
+   Group=www-data
+   WorkingDirectory=/home/tdmr/3dmr
+   Environment="PATH=/home/tdmr/3dmr/.venv/bin"
+   ExecStart=/home/tdmr/3dmr/.venv/bin/gunicorn modelrepository.wsgi:application --bind unix:/run/3dmr.sock
+
+   [Install]
+   WantedBy=multi-user.target
+
+Enable and start the service:
+
+.. code-block:: bash
+
+   sudo systemctl daemon-reexec
+   sudo systemctl daemon-reload
+   sudo systemctl enable 3dmr
+   sudo systemctl start 3dmr
+
+
+5. Nginx Setup
+--------------
+
+1. Create a config file:
+
+.. code-block:: nginx
+
+   # /etc/nginx/sites-available/3dmr
+   server {
+       listen 80;
+       listen [::]:80;
+       server_name your.domain.com;
+
+       location /static/ {
+           alias /home/tdmr/staticfiles/;
+       }
+
+       location / {
+           include proxy_params;
+           proxy_pass http://unix:/run/3dmr.sock;
+       }
+   }
+
+2. Enable the site and restart Nginx:
+
+   .. code-block:: bash
+
+      sudo ln -s /etc/nginx/sites-available/3dmr /etc/nginx/sites-enabled
+      sudo nginx -t
+      sudo systemctl restart nginx
+
+3. Ensure permissions:
+
+   .. code-block:: bash
+
+      sudo chown -R tdmr:www-data /home/tdmr
+      sudo chmod -R 755 /home/tdmr/models
+      sudo chmod -R 755 /home/tdmr/staticfiles
+
+
+6. Nightly Job Setup
+--------------------
+
+1. Create the script:
+
+   .. code-block:: bash
+
+      nano /home/tdmr/nightly.sh
+
+   Contents:
+
+   .. code-block:: bash
+
+      #!/bin/bash
+      cd /home/tdmr/3dmr/
+      source .venv/bin/activate
+      ./manage.py nightly
+      mv 3dmr-nightly.zip /home/tdmr/staticfiles/mainapp
+
+   Make it executable:
+
+   .. code-block:: bash
+
+      chmod +x /home/tdmr/nightly.sh
+      ./nightly.sh
+
+2. Add to crontab:
+
+   .. code-block:: bash
+
+      crontab -u tdmr -e
+
+   Add:
+
+   .. code-block::
+
+      0 4 * * * /home/tdmr/nightly.sh
+
+
+7. Done!
+--------
+
+Your 3DMR instance is now live and running via **Gunicorn and Nginx**.
