@@ -60,6 +60,7 @@ class BaseViewTestMixin(TestCase):
         )
         self.cat1 = Category.objects.create(name="category1")
         self.model1.categories.set([self.cat1])
+        self.model1.save() # trigger post_save signal to sync LatestModel
         self.latest_model1 = LatestModel.objects.get(
             model_id=self.model1.model_id, revision=self.model1.revision
         )
@@ -76,6 +77,7 @@ class BaseViewTestMixin(TestCase):
         )
         self.cat2 = Category.objects.create(name="category2")
         self.model2.categories.set([self.cat2])
+        self.model2.save()
         self.latest_model2 = LatestModel.objects.get(
             model_id=self.model2.model_id, revision=self.model2.revision
         )
@@ -92,6 +94,7 @@ class BaseViewTestMixin(TestCase):
         )
         self.cat3 = Category.objects.create(name="category3")
         self.model3.categories.set([self.cat3])
+        self.model3.save()
         self.latest_model3 = LatestModel.objects.get(
             model_id=self.model3.model_id, revision=self.model3.revision
         )
