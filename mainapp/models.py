@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.postgres import fields
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models.signals import post_save
@@ -53,7 +52,7 @@ class Model(models.Model):
     location = models.OneToOneField(Location, null=True, default=None, on_delete=models.CASCADE)
     license = models.IntegerField()
     categories = models.ManyToManyField(Category)
-    tags = fields.HStoreField(default=dict)
+    tags = models.JSONField()
     rotation = models.FloatField(default=0.0)
     scale = models.FloatField(default=1.0)
     translation_x = models.FloatField(default=0.0)
@@ -72,7 +71,7 @@ class LatestModel(models.Model):
     location = models.OneToOneField(Location, null=True, default=None, on_delete=models.CASCADE)
     license = models.IntegerField()
     categories = models.ManyToManyField(Category)
-    tags = fields.HStoreField(default=dict)
+    tags = models.JSONField()
     rotation = models.FloatField(default=0.0)
     scale = models.FloatField(default=1.0)
     translation_x = models.FloatField(default=0.0)
