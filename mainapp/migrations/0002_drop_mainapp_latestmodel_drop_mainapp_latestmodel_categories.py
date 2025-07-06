@@ -16,4 +16,10 @@ class Migration(migrations.Migration):
                 DROP VIEW IF EXISTS mainapp_latestmodel_categories;
             """
         ),
+        migrations.DeleteModel(
+            name='LatestModel',
+        ),
+        migrations.DeleteModel(
+            name='ModelCategories',
+        ),
     ]
