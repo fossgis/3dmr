@@ -19,6 +19,8 @@ def upload(model_file, options={}):
                 lm = LatestModel.objects.get(model_id=options['model_id'])
                 m = Model.objects.get(model_id=lm.model_id, revision=lm.revision)
 
+                options['categories'] = [cat.name for cat in lm.categories.all()]
+
                 location = m.location
                 if location is not None:
                     location.pk = None
@@ -32,8 +34,6 @@ def upload(model_file, options={}):
                 m.location = location
                 m.save()
 
-                m.categories.add(*lm.categories.all())
-                m.save()
             else:
                 # get the model_id for this model.
                 try:
@@ -75,16 +75,16 @@ def upload(model_file, options={}):
 
                 m.save()
 
-                for category_name in options['categories']:
-                    try:
-                        category = Category.objects.get(name=category_name)
-                    except:
-                        category = Category(name=category_name)
+            for category_name in options['categories']:
+                try:
+                    category = Category.objects.get(name=category_name)
+                except:
+                    category = Category(name=category_name)
 
-                    category.save()
-                    m.categories.add(category)
+                category.save()
+                m.categories.add(category)
 
-                m.save()
+            m.save() # trigger post_save signal to sync LatestModel
 
             change = Change(
                 author=options['author'],
