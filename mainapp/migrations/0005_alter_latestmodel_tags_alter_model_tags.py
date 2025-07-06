@@ -13,11 +13,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='latestmodel',
             name='tags',
-            field=models.JSONField(null=True),
+            field=models.JSONField(default=dict),
         ),
         migrations.AlterField(
             model_name='model',
             name='tags',
-            field=models.JSONField(null=True),
+            field=models.JSONField(default=dict),
         ),
     ]
