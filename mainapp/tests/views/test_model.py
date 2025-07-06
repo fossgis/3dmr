@@ -157,7 +157,7 @@ class ModelViewTests(BaseViewTestMixin, TestCase):
         response = self.client.get(reverse("model", args=[self.visible_model.model_id]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "mainapp/model.html")
-        self.assertEqual(response.context["model"].pk, self.visible_model.pk)
+        self.assertEqual(response.context["model"].model_id, self.visible_model.model_id)
         self.assertContains(response, self.visible_model.title)
         self.assertContains(response, self.comment1.comment)
         self.assertNotContains(response, self.comment2.comment)
