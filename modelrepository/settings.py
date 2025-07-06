@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'mainapp',
     'social_django',
-    'django_pgviews',
     'compressor',
 ]
 
