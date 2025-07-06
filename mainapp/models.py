@@ -4,8 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
-from django_pgviews import view as pg
+from django.db import transaction
 
 from .utils import CHANGES
 
@@ -62,10 +61,7 @@ class Model(models.Model):
     translation_z = models.FloatField(default=0.0)
     is_hidden = models.BooleanField(default=False)
 
-    class Meta:
-        app_label = 'mainapp'
-
-class LatestModel(pg.MaterializedView):
+class LatestModel(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     model_id = models.IntegerField()
     revision = models.IntegerField()
@@ -84,56 +80,37 @@ class LatestModel(pg.MaterializedView):
     translation_z = models.FloatField(default=0.0)
     is_hidden = models.BooleanField(default=False)
 
-    concurrent_index = 'id'
-    sql = """
-        SELECT
-            model.id AS id,
-            model.model_id AS model_id,
-            model.revision AS revision,
-            model.title AS title,
-            model.description AS description,
-            model.rendered_description AS rendered_description,
-            model.upload_date AS upload_date,
-            model.location_id as location_id,
-            model.license AS license,
-            model.rotation AS rotation,
-            model.scale AS scale,
-            model.translation_x AS translation_x,
-            model.translation_y AS translation_y,
-            model.translation_z AS translation_z,
-            model.author_id AS author_id,
-            model.tags AS tags,
-            model.is_hidden AS is_hidden
-        FROM mainapp_model model 
-            LEFT JOIN mainapp_model newer 
-                ON model.model_id = newer.model_id AND
-                   model.revision < newer.revision
-        WHERE newer.revision is NULL
-    """
-
-    class Meta:
-        app_label = 'mainapp'
-        db_table = 'mainapp_latestmodel'
-        managed = False
-
-# View for the categories field above
-class ModelCategories(pg.View):
-    sql = """
-        SELECT
-            id AS id,
-            model_id AS latestmodel_id,
-            category_id AS category_id
-        FROM mainapp_model_categories
-    """
-
-    class Meta:
-        app_label = 'mainapp'
-        db_table = 'mainapp_latestmodel_categories'
-        managed = False
-
 @receiver(post_save, sender=Model)
-def model_saved(sender, action=None, instance=None, **kwargs):
-    LatestModel.refresh(concurrently=True)
+def model_saved(sender, instance, created, **kwargs):
+    latest = Model.objects.filter(model_id=instance.model_id).order_by('-revision').first()
+    # Confirm if the updated instance is the latest model. If not,
+    # it implies the update is trigerred on some other version by
+    # dev and we don't want to trigger signal in such case
+    if latest == instance: 
+        with transaction.atomic():
+            lm, created = LatestModel.objects.update_or_create(
+                model_id=instance.model_id,
+                defaults={
+                    'author': instance.author,
+                    'revision': instance.revision,
+                    'title': instance.title,
+                    'description': instance.description,
+                    'rendered_description': instance.rendered_description,
+                    'upload_date': instance.upload_date,
+                    'location': instance.location,
+                    'license': instance.license,
+                    'tags': instance.tags,
+                    'rotation': instance.rotation,
+                    'scale': instance.scale,
+                    'translation_x': instance.translation_x,
+                    'translation_y': instance.translation_y,
+                    'translation_z': instance.translation_z,
+                    'is_hidden': instance.is_hidden
+                }
+            )
+
+            lm.categories.clear()
+            lm.categories.add(*instance.categories.all())
 
 class Change(models.Model):
     author = models.ForeignKey(User, models.CASCADE)
