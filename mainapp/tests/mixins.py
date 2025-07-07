@@ -7,7 +7,7 @@ from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 from social_django.models import UserSocialAuth
 
-from mainapp.models import Category, LatestModel, Location, Model
+from mainapp.models import Category, Location, Model
 
 
 @override_settings(
@@ -57,12 +57,10 @@ class BaseViewTestMixin(TestCase):
             location=Location.objects.create(latitude=48.8566, longitude=2.3522),
             tags={"color": "red", "size": "large"},
             license=0,
+            latest=True,
         )
         self.cat1 = Category.objects.create(name="category1")
         self.model1.categories.set([self.cat1])
-        self.latest_model1 = LatestModel.objects.get(
-            model_id=self.model1.model_id, revision=self.model1.revision
-        )
 
         self.model2 = Model.objects.create(
             model_id=2,
@@ -73,12 +71,10 @@ class BaseViewTestMixin(TestCase):
             location=Location.objects.create(latitude=2.3522, longitude=48.8566),
             tags={"color": "blue", "size": "small", "hidden": "true"},
             license=1,
+            latest=True,
         )
         self.cat2 = Category.objects.create(name="category2")
         self.model2.categories.set([self.cat2])
-        self.latest_model2 = LatestModel.objects.get(
-            model_id=self.model2.model_id, revision=self.model2.revision
-        )
 
         self.model3 = Model.objects.create(
             model_id=3,
@@ -89,12 +85,10 @@ class BaseViewTestMixin(TestCase):
             location=Location.objects.create(latitude=2.3522, longitude=48.8566),
             tags={"color": "blue", "size": "small"},
             license=1,
+            latest=True,
         )
         self.cat3 = Category.objects.create(name="category3")
         self.model3.categories.set([self.cat3])
-        self.latest_model3 = LatestModel.objects.get(
-            model_id=self.model3.model_id, revision=self.model3.revision
-        )
 
         self.model_dirs = []
 

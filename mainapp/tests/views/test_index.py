@@ -21,9 +21,9 @@ class IndexViewTest(BaseViewTestMixin, TestCase):
 
         models = response.context["models"]
         self.assertTrue(all(not m.is_hidden for m in models))
-        self.assertIn(self.latest_model1, models)
-        self.assertIn(self.latest_model3, models)
-        self.assertNotIn(self.latest_model2, models)
+        self.assertIn(self.model1, models)
+        self.assertIn(self.model3, models)
+        self.assertNotIn(self.model2, models)
 
     def test_index_view_get_authenticated_user(self):
         self.login_user(user_type="user")  # Assuming this uses self.user
@@ -38,9 +38,9 @@ class IndexViewTest(BaseViewTestMixin, TestCase):
 
         models = response.context["models"]
         self.assertTrue(all(not m.is_hidden for m in models))
-        self.assertIn(self.latest_model1, models)
-        self.assertIn(self.latest_model3, models)
-        self.assertNotIn(self.latest_model2, models)
+        self.assertIn(self.model1, models)
+        self.assertIn(self.model3, models)
+        self.assertNotIn(self.model2, models)
 
     def test_index_view_get_admin_user(self):
         self.login_user(user_type="admin")  # Assuming this uses self.admin_user
@@ -54,9 +54,9 @@ class IndexViewTest(BaseViewTestMixin, TestCase):
         self.assertContains(response, "Model 3")
 
         models = response.context["models"]
-        self.assertIn(self.latest_model1, models)
-        self.assertIn(self.latest_model2, models)
-        self.assertIn(self.latest_model3, models)
+        self.assertIn(self.model1, models)
+        self.assertIn(self.model2, models)
+        self.assertIn(self.model3, models)
 
     def test_update_last_page_called_on_index(self):
         self.client.get(reverse("index"))

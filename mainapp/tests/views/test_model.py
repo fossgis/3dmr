@@ -293,17 +293,17 @@ class ReviseModelViewTest(BaseViewTestMixin, TestCase):
 
     def test_revise_view_get(self):
         response = self.client.get(
-            reverse("revise", args=[self.latest_model3.model_id])
+            reverse("revise", args=[self.model3.model_id])
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "mainapp/revise.html")
         self.assertIsInstance(response.context["form"], UploadFileForm)
-        self.assertEqual(response.context["model"].pk, self.latest_model3.pk)
+        self.assertEqual(response.context["model"].pk, self.model3.pk)
 
     @patch("mainapp.views.database.upload")
     def test_revise_view_post_success(self, mock_db_upload):
         mock_new_revision_model = Model(
-            model_id=self.latest_model3.model_id, revision=2, author=self.user
+            model_id=self.model3.model_id, revision=2, author=self.user
         )
         mock_db_upload.return_value = mock_new_revision_model
 
@@ -312,7 +312,7 @@ class ReviseModelViewTest(BaseViewTestMixin, TestCase):
         )
 
         response = self.client.post(
-            reverse("revise", args=[self.latest_model3.model_id]),
+            reverse("revise", args=[self.model3.model_id]),
             data={"model_file": dummy_file},
         )
 
@@ -329,7 +329,7 @@ class ReviseModelViewTest(BaseViewTestMixin, TestCase):
         )
         mock_db_upload.assert_called_once()
         call_args = mock_db_upload.call_args[0]
-        self.assertEqual(int(call_args[1]["model_id"]), self.latest_model3.model_id)
+        self.assertEqual(int(call_args[1]["model_id"]), self.model3.model_id)
         self.assertTrue(call_args[1]["revision"])
         self.assertEqual(call_args[1]["author"], self.user)
 
@@ -341,16 +341,16 @@ class ReviseModelViewTest(BaseViewTestMixin, TestCase):
         )
 
         response = self.client.post(
-            reverse("revise", args=[self.latest_model3.model_id]),
+            reverse("revise", args=[self.model3.model_id]),
             data={"model_file": dummy_file},
         )
         self.assertRedirects(
-            response, reverse("revise", args=[self.latest_model3.model_id])
+            response, reverse("revise", args=[self.model3.model_id])
         )
 
     def test_revise_view_post_no_file(self):
         response = self.client.post(
-            reverse("revise", args=[self.latest_model3.model_id]), data={}
+            reverse("revise", args=[self.model3.model_id]), data={}
         )
         self.assertEqual(response.status_code, 200)
         form = response.context["form"]
