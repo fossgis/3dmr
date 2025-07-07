@@ -6,7 +6,7 @@ from django.db import transaction
 from django.conf import settings
 from django.contrib import messages
 
-from .models import Model, LatestModel, Change, Category, Location
+from .models import Model, Change, Category, Location
 
 from mainapp.markdown import markdown
 
@@ -16,8 +16,9 @@ def upload(model_file, options={}):
     try:
         with transaction.atomic():
             if options.get('revision', False):
-                lm = LatestModel.objects.get(model_id=options['model_id'])
-                m = Model.objects.get(model_id=lm.model_id, revision=lm.revision)
+                m = Model.objects.get(model_id=options['model_id'], latest=True)
+
+                options['categories'] = [cat.name for cat in m.categories.all()]
 
                 location = m.location
                 if location is not None:
@@ -30,15 +31,13 @@ def upload(model_file, options={}):
                 m.revision += 1
                 m.author = options['author']
                 m.location = location
-                m.save()
-
-                m.categories.add(*lm.categories.all())
+                m.latest = True
                 m.save()
             else:
                 # get the model_id for this model.
                 try:
-                    next_model_id = LatestModel.objects.latest('model_id').model_id + 1
-                except LatestModel.DoesNotExist:
+                    next_model_id = Model.objects.latest('model_id').model_id + 1
+                except Model.DoesNotExist:
                     next_model_id = 1 # no models in db
 
                 rendered_description = markdown(options['description'])
@@ -70,21 +69,17 @@ def upload(model_file, options={}):
                     translation_y=-options['translation'][1],
                     translation_z=-options['translation'][2],
                     rotation=options['rotation'],
-                    scale=options['scale']
+                    scale=options['scale'],
+                    latest=True
                 )
 
                 m.save()
 
-                for category_name in options['categories']:
-                    try:
-                        category = Category.objects.get(name=category_name)
-                    except:
-                        category = Category(name=category_name)
+            for category_name in options['categories']:
+                category, created = Category.objects.get_or_create(name=category_name)
 
-                    category.save()
-                    m.categories.add(category)
-
-                m.save()
+                category.save()
+                m.categories.add(category)
 
             change = Change(
                 author=options['author'],
@@ -138,11 +133,7 @@ def edit(options):
 
             m.categories.clear()
             for category_name in options['categories']:
-                try:
-                    category = Category.objects.get(name=category_name)
-                except:
-                    category = Category(name=category_name)
-                
+                category, created = Category.objects.get_or_create(name=category_name)
                 category.save()
                 m.categories.add(category)
 
