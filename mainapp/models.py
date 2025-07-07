@@ -4,8 +4,6 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from django_pgviews import view as pg
-
 from .utils import CHANGES
 
 # Create your models here.
