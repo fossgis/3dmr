@@ -1,5 +1,4 @@
-from django.db import models
-from django.contrib.postgres import fields
+from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models.signals import post_save
@@ -54,86 +53,42 @@ class Model(models.Model):
     location = models.OneToOneField(Location, null=True, default=None, on_delete=models.CASCADE)
     license = models.IntegerField()
     categories = models.ManyToManyField(Category)
-    tags = fields.HStoreField(default=dict)
+    tags = models.JSONField(default=dict)
     rotation = models.FloatField(default=0.0)
     scale = models.FloatField(default=1.0)
     translation_x = models.FloatField(default=0.0)
     translation_y = models.FloatField(default=0.0)
     translation_z = models.FloatField(default=0.0)
     is_hidden = models.BooleanField(default=False)
+    latest = models.BooleanField(default=False)
 
     class Meta:
-        app_label = 'mainapp'
+        unique_together = ('model_id', 'revision',)
 
-class LatestModel(pg.MaterializedView):
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    model_id = models.IntegerField()
-    revision = models.IntegerField()
-    title = models.CharField(max_length=32)
-    description = models.CharField(max_length=512)
-    rendered_description = models.CharField(max_length=1024)
-    upload_date = models.DateField(auto_now_add=True)
-    location = models.OneToOneField(Location, null=True, default=None, on_delete=models.CASCADE)
-    license = models.IntegerField()
-    categories = models.ManyToManyField(Category)
-    tags = fields.HStoreField(default=dict)
-    rotation = models.FloatField(default=0.0)
-    scale = models.FloatField(default=1.0)
-    translation_x = models.FloatField(default=0.0)
-    translation_y = models.FloatField(default=0.0)
-    translation_z = models.FloatField(default=0.0)
-    is_hidden = models.BooleanField(default=False)
+        # UniqueConstraint automatically creates an Index expression
+        constraints = [
+            models.UniqueConstraint(
+                fields=['model_id'],
+                condition=models.Q(latest=True),
+                name='unique_latest_model_per_id',
+            )
+        ]
 
-    concurrent_index = 'id'
-    sql = """
-        SELECT
-            model.id AS id,
-            model.model_id AS model_id,
-            model.revision AS revision,
-            model.title AS title,
-            model.description AS description,
-            model.rendered_description AS rendered_description,
-            model.upload_date AS upload_date,
-            model.location_id as location_id,
-            model.license AS license,
-            model.rotation AS rotation,
-            model.scale AS scale,
-            model.translation_x AS translation_x,
-            model.translation_y AS translation_y,
-            model.translation_z AS translation_z,
-            model.author_id AS author_id,
-            model.tags AS tags,
-            model.is_hidden AS is_hidden
-        FROM mainapp_model model 
-            LEFT JOIN mainapp_model newer 
-                ON model.model_id = newer.model_id AND
-                   model.revision < newer.revision
-        WHERE newer.revision is NULL
-    """
+        indexes = [
+            models.Index(fields=['model_id', 'revision']),
+            models.Index(fields=['-upload_date']),
+            models.Index(fields=['is_hidden']),
+        ]
 
-    class Meta:
-        app_label = 'mainapp'
-        db_table = 'mainapp_latestmodel'
-        managed = False
+    def save(self, *args, **kwargs):
+        with transaction.atomic():
+            if self.latest:
+                Model.objects.filter(
+                    model_id=self.model_id,
+                    latest=True
+                ).exclude(pk=self.pk).update(latest=False)
 
-# View for the categories field above
-class ModelCategories(pg.View):
-    sql = """
-        SELECT
-            id AS id,
-            model_id AS latestmodel_id,
-            category_id AS category_id
-        FROM mainapp_model_categories
-    """
-
-    class Meta:
-        app_label = 'mainapp'
-        db_table = 'mainapp_latestmodel_categories'
-        managed = False
-
-@receiver(post_save, sender=Model)
-def model_saved(sender, action=None, instance=None, **kwargs):
-    LatestModel.refresh(concurrently=True)
+            super().save(*args, **kwargs)
 
 class Change(models.Model):
     author = models.ForeignKey(User, models.CASCADE)
