@@ -75,6 +75,14 @@
 	{% endif %}
 	{% block body %}
 	{% endblock %}
+
+	<nav class="navbar-fixed-bottom">
+		<div class="container-fluid text-right">
+			<a class="item" target="_blank" href="https://wiki.openstreetmap.org/wiki/3D_Model_Repository">Wiki Page</a>
+			<span class="separator" aria-hidden="true">|</span>
+			<a class="item" target="_blank" href="https://github.com/fossgis/3dmr">GitHub</a>
+		</div>
+	</nav>
 	<script src="{% static 'mainapp/lib/jquery.min.js' %}"></script>
 	<script src="{% static 'mainapp/lib/bootstrap.min.js' %}"></script>
 	{% block footeradditions %}
