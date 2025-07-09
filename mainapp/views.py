@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.db import transaction
-from .models import Model, LatestModel, Comment, Category, Change, Ban, Location
+from .models import Model, Comment, Category, Change, Ban, Location
 from .forms import UploadFileForm, UploadFileMetadataForm, MetadataForm
 from .utils import get_kv, update_last_page, get_last_page, CHANGES, admin, LICENSES_DISPLAY
 import mainapp.database as database
@@ -22,7 +22,7 @@ def index(request):
     update_last_page(request)
 
     MODELS_IN_INDEX_PAGE = 6
-    models = LatestModel.objects.order_by('-pk')
+    models = Model.objects.filter(latest=True).order_by('-pk')
 
     if not admin(request):
         models = models.filter(is_hidden=False)
@@ -57,7 +57,7 @@ def model(request, model_id, revision=None):
     if revision:
         model = get_object_or_404(Model, model_id=model_id, revision=revision)
     else:
-        model = get_object_or_404(LatestModel, model_id=model_id)
+        model = get_object_or_404(Model, latest=True, model_id=model_id)
 
     if model.is_hidden and not admin(request):
         raise Http404('Model does not exist.')
@@ -221,7 +221,7 @@ def revise(request, model_id):
         messages.error(request, 'You are banned. Revising models is not permitted.')
         return redirect(index)
 
-    m = LatestModel.objects.get(model_id=model_id)
+    m = Model.objects.get(model_id=model_id, latest=True)
 
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
@@ -335,7 +335,7 @@ def user(request, username):
 
     user = get_object_or_404(User, username=username)
 
-    models = user.latestmodel_set.order_by('-pk')
+    models = user.model_set.filter(latest=True).order_by('-pk')
 
     if not admin(request):
         models = models.filter(is_hidden=False)

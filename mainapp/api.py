@@ -5,7 +5,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, FileResponse, Http404, HttpResponseBadRequest
 from django.core.paginator import Paginator, EmptyPage
-from .models import LatestModel, Comment, Model
+from .models import Comment, Model
 from .utils import get_kv, admin
 from django.views.decorators.csrf import csrf_exempt
 
@@ -35,7 +35,7 @@ def any_origin(f):
 # Create your views here.
 @any_origin
 def get_info(request, model_id):
-    model = get_object_or_404(LatestModel, model_id=model_id)
+    model = get_object_or_404(Model, latest=True, model_id=model_id)
 
     if model.is_hidden and not admin(request):
         raise Http404('Model does not exist.')
@@ -76,9 +76,10 @@ def get_info(request, model_id):
 @any_origin
 def get_model(request, model_id, revision=None):
     if not revision:
-        revision = get_object_or_404(LatestModel, model_id=model_id).revision
-
-    model = get_object_or_404(Model, model_id=model_id, revision=revision)
+        model = get_object_or_404(Model, model_id=model_id, latest=True)
+        revision = model.revision
+    else:
+        model = get_object_or_404(Model, model_id=model_id, revision=revision)
 
     if model.is_hidden and not admin(request):
         raise Http404('Model does not exist.')
@@ -93,7 +94,7 @@ def get_model(request, model_id, revision=None):
 @any_origin
 def lookup_tag(request, tag, page_id=1):
     key, value = get_kv(tag)
-    models = LatestModel.objects.filter(tags__contains={key: value}).order_by('model_id')
+    models = Model.objects.filter(latest=True, tags__contains={key: value}).order_by('model_id')
 
     if not admin(request):
         models = models.filter(is_hidden=False)
@@ -102,7 +103,7 @@ def lookup_tag(request, tag, page_id=1):
 
 @any_origin
 def lookup_category(request, category, page_id=1):
-    models = LatestModel.objects.filter(categories__name=category)
+    models = Model.objects.filter(latest=True, categories__name=category)
 
     if not admin(request):
         models = models.filter(is_hidden=False)
@@ -111,7 +112,7 @@ def lookup_category(request, category, page_id=1):
 
 @any_origin
 def lookup_author(request, username, page_id=1):
-    models = LatestModel.objects.filter(author__username=username)
+    models = Model.objects.filter(latest=True, author__username=username)
 
     if not admin(request):
         models = models.filter(is_hidden=False)
@@ -169,7 +170,7 @@ def search_range(request, latitude, longitude, distance, page_id=1):
     longitude = float(longitude)
     distance = float(distance)
 
-    models = LatestModel.objects.all()
+    models = Model.objects.filter(latest=True)
 
     if not admin(request):
         models = models.filter(is_hidden=False)
@@ -180,7 +181,7 @@ def search_range(request, latitude, longitude, distance, page_id=1):
 
 @any_origin
 def search_title(request, title, page_id=1):
-    models = LatestModel.objects.filter(title__icontains=title)
+    models = Model.objects.filter(latest=True, title__icontains=title)
 
     if not admin(request):
         models = models.filter(is_hidden=False)
@@ -193,7 +194,7 @@ def search_full(request):
     body = request.body.decode('UTF-8')
     data = json.loads(body)
 
-    models = LatestModel.objects.all()
+    models = Model.objects.filter(latest=True)
 
     if not admin(request):
         models = models.filter(is_hidden=False)

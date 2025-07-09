@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from mainapp.api import RESULTS_PER_API_CALL
-from mainapp.models import LatestModel, Model
+from mainapp.models import Model
 from mainapp.tests.mixins import BaseViewTestMixin
 
 
@@ -22,8 +22,8 @@ class SearchFullAPIViewTest(BaseViewTestMixin, TestCase):
         )
         self.assertEqual(response.status_code, 200)
         results = response.json()
-        self.assertIn(self.latest_model1.model_id, results)
-        self.assertNotIn(self.latest_model2.model_id, results)
+        self.assertIn(self.model1.model_id, results)
+        self.assertNotIn(self.model2.model_id, results)
 
     def test_search_full_author_filter(self):
         payload = {"author": "testuser", "format": ["id", "title"]}
@@ -99,8 +99,8 @@ class SearchFullAPIViewTest(BaseViewTestMixin, TestCase):
                 author=self.user,
                 is_hidden=False,
                 license=1,
+                latest=True,
             )
-            LatestModel.objects.get(model_id=model.model_id, revision=model.revision)
 
         payload_page1 = {"author": self.user.username, "page": 1}
         response_page1 = self.client.post(
@@ -153,11 +153,11 @@ class SearchFullAPIViewTest(BaseViewTestMixin, TestCase):
         )
         self.assertEqual(response.status_code, 200)
         results = json.loads(response.content)
-        self.assertIn(self.latest_model1.model_id, [r[0] for r in results])
-        self.assertIn(self.latest_model2.model_id, [r[0] for r in results])
+        self.assertIn(self.model1.model_id, [r[0] for r in results])
+        self.assertIn(self.model2.model_id, [r[0] for r in results])
 
     def test_search_full_with_format_no_location(self):
-        model = Model.objects.create(
+        self.model_no_loc = Model.objects.create(
             model_id=99,
             revision=1,
             title="Model No Loc",
@@ -165,9 +165,7 @@ class SearchFullAPIViewTest(BaseViewTestMixin, TestCase):
             is_hidden=False,
             location=None,
             license=1,
-        )
-        self.model_no_loc = LatestModel.objects.get(
-            model_id=model.model_id, revision=model.revision
+            latest=True,
         )
 
         payload = {

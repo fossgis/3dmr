@@ -55,6 +55,7 @@ class SearchViewTest(BaseViewTestMixin, TestCase):
                 location=Location.objects.create(latitude=0, longitude=0),
                 tags={},
                 license=0,
+                latest=True,
             )
 
         page1 = self.client.get(reverse("search"), {"query": "Paginated", "page": 1})

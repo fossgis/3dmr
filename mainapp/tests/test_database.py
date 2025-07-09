@@ -9,7 +9,7 @@ from django.test import TestCase, override_settings
 
 from mainapp import database
 from mainapp.markdown import markdown
-from mainapp.models import Category, Change, LatestModel, Location, Model
+from mainapp.models import Category, Change, Location, Model
 
 
 User = get_user_model()
@@ -66,7 +66,7 @@ class DatabaseTests(TestCase):
         self.assertEqual(created_model.license, options["license"])
         self.assertEqual(created_model.revision, 1)
 
-        latest_model = LatestModel.objects.get(model_id=created_model.model_id)
+        latest_model = Model.objects.get(model_id=created_model.model_id, latest=True)
         self.assertEqual(latest_model.revision, created_model.revision)
         self.assertEqual(latest_model.title, options["title"])
         self.assertEqual(latest_model.author, options["author"])
@@ -127,10 +127,8 @@ class DatabaseTests(TestCase):
             m2.model_id, 2, "Model ID should increment for the second model"
         )
 
-        latest_m1 = LatestModel.objects.get(model_id=1)
-        latest_m2 = LatestModel.objects.get(model_id=2)
-        self.assertEqual(latest_m1.title, opts1["title"])
-        self.assertEqual(latest_m2.title, opts2["title"])
+        self.assertEqual(m1.title, opts1["title"])
+        self.assertEqual(m2.title, opts2["title"])
 
     def test_upload_new_model_no_location(self):
         model_file = self._create_dummy_file()
@@ -205,7 +203,7 @@ class DatabaseTests(TestCase):
         self.assertEqual(revised_model.title, initial_model.title)
         self.assertEqual(revised_model.license, initial_model.license)
 
-        latest_model = LatestModel.objects.get(model_id=initial_model.model_id)
+        latest_model = Model.objects.get(model_id=initial_model.model_id, latest=True)
         self.assertEqual(latest_model.revision, 2)
         self.assertEqual(latest_model.title, initial_model.title)
         self.assertEqual(latest_model.author, revision_author)
@@ -305,8 +303,9 @@ class DatabaseTests(TestCase):
         self.assertEqual(edited_model.location.longitude, edit_options["longitude"])
         self.assertEqual(Location.objects.count(), 1)
 
-        latest_edited_model = LatestModel.objects.get(
-            model_id=edited_model.model_id, revision=edited_model.revision
+        latest_edited_model = Model.objects.get(
+            model_id=edited_model.model_id,
+            latest=True
         )
         self.assertEqual(latest_edited_model.title, edit_options["title"])
         self.assertEqual(latest_edited_model.license, edit_options["license"])
@@ -354,8 +353,6 @@ class DatabaseTests(TestCase):
         self.assertEqual(edited_model.location.longitude, edit_options["longitude"])
         self.assertEqual(Location.objects.count(), 1)
 
-
-"""
     def test_edit_model_remove_location(self):
         model_options = {
             'title': 'Loses Location', 'description': 'Has loc.', 'tags': {'loc': 'remove'},
@@ -376,10 +373,9 @@ class DatabaseTests(TestCase):
             'rotation': 0, 'scale': 1
         }
         result = database.edit(edit_options)
-        # currently this test fails here. Refer #7
+
         self.assertTrue(result)
 
         edited_model = Model.objects.get(pk=model_to_edit.pk)
         self.assertIsNone(edited_model.location, "Location should have been removed")
         self.assertEqual(Location.objects.count(), 0, "Location record should be deleted")
-"""
