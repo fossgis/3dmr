@@ -57,7 +57,7 @@ def model(request, model_id, revision=None):
     if revision:
         model = get_object_or_404(Model, model_id=model_id, revision=revision)
     else:
-        model = get_object_or_404(Model.objects.filter(latest=True), model_id=model_id)
+        model = get_object_or_404(Model, latest=True, model_id=model_id)
 
     if model.is_hidden and not admin(request):
         raise Http404('Model does not exist.')
