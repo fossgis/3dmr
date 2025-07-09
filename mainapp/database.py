@@ -18,12 +18,13 @@ def upload(model_file, options={}):
             if options.get('revision', False):
                 m = Model.objects.get(model_id=options['model_id'], latest=True)
 
-                options['categories'] = [cat.name for cat in m.categories.all()]
+                categories = m.categories.all()
 
                 location = m.location
                 if location is not None:
                     location.pk = None
                     location.id = None
+                    location._state.adding = True
                     location.save()
 
                 m.pk = None
@@ -32,7 +33,9 @@ def upload(model_file, options={}):
                 m.author = options['author']
                 m.location = location
                 m.latest = True
+                m._state.adding = True
                 m.save()
+                m.categories.set(categories)
             else:
                 # get the model_id for this model.
                 try:
@@ -75,11 +78,9 @@ def upload(model_file, options={}):
 
                 m.save()
 
-            for category_name in options['categories']:
-                category, created = Category.objects.get_or_create(name=category_name)
-
-                category.save()
-                m.categories.add(category)
+                for category_name in options['categories']:
+                    category, created = Category.objects.get_or_create(name=category_name)
+                    m.categories.add(category)
 
             change = Change(
                 author=options['author'],
