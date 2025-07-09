@@ -109,18 +109,6 @@ class Migration(migrations.Migration):
             name='model',
             unique_together={('model_id', 'revision')},
         ),
-        migrations.AddIndex(
-            model_name='model',
-            index=models.Index(fields=['model_id', 'revision'], name='mainapp_mod_model_i_7619e8_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='model',
-            index=models.Index(fields=['-upload_date'], name='mainapp_mod_upload__411f1e_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='model',
-            index=models.Index(fields=['is_hidden'], name='mainapp_mod_is_hidd_0a5be0_idx'),
-        ),
         migrations.AddConstraint(
             model_name='model',
             constraint=models.UniqueConstraint(condition=models.Q(('latest', True)), fields=('model_id',), name='unique_latest_model_per_id'),

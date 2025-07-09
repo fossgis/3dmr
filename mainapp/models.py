@@ -72,12 +72,6 @@ class Model(models.Model):
             )
         ]
 
-        indexes = [
-            models.Index(fields=['model_id', 'revision']),
-            models.Index(fields=['-upload_date']),
-            models.Index(fields=['is_hidden']),
-        ]
-
     def save(self, *args, **kwargs):
         with transaction.atomic():
             if self.latest:
