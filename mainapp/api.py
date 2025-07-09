@@ -75,10 +75,11 @@ def get_info(request, model_id):
 
 @any_origin
 def get_model(request, model_id, revision=None):
-    model = get_object_or_404(Model, model_id=model_id, latest=True)
-    
     if not revision:
+        model = get_object_or_404(Model, model_id=model_id, latest=True)
         revision = model.revision
+    else:
+        model = get_object_or_404(Model, model_id=model_id, revision=revision)
 
     if model.is_hidden and not admin(request):
         raise Http404('Model does not exist.')
