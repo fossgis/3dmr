@@ -172,8 +172,6 @@ function updateModelStats(stats) {
     );
 
     document.getElementById("hasAnimations").textContent = stats.hasAnimations ? "Yes" : "No";
-    setStatQualityClass("hasAnimations", stats.hasAnimations ? "good" : "neutral");
-
 }
 
 window.initStatsTHREE = initTHREE;
