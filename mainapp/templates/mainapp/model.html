@@ -194,6 +194,10 @@ initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }},
 		setUpRenderPane();
 		setUpStats();
 	});
+
+	$(function () {
+		$('[data-toggle="tooltip"]').tooltip();
+	});
 </script>
 {% endcompress %}
 {% endblock %}
