@@ -10,6 +10,7 @@
 		{% for error in form.title.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
 		{{ form.title }}
 	</div>
+	{% endif %}
 	{% if form_file %}
 	<div class="form-group required">
 		<label for="{{ form.model_file.id_for_label }}">{{ form.model_file.label }}</label>
@@ -18,10 +19,29 @@
 	</div>
 	<div id="model-preview" style="margin-bottom: 15px; display: none;">
 		<div class="tab-content" style="overflow: hidden; display: flex; align-items: flex-start;">
-			
-			<div id="view" role="tabpanel" style="margin-right: 20px;">
-				<b style="margin: 0 0 8px 0;">3D Preview</b>
-				<div class="render-pane" id="render-pane" style="height: 300px;"></div>
+			<div id="view" class="col-md-4" role="tabpanel">
+				<b style="margin-bottom: 8px;">3D Preview</b>
+				<div class="render-pane" id="render-pane">
+					<div id="fullscreen-button">&#x26F6;</div>
+					<div id="labels-container"></div>
+					<div id="scale-container" style="display: none;">
+						<div>
+							<span>Grid Size:</span> 
+							<span id="grid-size-value">-</span>
+						</div>
+						<div>
+							<span>Grid Spacing:</span> 
+							<span id="grid-spacing-value">-</span>
+						</div>
+						<div>
+							<span>Each Square:</span> 
+							<span id="square-size-value">-</span>
+						</div>
+						<div class="scale-footer">
+							Model fits in <span id="model-space-value">-</span> space
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<div id="model-stats" role="tabpanel">
@@ -33,6 +53,7 @@
 	</div>
 	<div id="model-status"></div>
 	{% endif %}
+	{% if form_metadata %}
 	<div class="form-group">
 		<label for="{{ form.description.id_for_label }}">{{ form.description.label }}:</label>
 		{% for error in form.description.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
@@ -217,11 +238,15 @@
 
 			initStatsTHREE(fileURL);
 			
-			const options = {"width": "350", "height": "300"}
+			const options = {"width": "400", "height": "350"}
 			
 			const renderPane = document.getElementById("render-pane");
-			while (renderPane.firstChild) {
-				renderPane.removeChild(renderPane.firstChild);
+			const canvases = document.getElementsByTagName("canvas");
+
+			for (const element of canvases) {
+				if (renderPane.contains(element)) {
+					renderPane.removeChild(element);
+				}
 			}
 			
 			displayPreview("render-pane", fileURL, options);
