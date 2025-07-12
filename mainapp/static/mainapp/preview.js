@@ -9,6 +9,7 @@ let labelsContainer = null;
 let scaleContainer = null;
 let gridSize = 100;
 let boundingBox = {x: 100, y:100, z:100};
+let groundPosition = 0;
 
 function setUpRenderPane(){
 	const elems = document.querySelectorAll('div.render-pane');
@@ -116,6 +117,7 @@ function loadGLB(url, options, three) {
 		const center = bbox.getCenter(new THREE.Vector3());
 		const size = bbox.getSize(new THREE.Vector3());
 		boundingBox = size;
+		groundPosition = -size.y/2 - bbox.min.y;
 
 		object.position.sub(center);
 
@@ -195,11 +197,13 @@ function toggleVisualHelpers(scene, enable) {
 	if (enable) {
 	if (!axesHelper) {
 			axesHelper = new THREE.AxesHelper(gridSize/2);
+			axesHelper.position.y = groundPosition;
 			scene.add(axesHelper);
 		}
 
 		if (!gridHelper) {
 			gridHelper = new THREE.GridHelper(gridSize);
+			gridHelper.position.y = groundPosition;
 			scene.add(gridHelper);
 		}
 
@@ -276,9 +280,9 @@ function updateLabels(camera) {
 
 	const tempV = new THREE.Vector3();
 	const label3DPositions = {
-		x: new THREE.Vector3(gridSize/2, 0, 0),
-		y: new THREE.Vector3(0, gridSize/2, 0),
-		z: new THREE.Vector3(0, 0, gridSize/2),
+		x: new THREE.Vector3(gridSize/2, groundPosition, 0),
+		y: new THREE.Vector3(0, gridSize/2 + groundPosition, 0),
+		z: new THREE.Vector3(0, groundPosition, gridSize/2),
 	};
 
 	for (const axis in {x:true, y:true, z:true}) {
