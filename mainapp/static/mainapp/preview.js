@@ -5,10 +5,10 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 let axesHelper = null;
 let gridHelper = null;
 let htmlLabels = {};
+let distanceMarkers = {};
 let labelsContainer = null;
 let scaleContainer = null;
 let gridSize = 100;
-let boundingBox = {x: 100, y:100, z:100};
 let groundPosition = 0;
 
 function setUpRenderPane(){
@@ -116,7 +116,6 @@ function loadGLB(url, options, three) {
 		const bbox = new THREE.Box3().setFromObject(object);
 		const center = bbox.getCenter(new THREE.Vector3());
 		const size = bbox.getSize(new THREE.Vector3());
-		boundingBox = size;
 		groundPosition = -size.y/2 - bbox.min.y;
 
 		object.position.sub(center);
@@ -127,7 +126,7 @@ function loadGLB(url, options, three) {
 		camera.position.set(center.x, center.y, cameraZ * 1.5);
 		camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-		gridSize = maxDim;
+		gridSize = Math.ceil(maxDim / 50) * 50;
 
 		let mixer = null;
 	
@@ -195,7 +194,7 @@ function resizeCanvas(renderer, camera, options, renderPane) {
 
 function toggleVisualHelpers(scene, enable) {
 	if (enable) {
-	if (!axesHelper) {
+		if (!axesHelper) {
 			axesHelper = new THREE.AxesHelper(gridSize/2);
 			axesHelper.position.y = groundPosition;
 			scene.add(axesHelper);
@@ -206,6 +205,8 @@ function toggleVisualHelpers(scene, enable) {
 			gridHelper.position.y = groundPosition;
 			scene.add(gridHelper);
 		}
+
+		const gridSpacing = gridSize / 10;
 
 		labelsContainer = document.getElementById('labels-container');
 		if (labelsContainer) {
@@ -223,6 +224,16 @@ function toggleVisualHelpers(scene, enable) {
 				labelsContainer.appendChild(htmlLabels.x);
 				labelsContainer.appendChild(htmlLabels.y);
 				labelsContainer.appendChild(htmlLabels.z);
+
+				distanceMarkers = {};
+				
+				for (let i = -5; i <= 5; i++) {
+					const distance = i * gridSpacing;
+					distanceMarkers[`marker_x_${i}`] = createLabelElement(`${distance.toString()}`, '#888');
+					labelsContainer.appendChild(distanceMarkers[`marker_x_${i}`]);
+					distanceMarkers[`marker_z_${i}`] = createLabelElement(`${distance.toString()}`, '#888');
+					labelsContainer.appendChild(distanceMarkers[`marker_z_${i}`]);
+				}
 			}
 		}
 
@@ -231,18 +242,8 @@ function toggleVisualHelpers(scene, enable) {
 			scaleContainer.style.display = 'block';
 			if (!gridSize) return;
 
-			const gridSpacing = gridSize / 10;
-			const totalSize = boundingBox.x * boundingBox.y * boundingBox.z;
-			
-			const gridSizeEl = document.getElementById('grid-size-value');
 			const gridSpacingEl = document.getElementById('grid-spacing-value');
-			const squareSizeEl = document.getElementById('square-size-value');
-			const modelSpaceEl = document.getElementById('model-space-value');
-			
-			if (gridSizeEl) gridSizeEl.textContent = `${gridSize.toFixed(1)}m`;
-			if (gridSpacingEl) gridSpacingEl.textContent = `${gridSpacing.toFixed(1)}m`;
-			if (squareSizeEl) squareSizeEl.textContent = `${gridSpacing.toFixed(1)}m × ${gridSpacing.toFixed(1)}m`;
-			if (modelSpaceEl) modelSpaceEl.innerHTML = `${totalSize.toFixed(0)}m<sup>3</sup>`;
+			if (gridSpacingEl) gridSpacingEl.textContent = `${gridSpacing.toString()}m`;
 		}
 	} else {
 		if (axesHelper) {
@@ -299,6 +300,44 @@ function updateLabels(camera) {
 		label.style.top = `${y}px`;
 	}
 
+	if (Object.keys(distanceMarkers).length > 0) {
+		const gridSpacing = gridSize / 10;
+		
+		for (let i = -5; i <= 5; i++) {
+			const marker_x = distanceMarkers[`marker_x_${i}`];
+			const marker_z = distanceMarkers[`marker_z_${i}`];
+			if (marker_x) {
+				
+				const markerPositionX = new THREE.Vector3(
+					-gridSize/2,
+					groundPosition, 
+					(i * gridSpacing), 
+				);
+				
+				tempV.copy(markerPositionX);
+				tempV.project(camera);
+				const x = (tempV.x * 0.5 + 0.5) * window.innerWidth;
+				const y = (-tempV.y * 0.5 + 0.5) * window.innerHeight;
+				marker_x.style.left = `${x}px`;
+				marker_x.style.top = `${y}px`;
+			}
+			if (marker_z) {
+				const markerPositionZ = new THREE.Vector3(
+					(i * gridSpacing), 
+					groundPosition, 
+					-gridSize/2
+				);
+
+				tempV.copy(markerPositionZ);
+				tempV.project(camera);
+				const x = (tempV.x * 0.5 + 0.5) * window.innerWidth;
+				const y = (-tempV.y * 0.5 + 0.5) * window.innerHeight;
+				marker_z.style.left = `${x}px`;
+				marker_z.style.top = `${y}px`;
+
+			}
+		}
+	}
 }
 
 function handleFullscreenChange(threeInstance) {
