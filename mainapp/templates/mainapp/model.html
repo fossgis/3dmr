@@ -43,21 +43,8 @@
 							<div id="fullscreen-button">&#x26F6;</div>
 							<div id="labels-container"></div>
 							<div id="scale-container" style="display: none;">
-								<div>
-									<span>Grid Size:</span> 
-									<span id="grid-size-value">-</span>
-								</div>
-								<div>
-									<span>Grid Spacing:</span> 
-									<span id="grid-spacing-value">-</span>
-								</div>
-								<div>
-									<span>Each Square:</span> 
-									<span id="square-size-value">-</span>
-								</div>
-								<div class="scale-footer">
-									Model fits in <span id="model-space-value">-</span> space
-								</div>
+								<span>Grid Spacing:</span> 
+								<span id="grid-spacing-value">-</span>
 							</div>
 						</div>
 					</div>
@@ -212,10 +199,6 @@ initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }},
 	window.addEventListener("load", function() {
 		setUpRenderPane();
 		setUpStats();
-	});
-
-	$(function () {
-		$('[data-toggle="tooltip"]').tooltip();
 	});
 </script>
 {% endcompress %}
