@@ -49,7 +49,8 @@ function calculateModelStats(model, animations) {
     let meshCount = 0;
 
     const seenMaterials = new Set();
-    const seenTextures = new Set();
+    const seenPBRTextures = new Set();
+    const seenOtherTextures = new Set();
     const boundingBox = new THREE.Box3().setFromObject(model);
 
     model.traverse(function (child) {
@@ -70,13 +71,16 @@ function calculateModelStats(model, animations) {
             materials.forEach((mat) => {
                 seenMaterials.add(mat.uuid);
 
-                const textures = [
+
+                const PBRTextures = [
                     'metalnessMap',
                     'roughnessMap',
                     'normalMap',
                     'aoMap',
                     'map',
                     'emissiveMap',
+                ];
+                const otherTextures = [
                     'bumpMap',
                     'displacementMap',
                     'alphaMap',
@@ -87,11 +91,15 @@ function calculateModelStats(model, animations) {
                     'sheenColorMap',
                     'specularMap'
                 ];
+                const allTextures = [
+                    ...PBRTextures.map(slot => ({ slot, isPBR: true })),
+                    ...otherTextures.map(slot => ({ slot, isPBR: false }))
+                ];
 
-                textures.forEach(slot => {
+                allTextures.forEach(({ slot, isPBR }) => {
                     const tex = mat[slot];
                     if (tex && tex.isTexture) {
-                        seenTextures.add(tex.uuid);
+                        (isPBR ? seenPBRTextures : seenOtherTextures).add(tex.uuid);
                     }
                 });
             });
@@ -113,7 +121,8 @@ function calculateModelStats(model, animations) {
             height: size.y.toFixed(2),
             depth: size.z.toFixed(2)
         },
-        visualDetailScore: seenMaterials.size + (1.5 * seenTextures.size),
+        hasTextures: Boolean(seenPBRTextures.size + seenOtherTextures.size),
+        PBRTextureCount: seenPBRTextures.size,
         meshes: meshCount,
         hasAnimations,
     };
@@ -138,18 +147,23 @@ function setStatQualityClass(id, quality) {
 
 function updateModelStats(stats) {
     const fc = stats.faces;
-    // toLocaleStrinng produces inconsistent decimal seperators across different regions
+    // toLocaleString produces inconsistent decimal seperators across different regions
     document.getElementById("faceCount").textContent = fc.toLocaleString();
     setStatQualityClass("faceCount", 
         fc <= 5000 ? "good" :
         fc <= 100000 ? "warning" : "bad"
     );
 
-    const score = stats.visualDetailScore;
-    document.getElementById("visualDetailScore").textContent = score.toLocaleString();
-    setStatQualityClass("visualDetailScore", 
-        score === 0 ? "bad" :
-        score <= 5 ? "warning" : "good"
+    const hasTextures = stats.hasTextures;
+    document.getElementById("hasTextures").textContent = hasTextures ? "Yes" : "No";
+    setStatQualityClass("hasTextures", 
+        hasTextures ? "good" : "warning"
+    );
+
+    const PBRTextureCount = stats.PBRTextureCount;
+    document.getElementById("PBRTextureCount").textContent = PBRTextureCount;
+    setStatQualityClass("PBRTextureCount", 
+        PBRTextureCount ? "good" : "warning"
     );
 
     const mesh = stats.meshes;
@@ -157,14 +171,14 @@ function updateModelStats(stats) {
     setStatQualityClass("meshCount", mesh >= 1 ? "good" : "bad");
 
     const density = stats.triangleDensity;
-    document.getElementById("triangleDensity").innerHTML = density.toLocaleString() + " triangles/meter<sup>3</sup>";
+    document.getElementById("triangleDensity").innerHTML = density.toLocaleString() + " triangles/m<sup>3</sup>";
     setStatQualityClass("triangleDensity", 
         density > 0 && density <= 500 ? "good" :
         density <= 1000 ? "warning" : "bad"
     );
 
     document.getElementById("boundingBox").textContent =
-        `${stats.boundingBox.width} meters × ${stats.boundingBox.height} meters × ${stats.boundingBox.depth} meters`;
+        `${stats.boundingBox.width}m × ${stats.boundingBox.height}m × ${stats.boundingBox.depth}m`;
     const volume = stats.volume;
     setStatQualityClass("boundingBox", 
         volume > 0.01 ? "good" :
