@@ -147,8 +147,7 @@ function setStatQualityClass(id, quality) {
 
 function updateModelStats(stats) {
     const fc = stats.faces;
-    // toLocaleString produces inconsistent decimal seperators across different regions
-    document.getElementById("faceCount").textContent = fc.toLocaleString();
+    document.getElementById("faceCount").textContent = fc.toLocaleString("en-US");
     setStatQualityClass("faceCount", 
         fc <= 5000 ? "good" :
         fc <= 100000 ? "warning" : "bad"
@@ -167,11 +166,11 @@ function updateModelStats(stats) {
     );
 
     const mesh = stats.meshes;
-    document.getElementById("meshCount").textContent = mesh.toLocaleString();
+    document.getElementById("meshCount").textContent = mesh.toLocaleString("en-US");
     setStatQualityClass("meshCount", mesh >= 1 ? "good" : "bad");
 
     const density = stats.triangleDensity;
-    document.getElementById("triangleDensity").innerHTML = density.toLocaleString() + " triangles/m<sup>3</sup>";
+    document.getElementById("triangleDensity").innerHTML = density.toLocaleString("en-US") + " triangles/m<sup>3</sup>";
     setStatQualityClass("triangleDensity", 
         density > 0 && density <= 500 ? "good" :
         density <= 1000 ? "warning" : "bad"
