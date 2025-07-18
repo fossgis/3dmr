@@ -126,7 +126,10 @@ function loadGLB(url, options, three) {
 		camera.position.set(center.x, center.y, cameraZ * 1.5);
 		camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-		gridSize = Math.ceil(maxDim / 50) * 50;
+		if (maxDim >= 5)
+			gridSize = Math.ceil(maxDim / 50) * 50;
+		else
+			gridSize = maxDim;
 
 		let mixer = null;
 	
@@ -229,9 +232,9 @@ function toggleVisualHelpers(scene, enable) {
 				
 				for (let i = -5; i <= 5; i++) {
 					const distance = i * gridSpacing;
-					distanceMarkers[`marker_x_${i}`] = createLabelElement(`${distance.toString()}`, '#888');
+					distanceMarkers[`marker_x_${i}`] = createLabelElement(`${distance.toFixed(1)}`, '#888');
 					labelsContainer.appendChild(distanceMarkers[`marker_x_${i}`]);
-					distanceMarkers[`marker_z_${i}`] = createLabelElement(`${distance.toString()}`, '#888');
+					distanceMarkers[`marker_z_${i}`] = createLabelElement(`${distance.toFixed(1)}`, '#888');
 					labelsContainer.appendChild(distanceMarkers[`marker_z_${i}`]);
 				}
 			}
@@ -243,7 +246,7 @@ function toggleVisualHelpers(scene, enable) {
 			if (!gridSize) return;
 
 			const gridSpacingEl = document.getElementById('grid-spacing-value');
-			if (gridSpacingEl) gridSpacingEl.textContent = `${gridSpacing.toString()}m`;
+			if (gridSpacingEl) gridSpacingEl.textContent = `${gridSpacing.toFixed(1)}m`;
 		}
 	} else {
 		if (axesHelper) {
