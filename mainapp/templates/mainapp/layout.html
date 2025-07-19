@@ -40,6 +40,7 @@
 			</div>
 			<div id="navbar" class="navbar-collapse collapse in" aria-expanded="true" style role="menu">
 				<ul class="nav navbar-nav navbar-right">
+					<li><a href="https://wiki.openstreetmap.org/wiki/3D_Model_Repository">Documentation</a></li>
 					<li><a href="{% url 'docs' %}">API Docs</a></li>
 					<li><a href="{% url 'downloads' %}">Downloads</a></li>
 					<li><a href="{% url 'map' %}">Map</a></li>
@@ -75,6 +76,14 @@
 	{% endif %}
 	{% block body %}
 	{% endblock %}
+
+	<nav class="navbar-fixed-bottom">
+		<div class="container-fluid text-right">
+			<a class="item" target="_blank" href="https://community.openstreetmap.org/tag/3d">3D Forum</a>
+			<span class="separator" aria-hidden="true">|</span>
+			<a class="item" target="_blank" href="https://github.com/fossgis/3dmr">GitHub</a>
+		</div>
+	</nav>
 	<script src="{% static 'mainapp/lib/jquery.min.js' %}"></script>
 	<script src="{% static 'mainapp/lib/bootstrap.min.js' %}"></script>
 	{% block footeradditions %}

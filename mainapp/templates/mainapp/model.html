@@ -40,6 +40,12 @@
 				<div class="tab-content" style="overflow: hidden;">
 					<div class="tab-pane active" id="view" role="tabpanel">
 						<div class="render-pane" data-model="{{ model.model_id }}" data-revision="{{ model.revision }}" id="render-pane{{ model.model_id }}.{{ model.revision }}" style="height: 480px;">
+							<div id="fullscreen-button">&#x26F6;</div>
+							<div id="labels-container"></div>
+							<div id="scale-container" style="display: none;">
+								<span>Grid Spacing:</span> 
+								<span id="grid-spacing-value">-</span>
+							</div>
 						</div>
 					</div>
 					{% if model.location %}

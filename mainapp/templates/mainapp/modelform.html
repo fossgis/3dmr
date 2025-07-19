@@ -10,6 +10,37 @@
 		{% for error in form.title.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
 		{{ form.title }}
 	</div>
+	{% endif %}
+	{% if form_file %}
+	<div class="form-group required">
+		<label for="{{ form.model_file.id_for_label }}">{{ form.model_file.label }}</label>
+		{% for error in form.model_file.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+		{{ form.model_file }}
+	</div>
+	<div id="model-preview" style="margin-bottom: 15px; display: none;">
+		<div class="tab-content" style="overflow: hidden; display: flex; align-items: flex-start;">
+			<div id="view" class="col-md-4" role="tabpanel">
+				<b style="margin-bottom: 8px;">3D Preview</b>
+				<div class="render-pane" id="render-pane">
+					<div id="fullscreen-button">&#x26F6;</div>
+					<div id="labels-container"></div>
+					<div id="scale-container" style="display: none;">
+						<span>Grid Spacing:</span> 
+						<span id="grid-spacing-value">-</span>
+					</div>
+				</div>
+			</div>
+
+			<div id="model-stats" role="tabpanel">
+				<b style="margin: 0 0 8px 0;">Model Stats</b>
+				{% include 'mainapp/model_stats.html' %}
+			</div>
+
+		</div>
+	</div>
+	<div id="model-status"></div>
+	{% endif %}
+	{% if form_metadata %}
 	<div class="form-group">
 		<label for="{{ form.description.id_for_label }}">{{ form.description.label }}:</label>
 		{% for error in form.description.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
@@ -25,19 +56,23 @@
 		{% for error in form.categories.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
 		{{ form.categories }}
 	</div>
+	<label for="map">Approximate position:</label>
 	<div id="map"></div>
 	<p id="map-descriptor"></p>
-	<div class="form-group">
-		<label for="{{ form.latitude.id_for_label }}">{{ form.latitude.label }}:</label>
-		{% for error in form.latitude.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
-		<div class="alert alert-danger" role="alert" id="latitude-error" style="display: none;"></div>
-		{{ form.latitude }}
-	</div>
-	<div class="form-group">
-		<label for="{{ form.longitude.id_for_label }}">{{ form.longitude.label }}:</label>
-		{% for error in form.longitude.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
-		<div class="alert alert-danger" role="alert" id="longitude-error" style="display: none;"></div>
-		{{ form.longitude }}
+	
+	<div class="row flex" style="justify-content: space-between;">
+		<div class="form-group" style="width: 45%;">
+			<label for="{{ form.latitude.id_for_label }}">{{ form.latitude.label }}:</label>
+			{% for error in form.latitude.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+			<div class="alert alert-danger" role="alert" id="latitude-error" style="display: none;"></div>
+			{{ form.latitude }}
+		</div>
+		<div class="form-group" style="width: 45%;">
+			<label for="{{ form.longitude.id_for_label }}">{{ form.longitude.label }}:</label>
+			{% for error in form.longitude.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+			<div class="alert alert-danger" role="alert" id="longitude-error" style="display: none;"></div>
+			{{ form.longitude }}
+		</div>
 	</div>
 	<span class="help-block">It's preferable to change the transformations of your model instead of using these fields.</span>
 	<div class="form-group">
@@ -70,29 +105,6 @@
 		{% endfor %}
 	</div>
 	{% endif %}
-	{% if form_file %}
-	<div class="form-group required">
-		<label for="{{ form.model_file.id_for_label }}">{{ form.model_file.label }}</label>
-		{% for error in form.model_file.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
-		{{ form.model_file }}
-	</div>
-	<div id="model-preview" style="margin-bottom: 15px; display: none;">
-		<div class="tab-content" style="overflow: hidden; display: flex; align-items: flex-start;">
-			
-			<div id="view" role="tabpanel" style="margin-right: 20px;">
-				<b style="margin: 0 0 8px 0;">3D Preview</b>
-				<div class="render-pane" id="render-pane" style="height: 240px;"></div>
-			</div>
-
-			<div id="model-stats" role="tabpanel">
-				<b style="margin: 0 0 8px 0;">Model Stats</b>
-				{% include 'mainapp/model_stats.html' %}
-			</div>
-
-		</div>
-	</div>
-	<div id="model-status"></div>
-	{% endif %}
 	<div class="alert alert-danger" role="alert" id="form-error" style="display: none;"></div>
 	<button type="submit" class="btn btn-default">{% if revise %}Revise Model{% elif edit %}Edit Metadata{% else %}Upload Model{% endif %}</button>
 </form>
@@ -113,7 +125,7 @@
 	var map = L.map('map');
 	map.on('load', function() {
 		var descriptor = document.getElementById('map-descriptor');
-		descriptor.innerHTML = 'Click anywhere on the map to set longitude/latitude values.';
+		descriptor.innerHTML = 'Click anywhere on the map to set approximate longitude/latitude values.<br/>This will only be attached to the model\'s metadata.';
 	});
 	map.setView([51.505, -0.09], 3);
 
@@ -213,11 +225,15 @@
 
 			initStatsTHREE(fileURL);
 			
-			const options = {"width": "240", "height": "240"}
+			const options = {"width": "400", "height": "350"}
 			
 			const renderPane = document.getElementById("render-pane");
-			while (renderPane.firstChild) {
-				renderPane.removeChild(renderPane.firstChild);
+			const canvases = document.getElementsByTagName("canvas");
+
+			for (const element of canvases) {
+				if (renderPane.contains(element)) {
+					renderPane.removeChild(element);
+				}
 			}
 			
 			displayPreview("render-pane", fileURL, options);
