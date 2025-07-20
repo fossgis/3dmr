@@ -3,3 +3,4 @@ db.sqlite3
 __pycache__
 staticfiles
 models
+mainapp/static/mainapp
