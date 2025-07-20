@@ -35,11 +35,22 @@ jobs:
       with:
         python-version: '3.13'
 
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-      
+
+    - name: Build static files
+      run: |
+        cd mainapp/static_src
+        npm install
+        npm run build
+
     - name: Download glTF Validator
       run: |
         curl -L -o gltf_validator.tar.xz https://github.com/KhronosGroup/glTF-Validator/releases/download/2.0.0-dev.3.10/gltf_validator-2.0.0-dev.3.10-linux64.tar.xz
