@@ -2,8 +2,13 @@
 {% block pagename %}Map{% endblock %}
 {% block headadditions %}
 {% load static %}
+{% load compress %}
+{% compress css inline %}
 <link rel="stylesheet" href="{% static 'mainapp/lib/leaflet.css' %}">
+{% endcompress %}
+{% compress js %}
 <script src="{% static 'mainapp/lib/leaflet.js' %}"></script>
+{% endcompress %}
 <style>
 	html, body {
 		width: 100%;
@@ -24,7 +29,9 @@
 	}
 </style>
 {% load static %}
+{% compress js %}
 <script src="{% static 'mainapp/map.js' %}"></script>
+{% endcompress %}
 {% endblock %}
 {% block body %}
 <div id="mapdiv"></div>
