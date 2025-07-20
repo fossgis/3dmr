@@ -66,7 +66,7 @@
 					<h3 class="panel-title">{{ model.title }}</h3>
 				</div>
 				<div class="panel-body">
-					<p>3DMR tag: <strong>3dmr={{ model.model_id }}</strong></p>
+					<p>3DMR tag: <a target="_blank" href="https://overpass-turbo.eu/?w=%223dmr%22%3D%22{{ model.model_id }}%22+global&R#"><strong>3dmr={{ model.model_id }}</strong></a></p>
 					<p>Categories:
 						{% for category in model.categories.all %}
 						<a href="{% url 'search' %}?category={{ category.name }}"><span class="label label-default">{{ category.name }}</span></a>
