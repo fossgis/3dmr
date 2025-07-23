@@ -1,4 +1,4 @@
-{% extends "mainapp/layout_3d.html" %}
+{% extends "mainapp/layout.html" %}
 {% load static %}
 {% block pagename %}Homepage{% endblock %}
 {% block headadditions %}
@@ -25,13 +25,10 @@
 </div>
 {% endblock %}
 {% block footeradditions %}
-{% load compress %}
-{% compress js %}
-<script type="module" src="{% static 'mainapp/preview.js' %}"></script>
+<script type="module" src="{% static 'mainapp/main.bundle.js' %}"></script>
 <script>
 	window.addEventListener("load", function() {
 		setUpRenderPane();
 	});
 </script>
-{% endcompress %}
 {% endblock %}

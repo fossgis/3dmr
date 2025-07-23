@@ -212,10 +212,7 @@
 {% endif %}
 
 {% if form_file %}
-{% load compress %}
-{% compress js %}
-<script type="module" src="{% static 'mainapp/preview.js' %}"></script>
-<script type="module" src="{% static 'mainapp/model_stats.js' %}"></script>
+<script type="module" src="{% static 'mainapp/main.bundle.js' %}"></script>
 <script type="module">
 	document.getElementById('{{ form.model_file.id_for_label }}')
 	.addEventListener("change", function (event) {
@@ -242,5 +239,4 @@
 		}
 	});
 </script>
-{% endcompress %}
 {% endif %}

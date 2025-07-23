@@ -15,7 +15,7 @@ This project requires **PostgreSQL**, the `KhronosGroup glTF-Validator <https://
 Prerequisites
 -------------
 
-1. Install Python 3 (version 3.13 recommended) and `pip3`.
+1. Install Python 3 (version 3.13 recommended), `pip3`, Node (version 22.x recommended) and `npm`.
 
 2. Install PostgreSQL and ensure the server is running. You’ll also need to create a database and user for local development.
 
@@ -43,6 +43,17 @@ Prerequisites
       GLTF_VALIDATOR_PATH=/path/to/gltf_validator/gltf_validator
 
    Replace `/path/to/` with the actual path where you want to store the gltf_validator. This is required for model validation to work.
+
+4. Build static files:
+
+   Navigate to the `mainapp/static_src` directory and run:
+
+   .. code-block:: bash
+
+      npm install
+      npm run build
+
+   This will compile the static files needed for the web application and store them in `mainapp/static` directory.
 
 Setting Up the Development Server
 ---------------------------------
@@ -153,7 +164,7 @@ These are step-by-step instructions to deploy the 3DMR repository using **Gunico
 
    .. code-block:: bash
 
-      sudo apt install postgresql postgresql-client git python3 python3-pip nginx python3-venv
+      sudo apt install postgresql postgresql-client git python3 python3-pip nginx python3-venv nodejs npm
 
 
 2. PostgreSQL Setup
@@ -236,7 +247,18 @@ These are step-by-step instructions to deploy the 3DMR repository using **Gunico
    - Set `GLTF_VALIDATOR_PATH=/home/tdmr/gltf_validator/gltf_validator`
    - Set `ALLOWED_HOSTS=your.domain.com`
 
-6. Migrate database and collect static files:
+6. Build static files:
+
+   Navigate to the `mainapp/static_src` directory and run:
+
+   .. code-block:: bash
+
+      npm install
+      npm run build
+
+   This will compile the static files needed for the web application and store them in `mainapp/static` directory.
+
+7. Migrate database and collect static files:
 
    .. code-block:: bash
 
