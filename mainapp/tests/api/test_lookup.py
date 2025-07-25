@@ -46,7 +46,7 @@ class LookupAuthorAPIViewTests(BaseViewTestMixin, TestCase):
 
     def test_lookup_author_success(self):
         response = self.client.get(
-            reverse("lookup_author", args=[self.user.username, 1])
+            reverse("lookup_author", args=[self.user.profile.uid, 1])
         )
         self.assertEqual(response.status_code, 200)
         data = response.json()
