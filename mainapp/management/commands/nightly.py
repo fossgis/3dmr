@@ -35,7 +35,7 @@ class Command(BaseCommand):
                 longitude = None
 
             output = dumps({
-                'author': model.author.username,
+                'author': model.author.profile.uid,
                 'revision': model.revision,
                 'title': model.title,
                 'description': model.description,

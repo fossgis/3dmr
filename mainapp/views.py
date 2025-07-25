@@ -322,18 +322,18 @@ def upload(request):
         'max_model_size': settings.MAX_MODEL_SIZE / (1024 * 1024)
     })
 
-def user(request, username):
+def user(request, uid=''):
     update_last_page(request)
 
     RESULTS_PER_PAGE = 6
 
-    if username == '':
+    if uid == '':
         if request.user:
-            username = request.user.username # show our own userpage
+            uid = request.user.profile.uid # show our own userpage
         else:
             pass # redirect to index, no user to load
 
-    user = get_object_or_404(User, username=username)
+    user = get_object_or_404(UserSocialAuth, uid=uid).user
 
     models = user.model_set.filter(latest=True).order_by('-pk')
 
@@ -355,7 +355,7 @@ def user(request, username):
 
     context = {
         'owner': {
-            'username': user.username,
+            'display_name': user.profile.display_name,
             'avatar': user.profile.avatar,
             'profile': user.profile,
             'models': results,
@@ -388,7 +388,7 @@ def editprofile(request):
     request.user.profile.rendered_description = markdown(description)
     request.user.save()
 
-    return redirect(user, username='')
+    return redirect(user, uid='')
 
 def addcomment(request):
     def error(ajax, msg, redirect_page=index, *args, **kwargs):
@@ -441,7 +441,7 @@ def addcomment(request):
 
     response = {
         'comment': rendered_comment,
-        'author': author.username,
+        'author': author.profile.display_name,
         'datetime': obj.datetime,
         'success': 'yes'
     }
@@ -452,20 +452,20 @@ def ban(request):
     if not admin(request):
         return redirect(index)
 
-    username = request.POST.get('username')
+    uid = request.POST.get('uid')
     reason = request.POST.get('reason')
 
-    if not username:
+    if not uid:
         return redirect(index)
 
-    banned_user = User.objects.get(username=username)
+    banned_user = get_object_or_404(UserSocialAuth, uid=uid).user
     
     action = request.POST.get('type')
 
     if action == 'ban':
         if not reason or len(reason) == 0:
             messages.error(request, 'No reason for ban was specified.')
-            return redirect(user, username=username)
+            return redirect(user, uid=uid)
         
         with transaction.atomic():
             if banned_user.profile.is_banned:
@@ -478,17 +478,17 @@ def ban(request):
                 )
 
                 ban.save()
-            return redirect(user, username=username)
+            return redirect(user, uid=uid)
     elif action == 'unban':
         ban = banned_user.ban_set.first()
         if ban:
             ban.delete()
         else:
             messages.error(request, 'User is not banned.')
-        return redirect(user, username=username)
+        return redirect(user, uid=uid)
 
     messages.error(request, 'An error occurred. Please try again.')
-    return redirect(user, username=username)
+    return redirect(user, uid=uid)
 
 def hide_model(request):
     if not admin(request):
