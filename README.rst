@@ -15,7 +15,7 @@ This project requires **PostgreSQL**, the `KhronosGroup glTF-Validator <https://
 Prerequisites
 -------------
 
-1. Install Python 3 (version 3.13 recommended), `pip3`, Node (version 22.x recommended) and `npm`.
+1. Install Python 3 (version 3.13 recommended), `pip3`, Node (version 20.x recommended) and `npm`.
 
 2. Install PostgreSQL and ensure the server is running. You’ll also need to create a database and user for local development.
 
@@ -54,6 +54,12 @@ Prerequisites
       npm run build
 
    This will compile the static files needed for the web application and store them in `mainapp/static` directory.
+
+5. Create OSM OAuth2 Application:
+
+   Go to the `OpenStreetMap OAuth2 Applications <https://www.openstreetmap.org/oauth2/applications>`_ page and create a new application.
+   You will need to provide a name, and callback URL: ``http://127.0.0.1:8000/social/complete/openstreetmap-oauth2/``.
+   After creating the application, you will receive a client ID and client secret.
 
 Setting Up the Development Server
 ---------------------------------
@@ -271,7 +277,25 @@ These are step-by-step instructions to deploy the 3DMR repository using **Gunico
 4. Gunicorn Setup
 -----------------
 
-Create a `gunicorn.service` file for systemd:
+Create a `3dmr.socket` file for systemd:
+.. code-block:: bash
+
+   sudo nano /etc/systemd/system/3dmr.socket
+
+.. code-block:: ini
+
+   # /etc/systemd/system/3dmr.service
+   [Unit]
+   Description=3DMR Gunicorn socket
+
+   [Socket]
+   ListenStream=/run/3dmr.sock
+   SocketUser=www-data
+
+   [Install]
+   WantedBy=multi-user.target
+
+Create a `3dmr.service` file for systemd:
 
 .. code-block:: bash
 
