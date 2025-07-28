@@ -3,9 +3,12 @@ import subprocess
 import zipfile
 from pathlib import Path
 import shutil
+import logging
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     help = "Extracts .zip archives with OBJ files and converts them to .glb using obj2gltf"
@@ -24,6 +27,10 @@ class Command(BaseCommand):
 
         zip_files = base_dir.rglob("*.zip")
 
+        if not zip_files:
+            logger.info("No zip files found in the model directory.")
+            return
+
         for zip_path in zip_files:
             dir_path = zip_path.parent
             model_id = dir_path.name
@@ -31,23 +38,23 @@ class Command(BaseCommand):
             workdir = extracted_dir / f"{model_id}_{revision}"
             workdir.mkdir(parents=True, exist_ok=True)
 
-            self.stdout.write(f"Extracting {zip_path} -> {workdir}")
+            logger.debug(f"Extracting {zip_path} -> {workdir}")
             try:
                 with zipfile.ZipFile(zip_path, 'r') as zip_ref:
                     zip_ref.extractall(workdir)
             except zipfile.BadZipFile:
-                self.stderr.write(f"Bad zip file: {zip_path}")
+                logger.error(f"Bad zip file: {zip_path}")
                 continue
 
             obj_files = list(workdir.glob("*.obj"))
             if not obj_files:
-                self.stdout.write(f"No OBJ file found in {zip_path} — skipping.")
+                logger.warning(f"No OBJ file found in {zip_path} — skipping.")
                 continue
 
             obj_file = obj_files[0]
             output_path = dir_path / f"{revision}.glb"
 
-            self.stdout.write(f"Converting...")
+            logger.debug("Converting...")
             try:
                 subprocess.run(
                     [
@@ -59,19 +66,25 @@ class Command(BaseCommand):
                         "--y"
                     ],
                     check=True,
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL
+                    capture_output=True,
+                    text=True
                 )
-                self.stdout.write(f"Done: {output_path}")
+                logger.info(f"Done: {output_path}")
             except FileNotFoundError:
-                self.stderr.write("npx command not found. Make sure npm and nodejs are installed.")
+                logger.error("npx command not found. Make sure npm and nodejs are installed.")
                 break
-            except subprocess.CalledProcessError:
-                self.stderr.write(f"Conversion failed for {zip_path}")
+            except subprocess.CalledProcessError as e:
+                logger.error(f"Conversion failed for {zip_path}")
+                logger.info(f"Command: {' '.join(e.cmd)}")
+                logger.info(f"Exit code: {e.returncode}")
+                logger.info("--- stdout ---")
+                logger.info(e.stdout)
+                logger.error("--- stderr ---")
+                logger.error(e.stderr)
             if (options['cleanup']):
                 zip_path.unlink()
-                self.stdout.write(f"Removed {zip_path}")
+                logger.info(f"Removed {zip_path}")
         
         if len(os.listdir(extracted_dir)):
             shutil.rmtree(extracted_dir)
-            self.stdout.write(f"Removed {extracted_dir}")
+            logger.info(f"Removed {extracted_dir}")
