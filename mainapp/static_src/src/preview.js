@@ -4,6 +4,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 let axesHelper = null;
 let gridHelper = null;
+let compass = null;
 let htmlLabels = {};
 let distanceMarkers = {};
 let labelsContainer = null;
@@ -152,6 +153,8 @@ function animate(renderer, scene, camera, controls, options, mixer, renderPane) 
 	// clock instance needs to be outside the animation
 	// loop to ensure consistency with the mixer 
 	const clock = new THREE.Clock();
+	const dir = new THREE.Vector3();
+	const sph = new THREE.Spherical();
 
 	function loop() {
 		requestAnimationFrame(loop);
@@ -169,6 +172,11 @@ function animate(renderer, scene, camera, controls, options, mixer, renderPane) 
 		}
 
 		renderer.render(scene, camera);
+		if (compass){
+			camera.getWorldDirection(dir);
+			sph.setFromVector3(dir);
+			compass.style.transform = `rotate(${THREE.MathUtils.radToDeg(sph.theta) - 180}deg)`;
+		}
 	}
 
 	loop();
@@ -197,6 +205,11 @@ function resizeCanvas(renderer, camera, options, renderPane) {
 
 function toggleVisualHelpers(scene, enable) {
 	if (enable) {
+		if (!compass) {
+			compass = document.getElementById('compassContainer');
+			compass.style.display = 'block';
+		}
+
 		if (!axesHelper) {
 			axesHelper = new THREE.AxesHelper(gridSize/2);
 			axesHelper.position.y = groundPosition;
@@ -249,6 +262,11 @@ function toggleVisualHelpers(scene, enable) {
 			if (gridSpacingEl) gridSpacingEl.textContent = `${gridSpacing.toFixed(1)}m`;
 		}
 	} else {
+		if (compass) {
+			compass.style.display = 'none';
+			compass = null;
+		}
+
 		if (axesHelper) {
 			scene.remove(axesHelper);
 			axesHelper.dispose();
