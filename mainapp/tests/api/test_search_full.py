@@ -26,7 +26,7 @@ class SearchFullAPIViewTest(BaseViewTestMixin, TestCase):
         self.assertNotIn(self.model2.model_id, results)
 
     def test_search_full_author_filter(self):
-        payload = {"author": "testuser", "format": ["id", "title"]}
+        payload = {"author": self.user.profile.uid, "format": ["id", "title"]}
         response = self.client.post(
             reverse("search_full"),
             data=json.dumps(payload),
@@ -112,7 +112,7 @@ class SearchFullAPIViewTest(BaseViewTestMixin, TestCase):
         data_page1 = response_page1.json()
         self.assertEqual(len(data_page1), RESULTS_PER_API_CALL)
 
-        payload_page2 = {"author": self.user.profile.display_name, "page": 2}
+        payload_page2 = {"author": self.user.profile.uid, "page": 2}
         response_page2 = self.client.post(
             reverse("search_full"),
             data=json.dumps(payload_page2),
@@ -123,7 +123,7 @@ class SearchFullAPIViewTest(BaseViewTestMixin, TestCase):
         self.assertTrue(0 < len(data_page2) <= RESULTS_PER_API_CALL)
 
     def test_search_full_empty_page_result(self):
-        payload = {"author": self.user.profile.display_name, "page": 999}
+        payload = {"author": self.user.profile.uid, "page": 999}
         response = self.client.post(
             reverse("search_full"),
             data=json.dumps(payload),
