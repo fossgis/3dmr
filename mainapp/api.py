@@ -205,11 +205,11 @@ def search_full(request):
         models = models.filter(is_hidden=False)
 
     if data.get('author'): #uid
-        try :
+        try:
             author = UserSocialAuth.objects.get(uid=data.get('author')).user
             models = models.filter(author=author)
         except UserSocialAuth.DoesNotExist:
-            pass
+            return HttpResponseBadRequest('Author not found')
 
     latitude = data.get('lat')
     longitude = data.get('lon')
