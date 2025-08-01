@@ -26,14 +26,14 @@ class BanTest(BaseViewTestMixin, TestCase):
         response = self.client.post(
             reverse("ban"),
             {
-                "username": self.user_to_be_banned.username,
+                "uid": self.user_to_be_banned.profile.uid,
                 "type": "ban",
                 "reason": "test",
             },
         )
         self.assertRedirects(response, reverse("index"))
 
-    def test_ban_view_no_username(self):
+    def test_ban_view_no_uid(self):
         self.login_user(user_type="admin")
         response = self.client.post(reverse("ban"), {"type": "ban", "reason": "test"})
         self.assertRedirects(response, reverse("index"))
@@ -45,13 +45,13 @@ class BanTest(BaseViewTestMixin, TestCase):
         response = self.client.post(
             reverse("ban"),
             {
-                "username": self.user_to_be_banned.username,
+                "uid": self.user_to_be_banned.profile.uid,
                 "type": "ban",
                 "reason": "Test ban reason",
             },
         )
         self.assertRedirects(
-            response, reverse("user", args=[self.user_to_be_banned.username])
+            response, reverse("user", args=[self.user_to_be_banned.profile.uid])
         )
         self.user_to_be_banned.refresh_from_db()
         self.assertTrue(Ban.objects.filter(banned_user=self.user_to_be_banned).exists())
@@ -60,10 +60,10 @@ class BanTest(BaseViewTestMixin, TestCase):
         self.login_user(user_type="admin")
         response = self.client.post(
             reverse("ban"),
-            {"username": self.user_to_be_banned.username, "type": "ban", "reason": ""},
+            {"uid": self.user_to_be_banned.profile.uid, "type": "ban", "reason": ""},
         )
         self.assertRedirects(
-            response, reverse("user", args=[self.user_to_be_banned.username])
+            response, reverse("user", args=[self.user_to_be_banned.profile.uid])
         )
         self.assertFalse(
             Ban.objects.filter(banned_user=self.user_to_be_banned).exists()
@@ -80,13 +80,13 @@ class BanTest(BaseViewTestMixin, TestCase):
         response = self.client.post(
             reverse("ban"),
             {
-                "username": self.user_to_be_banned.username,
+                "uid": self.user_to_be_banned.profile.uid,
                 "type": "ban",
                 "reason": "Another reason",
             },
         )
         self.assertRedirects(
-            response, reverse("user", args=[self.user_to_be_banned.username])
+            response, reverse("user", args=[self.user_to_be_banned.profile.uid])
         )
         self.assertEqual(
             Ban.objects.filter(banned_user=self.user_to_be_banned).count(), 1
@@ -103,10 +103,10 @@ class BanTest(BaseViewTestMixin, TestCase):
 
         response = self.client.post(
             reverse("ban"),
-            {"username": self.user_to_be_banned.username, "type": "unban"},
+            {"uid": self.user_to_be_banned.profile.uid, "type": "unban"},
         )
         self.assertRedirects(
-            response, reverse("user", args=[self.user_to_be_banned.username])
+            response, reverse("user", args=[self.user_to_be_banned.profile.uid])
         )
         self.user_to_be_banned.profile.refresh_from_db()
         self.assertFalse(self.user_to_be_banned.profile.is_banned)
@@ -117,8 +117,8 @@ class BanTest(BaseViewTestMixin, TestCase):
 
         response = self.client.post(
             reverse("ban"),
-            {"username": self.user_to_be_banned.username, "type": "unban"},
+            {"uid": self.user_to_be_banned.profile.uid, "type": "unban"},
         )
         self.assertRedirects(
-            response, reverse("user", args=[self.user_to_be_banned.username])
+            response, reverse("user", args=[self.user_to_be_banned.profile.uid])
         )

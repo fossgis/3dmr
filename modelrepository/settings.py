@@ -50,6 +50,18 @@ SOCIAL_AUTH_URL_NAMESPACE = 'social'
 SOCIAL_AUTH_OPENSTREETMAP_OAUTH2_KEY = os.environ.get('OSM_CLIENT_ID')
 SOCIAL_AUTH_OPENSTREETMAP_OAUTH2_SECRET = os.environ.get('OSM_CLIENT_SECRET')
 
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'mainapp.pipeline.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

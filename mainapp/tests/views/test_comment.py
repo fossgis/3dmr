@@ -44,7 +44,7 @@ class CommentViewTest(BaseViewTestMixin, TestCase):
 
         response_data = json.loads(response.content)
         self.assertEqual(response_data["success"], "yes")
-        self.assertEqual(response_data["author"], self.user.username)
+        self.assertEqual(response_data["author"], self.user.profile.display_name)
         self.assertIn(comment_text, response_data["comment"])
         self.assertIsNotNone(response_data["datetime"])
 

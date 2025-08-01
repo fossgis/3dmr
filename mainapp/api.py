@@ -8,6 +8,7 @@ from django.core.paginator import Paginator, EmptyPage
 from .models import Comment, Model
 from .utils import get_kv, admin
 from django.views.decorators.csrf import csrf_exempt
+from social_django.models import UserSocialAuth
 
 RESULTS_PER_API_CALL= 20
 
@@ -59,7 +60,7 @@ def get_info(request, model_id):
         'lon': longitude,
         'license': model.license,
         'desc': model.description,
-        'author': model.author.username,
+        'author': model.author.profile.uid,
         'date': model.upload_date,
         'rotation': model.rotation,
         'scale': model.scale,
@@ -68,7 +69,10 @@ def get_info(request, model_id):
 
         # Note: the [::1] evaluates the query set to a list
         'categories': model.categories.all().values_list('name', flat=True)[::1],
-        'comments': comments.values_list('author__username', 'comment', 'datetime')[::1],
+        'comments': [
+            (comment.author.profile.uid, comment.comment, comment.datetime)
+            for comment in comments
+        ],
     }
 
     return JsonResponse(result)
@@ -111,8 +115,9 @@ def lookup_category(request, category, page_id=1):
     return api_paginate(models, page_id)
 
 @any_origin
-def lookup_author(request, username, page_id=1):
-    models = Model.objects.filter(latest=True, author__username=username)
+def lookup_author(request, uid, page_id=1):
+    user = get_object_or_404(UserSocialAuth, uid=uid).user
+    models = user.model_set.filter(latest=True)
 
     if not admin(request):
         models = models.filter(is_hidden=False)
@@ -199,9 +204,12 @@ def search_full(request):
     if not admin(request):
         models = models.filter(is_hidden=False)
 
-    author = data.get('author')
-    if author:
-        models = models.filter(author__username=author)
+    if data.get('author'): #uid
+        try:
+            author = UserSocialAuth.objects.get(uid=data.get('author')).user
+            models = models.filter(author=author)
+        except UserSocialAuth.DoesNotExist:
+            return HttpResponseBadRequest('Author not found')
 
     latitude = data.get('lat')
     longitude = data.get('lon')

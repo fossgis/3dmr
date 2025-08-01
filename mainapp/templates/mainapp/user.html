@@ -29,12 +29,12 @@ function enableEdit() {
 {% block body %}
 <div class="container">
 	<div class="col-12">
-		<h1>{{ owner.username }}'s user page</h1>
+		<h1>{{ owner.profile.display_name }}'s user page</h1>
 	</div>
 	<div class="col-lg-8 col-12">
 		<div id="description">
 			{{ owner.profile.rendered_description|safe }}
-			{% if user.username == owner.username and not user.profile.is_banned %}
+			{% if user.profile.uid == owner.profile.uid and not user.profile.is_banned %}
 			<form action="{% url 'editprofile' %}" method="post" id="editForm">
 				{% csrf_token %}
 				<label for="desc">Description:</label><br>
@@ -52,10 +52,10 @@ function enableEdit() {
 		{% if user.profile.is_admin %}
 		<div style="margin-top: 20px">
 			{% if owner.ban %}
-			<p>Banned by <a href="{% url 'user' username=owner.ban.admin.username %}">{{ owner.ban.admin.username }}</a> on {{ owner.ban.datetime|date:"Y-m-d H:i" }} (Reason: {{ owner.ban.reason }})</p>
+			<p>Banned by <a href="{% url 'user' uid=owner.ban.admin.profile.uid %}">{{ owner.ban.admin.profile.display_name }}</a> on {{ owner.ban.datetime|date:"Y-m-d H:i" }} (Reason: {{ owner.ban.reason }})</p>
 			<form action="{% url 'ban' %}" method="post" class="form-inline">
 				{% csrf_token %}
-				<input type="hidden" name="username" value="{{ owner.username}}">
+				<input type="hidden" name="uid" value="{{ owner.profile.uid }}">
 				<input type="hidden" name="type" value="unban">
 				<button type="submit" class="btn btn-danger">Unban user</button>
 			</form>
@@ -64,14 +64,14 @@ function enableEdit() {
 				{% csrf_token %}
 				<label for="reason">Reason:</label>
 				<input type="text" class="form-control" maxlength="1024" minlength="1" name="reason" id="reason" placeholder="Uploaded Utah Teapot">
-				<input type="hidden" name="username" value="{{ owner.username}}">
+				<input type="hidden" name="uid" value="{{ owner.profile.uid}}">
 				<input type="hidden" name="type" value="ban">
 				<button type="submit" class="btn btn-danger">Ban user</button>
 			</form>
 			{% endif %}
 		</div>
 		{% endif %}
-		<h2>{{ owner.username }}'s models</h2><br>
+		<h2>{{ owner.profile.display_name }}'s models</h2><br>
 		<div class="row flex">
 			{% with hide_user=True %}
 			{% for model in owner.models %}
@@ -85,7 +85,7 @@ function enableEdit() {
 				{% if page == page_id %}
 				<a class="btn btn-primary disabled">{{ page }}</a>
 				{% else %}
-				<a href="{% url 'user' username=owner.username %}?page={{ page }}" class="btn btn-default">{{ page }}</a>
+				<a href="{% url 'user' uid=owner.profile.uid %}?page={{ page }}" class="btn btn-default">{{ page }}</a>
 				{% endif %}
 				{% endfor %}
 			</div>

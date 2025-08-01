@@ -43,8 +43,7 @@ class GetInfoAPIViewTest(BaseViewTestMixin, TestCase):
         self.assertEqual(data["lon"], self.model1.location.longitude)
         self.assertEqual(data["license"], self.model1.license)
         self.assertEqual(data["desc"], self.model1.description)
-        self.assertEqual(data["author"], self.model1.author.username)
-        # self.assertEqual(data['date'], self.model1.upload_date.isoformat()) # Check format if needed
+        self.assertEqual(data["author"], self.model1.author.profile.uid)
         self.assertEqual(data["rotation"], self.model1.rotation)
         self.assertEqual(data["scale"], self.model1.scale)
         self.assertEqual(
@@ -59,7 +58,7 @@ class GetInfoAPIViewTest(BaseViewTestMixin, TestCase):
         self.assertIn(self.cat1.name, data["categories"])
 
         self.assertEqual(len(data["comments"]), 1)
-        self.assertEqual(data["comments"][0][0], self.comment_visible.author.username)
+        self.assertEqual(data["comments"][0][0], self.comment_visible.author.profile.uid)
         self.assertEqual(data["comments"][0][1], self.comment_visible.comment)
 
     def test_get_info_hidden_model_non_admin(self):
