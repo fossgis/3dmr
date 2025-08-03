@@ -95,7 +95,16 @@
 		{{ form.scale }}
 		<span id="scaling-help" class="help-block">Specifies the scaling of the model. '2' here would mean that each unit in the model corresponds to 2 meters.</span>
 	</div>
-	<div class="form-group required">
+	<div class="form-group">
+		<label>Where does the model come from?</label>
+		{% for error in form.model_source.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+		{% for radio in form.model_source %}
+		<div class="radio">
+			<label>{{ radio.tag }}{{ radio.choice_label }}</label>
+		</div>
+		{% endfor %}
+	</div>
+	<div class="form-group">
 		<label>License</label>
 		{% for error in form.license.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
 		{% for radio in form.license %}
@@ -103,6 +112,7 @@
 			<label>{{ radio.tag }}{{ radio.choice_label }}</label>
 		</div>
 		{% endfor %}
+		<span id="license-help" class="help-block"></span>
 	</div>
 	{% endif %}
 	<div class="alert alert-danger" role="alert" id="form-error" style="display: none;"></div>
@@ -208,6 +218,19 @@
 
 		return ok;
 	}
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const licenseHelp = document.getElementById('license-help');
+        const radioButtons = document.querySelectorAll('input[name="model_source"]');
+
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', function() {
+                licenseHelp.innerHTML = this.value !== 'self_created' ? 
+				'Please check the license of the source and make sure you are allowed to upload the model somewhere else <strong>without having to give attribution</strong>. Please provide the original source in the description.':
+				''
+            });
+        });
+    });
 </script>
 {% endif %}
 
