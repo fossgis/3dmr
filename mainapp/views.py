@@ -98,7 +98,7 @@ def search(request):
     if category:
         url_params += 'category=' + category
 
-    models = Model.objects
+    models = Model.objects.filter(latest=True)
 
     if tag:
         try:
