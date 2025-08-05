@@ -62,16 +62,16 @@
 		"building": "yes",
 		"tourism": "attraction",
 	}
-	"author": "n42k",
+	"author": "22633299",
 	"date": "2017-03-28",
 	"categories": ["monuments", "tall"],
 	"comments": [
 	{
-		"author": "n42k",
+		"author": "22633299",
 		"body": "I've technically been here!"
 	},
 	{
-		"author": "n42k",
+		"author": "22633299",
 		"body": "test comment"
 	}
 	]
@@ -161,12 +161,12 @@ et.jpg</code></pre>
 					<h3 class="panel-title">Author Lookup</h3>
 				</div>
 				<div class="panel-body">
-					<p>Returns model ids that have the specified author as one of their categories.</p>
+					<p>Returns model ids that have the specified author as one of their categories. Here uid refers to the OSM user id.</p>
 					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/author/&lt;string:username&gt;</span>
+					<span class="label label-default">/api/author/&lt;string:uid&gt;</span>
 					<br>
 					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/author/&lt;string:username&gt;/&lt;int:pageid&gt;</span>
+					<span class="label label-default">/api/author/&lt;string:uid&gt;/&lt;int:pageid&gt;</span>
 					<p class="response">Sample Response:</p>
 					<pre><code>[6, 8]</code></pre>
 				</div>
@@ -257,7 +257,7 @@ et.jpg</code></pre>
 		"tall"
 	],
 	"page": 1,
-	"author": "n42k"
+	"author": "22633299"
 }</textarea><br>
 						<input type="submit" onclick="return send()">
 					</form>
@@ -278,7 +278,7 @@ et.jpg</code></pre>
 "tall"
 ],
 "page": 1,
-"author": "n42k"
+"author": "22633299"
 }</code></pre>
 					<p class="response">Sample Response:</p>
 					<pre><code>[6, 8]</code></pre>

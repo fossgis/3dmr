@@ -84,7 +84,7 @@
 					</p>
 					<p>Description:</p>
 					<p>{{ model.rendered_description|safe }}</p>
-					<p>Uploaded by <a href="{% url 'user' model.author.username %}"><span class="label label-default">{{ model.author.username }}</span></a> on {{ model.upload_date|date:"c" }}</p>
+					<p>Uploaded by <a href="{% url 'user' model.author.profile.uid %}"><span class="label label-default">{{ model.author.profile.display_name }}</span></a> on {{ model.upload_date|date:"c" }}</p>
 					<p>{{ license }}</p>
 					<a href="{% url 'get_model' model.model_id model.revision %}" class="btn btn-default" role="button">Download</a>
 					{% if user.is_authenticated and model.author == user %}
@@ -157,8 +157,8 @@
 							{{ comment.rendered_comment|safe }}
 						</div>
 						<div class="panel-footer">
-							<a href="{% url 'user' comment.author.username %}">
-								<span class="label label-default">{{ comment.author.username }}</span>
+							<a href="{% url 'user' comment.author.profile.uid %}">
+								<span class="label label-default">{{ comment.author.profile.uid }}</span>
 							</a>
 							on {{ comment.datetime|date:"Y-m-d H:i" }}
 							{% if model.revision != comment.model.revision %}

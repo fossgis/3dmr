@@ -23,7 +23,7 @@
 			{% if hide_user %}
 			<p>Upload date: {{ model.upload_date|date:"c" }}</p>
 			{% else %}
-			<p>Uploaded by <a href="{% url 'user' username=model.author.username %}"><span class="label label-default">{{ model.author.username }}</span></a> on {{ model.upload_date|date:"c" }}</p>
+			<p>Uploaded by <a href="{% url 'user' uid=model.author.profile.uid %}"><span class="label label-default">{{ model.author.profile.display_name }}</span></a> on {{ model.upload_date|date:"c" }}</p>
 			{% endif %}
 		</div>
 	</div>

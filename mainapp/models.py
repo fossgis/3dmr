@@ -6,7 +6,6 @@ from django.dispatch import receiver
 
 from .utils import CHANGES
 
-# Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     description = models.CharField(max_length=2048, default='Your description...')
@@ -23,6 +22,21 @@ class Profile(models.Model):
         if avatar is None:
             avatar = staticfiles_storage.url('mainapp/images/default_avatar.svg')
         return avatar
+    
+    @property
+    def display_name(self):
+        display_name = self.user.social_auth.first().extra_data.get('display_name')
+        if display_name is None:
+            display_name = self.user.username
+        return display_name
+    
+    # uid is the unique permanent identifier for the user in the OpenStreetMap OAuth2 system
+    # It is different from the display_name (at some places referred to as username), which is
+    # not guaranteed to be unique and can be changed.
+    @property
+    def uid(self):
+        uid = self.user.social_auth.first().uid
+        return uid
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
