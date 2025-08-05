@@ -44,6 +44,7 @@ class DatabaseTests(TestCase):
             "categories": ["TestCategory1", "ExistingCategory1"],
             "latitude": 10.0,
             "longitude": 20.0,
+            "source": None,
             "license": 1,
             "author": self.user,
             "translation": [1.0, 2.0, 3.0],
@@ -98,6 +99,7 @@ class DatabaseTests(TestCase):
             "categories": ["CatA"],
             "latitude": None,
             "longitude": None,
+            "source": None,
             "license": 8,
             "author": self.user,
             "translation": [0, 0, 0],
@@ -115,6 +117,7 @@ class DatabaseTests(TestCase):
             "categories": ["CatB"],
             "latitude": None,
             "longitude": None,
+            "source": None,
             "license": 9,
             "author": self.user,
             "translation": [0, 0, 0],
@@ -139,6 +142,7 @@ class DatabaseTests(TestCase):
             "categories": ["NoLocationCat"],
             "latitude": None,
             "longitude": None,
+            "source": None,
             "license": 2,
             "author": self.user,
             "translation": [0, 0, 0],
@@ -168,6 +172,7 @@ class DatabaseTests(TestCase):
             "author": initial_user,
             "translation": [1, 1, 1],
             "rotation": 0,
+            "source": None,
             "scale": 1,
             "revision": False,
         }
@@ -242,6 +247,7 @@ class DatabaseTests(TestCase):
             "categories": ["OldCat", "KeepCat"],
             "latitude": "50.0",
             "longitude": "60.0",
+            "source": None,
             "license": 4,
             "author": uploader,
             "translation": [1, 2, 3],
@@ -263,6 +269,7 @@ class DatabaseTests(TestCase):
             "categories": ["NewCat1", "KeepCat", "NewCat2"],
             "latitude": 55.5,
             "longitude": 66.6,
+            "source": "https://3dmr.eu/",
             "license": 5,
             "translation": [-5.0, -6.0, -7.0],
             "rotation": 180.0,
@@ -308,6 +315,7 @@ class DatabaseTests(TestCase):
             latest=True
         )
         self.assertEqual(latest_edited_model.title, edit_options["title"])
+        self.assertEqual(latest_edited_model.source, edit_options["source"])
         self.assertEqual(latest_edited_model.license, edit_options["license"])
 
     def test_edit_model_add_location(self):
@@ -319,6 +327,7 @@ class DatabaseTests(TestCase):
             "categories": ["LocAddCat"],
             "latitude": None,
             "longitude": None,
+            "source": None,
             "license": 6,
             "author": self.user,
             "translation": [0, 0, 0],
@@ -339,6 +348,7 @@ class DatabaseTests(TestCase):
             "categories": ["LocAddCat"],
             "latitude": 70.0,
             "longitude": 80.0,
+            "source": None,
             "license": model_to_edit.license,
             "translation": [0, 0, 0],
             "rotation": 0,
@@ -357,7 +367,7 @@ class DatabaseTests(TestCase):
         model_options = {
             'title': 'Loses Location', 'description': 'Has loc.', 'tags': {'loc': 'remove'},
             'categories': ['LocRemoveCat'], 'latitude': '90.0', 'longitude': '100.0',
-            'license': 7, 'author': self.user, 'translation': [0,0,0],
+            'source': None, 'license': 7, 'author': self.user, 'translation': [0,0,0],
             'rotation': 0, 'scale': 1, 'revision': False
         }
         model_to_edit = database.upload(self._create_dummy_file(), model_options)
@@ -368,7 +378,7 @@ class DatabaseTests(TestCase):
             'model_id': model_to_edit.model_id, 'revision': model_to_edit.revision,
             'title': model_to_edit.title, 'description': model_to_edit.description,
             'tags': model_to_edit.tags, 'categories': ['LocRemoveCat'],
-            'latitude': None, 'longitude': None,
+            'latitude': None, 'longitude': None, 'source': None,
             'license': model_to_edit.license, 'translation': [0,0,0],
             'rotation': 0, 'scale': 1
         }

@@ -131,6 +131,8 @@ class FormIntegrationTests(SimpleTestCase):
             "translation": "1 2 3",
             "rotation": "45",
             "scale": "1.2",
+            "model_source": "self_created",
+            "source": None,
             "license": "0",
         }
         form = MetadataForm(data=form_data)
@@ -158,6 +160,7 @@ class FormIntegrationTests(SimpleTestCase):
             "translation": "",
             "rotation": "",
             "scale": "",
+            "model_source": "self_created",
             "license": "0",
         }
 
