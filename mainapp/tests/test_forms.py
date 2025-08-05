@@ -142,6 +142,18 @@ class FormIntegrationTests(SimpleTestCase):
         self.assertEqual(cleaned["tags"], {"shape": "cube"})
         self.assertEqual(cleaned["translation"], [-1.0, -2.0, -3.0])
 
+    def test_metadata_form_other_source(self):
+        form_data = {
+            "title": "Test",
+            # other source requires a source URL
+            "model_source": "other_source",
+            "license": "0",
+        }
+
+        form = MetadataForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("Please specify the other source.", form.errors.get("source", []))
+
     def test_upload_file_metadata_form_missing(self):
         form = UploadFileMetadataForm(data={})
         self.assertFalse(form.is_valid())
