@@ -104,6 +104,13 @@
 		</div>
 		{% endfor %}
 	</div>
+	<div id="model-source" class="form-group">
+		<label for="{{ form.source.id_for_label }}">{{ form.source.label }}:</label>
+		{% for error in form.source.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+		<div class="alert alert-danger" role="alert" id="source-error" style="display: none;"></div>
+		{{ form.source }}
+		<span id="source-help" class="help-block">Please specify the exact link to the source model.</span>
+	</div>
 	<div class="form-group">
 		<label>License</label>
 		{% for error in form.license.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
@@ -222,14 +229,25 @@
     document.addEventListener('DOMContentLoaded', function() {
         const licenseHelp = document.getElementById('license-help');
         const radioButtons = document.querySelectorAll('input[name="model_source"]');
+        const modelSource = document.getElementById('model-source');
+
+        function toogle(selectedValue) {
+            licenseHelp.innerHTML = selectedValue !== 'self_created' ?
+                'Please check the license of the source and make sure you are allowed to upload the model somewhere else <strong>without having to give attribution</strong>. Please also provide the original source.' :
+                '';
+            modelSource.style.display = selectedValue === 'self_created' ? 'none' : 'block';
+        }
 
         radioButtons.forEach(radio => {
             radio.addEventListener('change', function() {
-                licenseHelp.innerHTML = this.value !== 'self_created' ? 
-				'Please check the license of the source and make sure you are allowed to upload the model somewhere else <strong>without having to give attribution</strong>. Please provide the original source in the description.':
-				''
+                toogle(this.value);
             });
         });
+
+        const selectedRadio = document.querySelector('input[name="model_source"]:checked');
+        if (selectedRadio) {
+            toogle(selectedRadio.value);
+        }
     });
 </script>
 {% endif %}

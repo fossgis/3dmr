@@ -176,6 +176,12 @@ class MetadataForm(forms.Form):
         required=True, widget=forms.RadioSelect
     )
 
+    source = forms.CharField(
+        label='Source',
+        max_length=255,
+        required=False
+    )
+
     license = forms.ChoiceField(
         label='License', required=True, choices=LICENSES_FORM.items(), initial=0,
         widget=forms.RadioSelect)
@@ -183,6 +189,11 @@ class MetadataForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(MetadataForm, self).__init__(*args, **kwargs)
         init_bootstrap_form(self.fields, ['model_source', 'license'])
+
+    def clean_source(self):
+        if self.cleaned_data.get('model_source') == 'other_source' and not self.cleaned_data['source']:
+            raise forms.ValidationError('Please specify the other source.', code='required')
+        return self.cleaned_data['source']
 
 # This class represents a mix of the UploadFileForm and the MetadataForm
 class UploadFileMetadataForm(MetadataForm):

@@ -72,6 +72,7 @@ def upload(model_file, options={}):
                     translation_y=-options['translation'][1],
                     translation_z=-options['translation'][2],
                     rotation=options['rotation'],
+                    source=options['source'],
                     scale=options['scale'],
                     latest=True
                 )
@@ -127,6 +128,7 @@ def edit(options):
             m.translation_z = options['translation'][2]
             m.rotation = options['rotation']
             m.scale = options['scale']
+            m.source = options['source']
             m.license = options['license']
 
             rendered_description = markdown(options['description'])

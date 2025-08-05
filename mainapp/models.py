@@ -63,6 +63,7 @@ class Model(models.Model):
     rendered_description = models.CharField(max_length=1024)
     upload_date = models.DateField(auto_now_add=True)
     location = models.OneToOneField(Location, null=True, default=None, on_delete=models.CASCADE)
+    source = models.CharField(max_length=255, null=True)
     license = models.IntegerField()
     categories = models.ManyToManyField(Category)
     tags = models.JSONField(default=dict)
