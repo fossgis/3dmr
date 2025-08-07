@@ -93,7 +93,11 @@
 					<p>Uploaded by <a href="{% url 'user' model.author.profile.uid %}"><span class="label label-default">{{ model.author.profile.display_name }}</span></a> on {{ model.upload_date|date:"c" }}</p>
 					{% if model.source %}
 					<p>From: 
+						{% if model.source_is_url %}
 						<a href="{{ model.source }}">Original Source</a>
+						{% else %}
+						{{ model.source }}
+						{% endif %}
 					</p>
 					{% endif %}
 					<p>{{ license }}</p>

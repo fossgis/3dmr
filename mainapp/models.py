@@ -1,3 +1,5 @@
+import re
+
 from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -74,6 +76,17 @@ class Model(models.Model):
     translation_z = models.FloatField(default=0.0)
     is_hidden = models.BooleanField(default=False)
     latest = models.BooleanField(default=False)
+
+    @property
+    def source_is_url(self):
+        regex = r"https?:\/\/[^\s\"'>]+"
+        if self.source:
+            if re.match(regex, self.source):
+                return True
+            else:
+                return False
+        else:
+            return False
 
     class Meta:
         unique_together = ('model_id', 'revision',)
