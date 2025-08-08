@@ -252,9 +252,9 @@ function toggleVisualHelpers(scene, enable) {
 				
 				for (let i = -5; i <= 5; i++) {
 					const distance = i * gridSpacing;
-					distanceMarkers[`marker_x_${i}`] = createLabelElement(`${distance.toFixed(1)}`, '#888');
+					distanceMarkers[`marker_x_${i}`] = createLabelElement(`${distance.toFixed(1)}`, 'skyblue');
 					labelsContainer.appendChild(distanceMarkers[`marker_x_${i}`]);
-					distanceMarkers[`marker_z_${i}`] = createLabelElement(`${distance.toFixed(1)}`, '#888');
+					distanceMarkers[`marker_z_${i}`] = createLabelElement(`${distance.toFixed(1)}`, 'skyblue');
 					labelsContainer.appendChild(distanceMarkers[`marker_z_${i}`]);
 				}
 			}
