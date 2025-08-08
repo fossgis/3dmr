@@ -80,13 +80,7 @@ class Model(models.Model):
     @property
     def source_is_url(self):
         regex = r"https?:\/\/[^\s\"'>]+"
-        if self.source:
-            if re.match(regex, self.source):
-                return True
-            else:
-                return False
-        else:
-            return False
+        return self.source and re.match(regex, self.source)
 
     class Meta:
         unique_together = ('model_id', 'revision',)
