@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.dateformat import format
-from mainapp.models import LatestModel
+from mainapp.models import Model
 from json import dumps
 from zipfile import ZipFile
 
@@ -15,7 +15,7 @@ class Command(BaseCommand):
         info_file = open(INFO_FILENAME, 'w')
         zip_file = ZipFile(NIGHTLY_FILENAME, 'w')
 
-        models = LatestModel.objects.filter(is_hidden=False)
+        models = Model.objects.filter(latest=True, is_hidden=False)
 
         info_file.write('{\n')
 
