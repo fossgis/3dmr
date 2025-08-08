@@ -72,19 +72,34 @@
 				</div>
 				<div class="panel-body">
 					<p>3DMR tag: <strong>3dmr={{ model.model_id }}</strong></p>
+					{% if model.categories.all %}
 					<p>Categories:
 						{% for category in model.categories.all %}
 						<a href="{% url 'search' %}?category={{ category.name }}"><span class="label label-default">{{ category.name }}</span></a>
 						{% endfor %}
 					</p>
+					{% endif %}
+					{% if model.tags.items %}
 					<p>Tags:
 						{% for k, v in model.tags.items %}
 						<a href="{% url 'search' %}?tag={{ k }}={{ v }}"><span class="label label-default">{{ k }}={{ v }}</span></a>
 						{% endfor %}
 					</p>
+					{% endif %}
+					{% if model.rendered_description %}
 					<p>Description:</p>
 					<p>{{ model.rendered_description|safe }}</p>
+					{% endif %}
 					<p>Uploaded by <a href="{% url 'user' model.author.profile.uid %}"><span class="label label-default">{{ model.author.profile.display_name }}</span></a> on {{ model.upload_date|date:"c" }}</p>
+					{% if model.source %}
+					<p>From: 
+						{% if model.source_is_url %}
+						<a href="{{ model.source }}">Original Source</a>
+						{% else %}
+						{{ model.source }}
+						{% endif %}
+					</p>
+					{% endif %}
 					<p>{{ license }}</p>
 					<a href="{% url 'get_model' model.model_id model.revision %}" class="btn btn-default" role="button">Download</a>
 					{% if user.is_authenticated and model.author == user %}

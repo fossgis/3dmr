@@ -87,6 +87,7 @@ class UploadModelViewTest(BaseViewTestMixin, TestCase):
             "translation": "0 0 0",
             "rotation": "0",
             "scale": "1",
+            "model_source": "self_created",
             "license": "0",
             "model_file": dummy_file,
         }
@@ -245,6 +246,7 @@ class EditModelViewTest(BaseViewTestMixin, TestCase):
             "translation": "1.0 2.0 3.0",
             "rotation": "90",
             "scale": "1.5",
+            "model_source": "self_created",
             "license": "1",
         }
         response = self.client.post(
@@ -267,6 +269,7 @@ class EditModelViewTest(BaseViewTestMixin, TestCase):
         edit_data = {
             "title": "Updated Title",
             "description": "Updated Desc",
+            "model_source": "self_created",
             "license": "0",
         }
         response = self.client.post(

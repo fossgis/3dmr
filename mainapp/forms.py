@@ -167,13 +167,33 @@ class MetadataForm(forms.Form):
         label='Scale', required=False,
         attrs={'placeholder': '1.2', 'value': '1.0', 'aria-describedby': 'scaling-help'})
 
+    model_source = forms.ChoiceField(
+        label='Where does the model come from?',
+        choices=[
+            ('self_created', 'I have created the model myself.'),
+            ('other_source', 'I have taken the model from another source.')
+        ],
+        required=True, widget=forms.RadioSelect
+    )
+
+    source = forms.CharField(
+        label='Source',
+        max_length=255,
+        required=False
+    )
+
     license = forms.ChoiceField(
-        label='License', required=False, choices=LICENSES_FORM.items(), initial=0,
+        label='License', required=True, choices=LICENSES_FORM.items(), initial=0,
         widget=forms.RadioSelect)
 
     def __init__(self, *args, **kwargs):
         super(MetadataForm, self).__init__(*args, **kwargs)
-        init_bootstrap_form(self.fields, ['license'])
+        init_bootstrap_form(self.fields, ['model_source', 'license'])
+
+    def clean_source(self):
+        if self.cleaned_data.get('model_source') == 'other_source' and not self.cleaned_data['source']:
+            raise forms.ValidationError('Please specify the other source.', code='required')
+        return self.cleaned_data['source']
 
 # This class represents a mix of the UploadFileForm and the MetadataForm
 class UploadFileMetadataForm(MetadataForm):
@@ -182,4 +202,4 @@ class UploadFileMetadataForm(MetadataForm):
 
     def __init__(self, *args, **kwargs):
         super(UploadFileMetadataForm, self).__init__(*args, **kwargs)
-        init_bootstrap_form(self.fields, ['license', 'model_file'])
+        init_bootstrap_form(self.fields, ['model_source', 'license', 'model_file'])

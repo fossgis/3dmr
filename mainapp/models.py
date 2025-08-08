@@ -1,3 +1,5 @@
+import re
+
 from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -63,6 +65,7 @@ class Model(models.Model):
     rendered_description = models.CharField(max_length=1024)
     upload_date = models.DateField(auto_now_add=True)
     location = models.OneToOneField(Location, null=True, default=None, on_delete=models.CASCADE)
+    source = models.CharField(max_length=255, null=True)
     license = models.IntegerField()
     categories = models.ManyToManyField(Category)
     tags = models.JSONField(default=dict)
@@ -73,6 +76,11 @@ class Model(models.Model):
     translation_z = models.FloatField(default=0.0)
     is_hidden = models.BooleanField(default=False)
     latest = models.BooleanField(default=False)
+
+    @property
+    def source_is_url(self):
+        regex = r"https?:\/\/[^\s\"'>]+"
+        return self.source and re.match(regex, self.source)
 
     class Meta:
         unique_together = ('model_id', 'revision',)

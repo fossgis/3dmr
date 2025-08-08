@@ -171,6 +171,7 @@ def edit(request, model_id, revision):
                 'translation': form.cleaned_data['translation'],
                 'rotation': form.cleaned_data['rotation'],
                 'scale': form.cleaned_data['scale'],
+                'source': form.cleaned_data['source'],
                 'license': form.cleaned_data['license'],
                 'model_id': model_id,
                 'revision': revision
@@ -201,6 +202,8 @@ def edit(request, model_id, revision):
             'translation': '{} {} {}'.format(-m.translation_x + 0, -m.translation_y + 0, -m.translation_z + 0),
             'rotation': m.rotation,
             'scale': m.scale,
+            'model_source': 'other_source' if m.source else 'self_created',
+            'source': m.source,
             'license': m.license
         }
 
@@ -290,6 +293,7 @@ def upload(request):
                 'translation': form.cleaned_data['translation'],
                 'rotation': form.cleaned_data['rotation'],
                 'scale': form.cleaned_data['scale'],
+                'source': form.cleaned_data['source'],
                 'license': form.cleaned_data['license'],
                 'author': request.user
                 })
