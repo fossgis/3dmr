@@ -4,6 +4,8 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 let axesHelper = null;
 let gridHelper = null;
+let northArrowHelper = null;
+let frontArrowHelper = null;
 let htmlLabels = {};
 let distanceMarkers = {};
 let labelsContainer = null;
@@ -209,7 +211,21 @@ function toggleVisualHelpers(scene, enable) {
 			scene.add(gridHelper);
 		}
 
+		const z_dir = new THREE.Vector3(0, 0, 1);
+		const neg_z_dir = new THREE.Vector3(0, 0, -1);
+		const origin = new THREE.Vector3(0, groundPosition, 0);
+		// slightly offset to avoid overlap with the grid
+		const length = gridSize * 1.1 / 2;
 		const gridSpacing = gridSize / 10;
+
+		if (!northArrowHelper) {
+			northArrowHelper = new THREE.ArrowHelper(neg_z_dir, origin, length, 0xFFD700, gridSpacing * 0.3, 0.1 * gridSpacing);
+			scene.add(northArrowHelper);
+		}
+		if (!frontArrowHelper) {
+			frontArrowHelper = new THREE.ArrowHelper(z_dir, origin, length, 0x0000FF, gridSpacing * 0.3, 0.1 * gridSpacing);
+			scene.add(frontArrowHelper);
+		}
 
 		labelsContainer = document.getElementById('labels-container');
 		if (labelsContainer) {
@@ -224,17 +240,21 @@ function toggleVisualHelpers(scene, enable) {
 				htmlLabels.x = createLabelElement('X', 'red');
 				htmlLabels.y = createLabelElement('Y', 'green');
 				htmlLabels.z = createLabelElement('Z', 'blue');
+				htmlLabels.front = createLabelElement('Front', 'blue');
+				htmlLabels.north = createLabelElement('North', 'yellow');
 				labelsContainer.appendChild(htmlLabels.x);
 				labelsContainer.appendChild(htmlLabels.y);
 				labelsContainer.appendChild(htmlLabels.z);
+				labelsContainer.appendChild(htmlLabels.front);
+				labelsContainer.appendChild(htmlLabels.north);
 
 				distanceMarkers = {};
 				
 				for (let i = -5; i <= 5; i++) {
 					const distance = i * gridSpacing;
-					distanceMarkers[`marker_x_${i}`] = createLabelElement(`${distance.toFixed(1)}`, '#888');
+					distanceMarkers[`marker_x_${i}`] = createLabelElement(`${distance.toFixed(1)}`, 'skyblue');
 					labelsContainer.appendChild(distanceMarkers[`marker_x_${i}`]);
-					distanceMarkers[`marker_z_${i}`] = createLabelElement(`${distance.toFixed(1)}`, '#888');
+					distanceMarkers[`marker_z_${i}`] = createLabelElement(`${distance.toFixed(1)}`, 'skyblue');
 					labelsContainer.appendChild(distanceMarkers[`marker_z_${i}`]);
 				}
 			}
@@ -259,6 +279,17 @@ function toggleVisualHelpers(scene, enable) {
 			scene.remove(gridHelper);
 			gridHelper.dispose();
 			gridHelper = null;
+		}
+
+		if (northArrowHelper) {
+			scene.remove(northArrowHelper);
+			northArrowHelper.dispose();
+			northArrowHelper = null;
+		}
+		if (frontArrowHelper) {
+			scene.remove(frontArrowHelper);
+			frontArrowHelper.dispose();
+			frontArrowHelper = null;
 		}
 
 		if (labelsContainer) {
@@ -287,11 +318,14 @@ function updateLabels(camera) {
 		x: new THREE.Vector3(gridSize/2, groundPosition, 0),
 		y: new THREE.Vector3(0, gridSize/2 + groundPosition, 0),
 		z: new THREE.Vector3(0, groundPosition, gridSize/2),
+		// slightly offset to avoid overlap with the arrow head
+		north: new THREE.Vector3(0, groundPosition, -gridSize * 1.11 / 2),
+		front: new THREE.Vector3(0, groundPosition, gridSize * 1.11 / 2),
 	};
 
-	for (const axis in {x:true, y:true, z:true}) {
-		const label = htmlLabels[axis];
-		const position = label3DPositions[axis];
+	for (const labelItem in {x:true, y:true, z:true, north:true, front:true}) {
+		const label = htmlLabels[labelItem];
+		const position = label3DPositions[labelItem];
 
 		tempV.copy(position);
 		tempV.project(camera);
