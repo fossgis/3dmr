@@ -40,17 +40,15 @@ function enableEdit() {
 			<div id="description">
 				{{ owner.profile.rendered_description|safe }}
 				{% if user.profile.uid == owner.profile.uid and not user.profile.is_banned %}
-				<form action="{% url 'editprofile' %}" method="post" id="editForm">
-					{% csrf_token %}
-					<label for="desc">Description:</label><br>
-					<textarea cols="80" rows="6" id="desc" name="desc">{{ owner.profile.description }}</textarea><br>
-					<button type="submit" class="btn">Submit</button>
-				</form>
+				{% include "mainapp/user_form.html" with form=form %}
 				<button type="button" class="btn" style="display: none;" id="editButton">Edit Description</button>
 				<script>
 					document.getElementById("editForm").style.display = "none";
 					document.getElementById("editButton").style.display = "block";
 					document.getElementById("editButton").onclick = enableEdit;
+					{% if form.errors %}
+					enableEdit();
+					{% endif %}
 				</script>
 				{% endif %}
 			</div>
