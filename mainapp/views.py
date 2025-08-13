@@ -10,7 +10,7 @@ from django.contrib.auth import logout
 from django.contrib import messages
 from django.db import transaction
 from .models import Model, Category, Change, Ban, Location
-from .forms import UploadFileForm, UploadFileMetadataForm, MetadataForm
+from .forms import UploadFileForm, UploadFileMetadataForm, MetadataForm, UserDescriptionForm
 from .utils import get_kv, update_last_page, get_last_page, CHANGES, admin, LICENSES_DISPLAY
 import mainapp.database as database
 from mainapp.markdown import markdown
@@ -319,7 +319,7 @@ def upload(request):
         'max_model_size': settings.MAX_MODEL_SIZE / (1024 * 1024)
     })
 
-def user(request, uid=''):
+def user(request, uid='', form=None):
     update_last_page(request)
 
     RESULTS_PER_PAGE = 6
@@ -349,6 +349,9 @@ def user(request, uid=''):
         results = paginator.page(page_id)
     except EmptyPage:
         results = []
+    
+    if form is None:
+        form = UserDescriptionForm(initial={'description': user.profile.description})
 
     context = {
         'owner': {
@@ -362,6 +365,7 @@ def user(request, uid=''):
         'paginator': paginator,
         'page_id': page_id,
         'changes': CHANGES,
+        'form': form,
     }
 
     return render(request, 'mainapp/user.html', context)
@@ -372,20 +376,28 @@ def modelmap(request):
     return render(request, 'mainapp/map.html')
 
 def editprofile(request):
+    if request.method != 'POST':
+        return redirect(user, uid='')
+
     if not request.user.is_authenticated:
         return redirect(index)
 
     if request.user.profile.is_banned:
         messages.error(request, 'You are banned. Editing your profile is not permitted.')
         return redirect(index)
+    
+    form = UserDescriptionForm(request.POST)
+    if form.is_valid():
+        description = form.cleaned_data['description'].strip()
+        request.user.profile.description = description
+        request.user.profile.rendered_description = markdown(description)
+        request.user.profile.save()
 
-    description = request.POST.get('desc')
+        messages.success(request, 'Profile updated successfully.')
 
-    request.user.profile.description = description
-    request.user.profile.rendered_description = markdown(description)
-    request.user.save()
-
-    return redirect(user, uid='')
+        return redirect(user, uid='')
+    else:
+        return user(request, uid='', form=form)
 
 def ban(request):
     if not admin(request):

@@ -1,0 +1,10 @@
+<form action="{% url 'editprofile' %}" method="post" id="editForm">
+	{% csrf_token %}
+	<div class="form-group required">
+		<label for="{{ form.description.id_for_label }}">{{ form.description.label }}:</label>
+		<br/>
+		{% for error in form.description.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+		{{ form.description }}
+	</div>
+	<button type="submit" class="btn">Submit</button>
+</form>
