@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.contrib import messages
 from django.db import transaction
-from .models import Model, Comment, Category, Change, Ban, Location
+from .models import Model, Category, Change, Ban, Location
 from .forms import UploadFileForm, UploadFileMetadataForm, MetadataForm
 from .utils import get_kv, update_last_page, get_last_page, CHANGES, admin, LICENSES_DISPLAY
 import mainapp.database as database
@@ -62,15 +62,8 @@ def model(request, model_id, revision=None):
     if model.is_hidden and not admin(request):
         raise Http404('Model does not exist.')
 
-    comments = Comment.objects.filter(model__model_id=model_id)
-
-    if not admin(request):
-        comments = comments.filter(is_hidden=False)
-
     context = {
         'model': model,
-        'comments': comments.order_by('-datetime'),
-        'old_comment': request.session.get('comment', ''),
         'license': LICENSES_DISPLAY[model.license]
     }
 
@@ -394,64 +387,6 @@ def editprofile(request):
 
     return redirect(user, uid='')
 
-def addcomment(request):
-    def error(ajax, msg, redirect_page=index, *args, **kwargs):
-        if ajax == 'false':
-            messages.error(request, msg)
-            return redirect(redirect_page, **kwargs)
-        else:
-            response = {
-                'success': 'no',
-                'error': msg
-            }
-            return JsonResponse(response)
-
-    if not request.user.is_authenticated:
-        return redirect(index)
-
-    ajax = request.POST.get('ajax')
-
-    if request.user.profile.is_banned:
-        return error(ajax, 'You are banned. Commenting is not permitted.')
-
-    comment = request.POST.get('comment').strip()
-    model_id = int(request.POST.get('model_id'))
-    revision = int(request.POST.get('revision'))
-
-    if len(comment) == 0:
-        return error(ajax, 'Comment must not be empty.')
-    elif len(comment) > 1024:
-        request.session['comment'] = comment
-        return error(ajax, 'Comment too long.', model, model_id=model_id, revision=revision)
-
-    author = request.user
-    rendered_comment = markdown(comment)
-    model_obj = get_object_or_404(Model, model_id=model_id, revision=revision)
-
-    obj = Comment(
-        author=author,
-        comment=comment,
-        rendered_comment=rendered_comment,
-        model=model_obj,
-    )
-
-    obj.save()
-
-    if request.session.get('comment'):
-        del request.session['comment']
-
-    if ajax == 'false':
-        return redirect(model, model_id=model_id, revision=revision)
-
-    response = {
-        'comment': rendered_comment,
-        'author': author.profile.display_name,
-        'datetime': obj.datetime,
-        'success': 'yes'
-    }
-
-    return JsonResponse(response)
-
 def ban(request):
     if not admin(request):
         return redirect(index)
@@ -517,39 +452,6 @@ def hide_model(request):
             raise ValueError('Invalid argument for action.')
 
         hidden_model.save()
-    except ValueError:
-        messages.error(request, 'An error occurred. Please try again.')
-
-    return redirect(model, model_id=model_id, revision=revision)
-
-def hide_comment(request):
-    if not admin(request):
-        return redirect(index)
-
-    model_id = request.POST.get('model_id')
-    revision = request.POST.get('revision')
-
-    if not model_id or not revision:
-        return redirect(index)
-
-    comment_id = request.POST.get('comment_id')
-
-    if not comment_id:
-        return redirect(model, model_id=model_id, revision=revision)
-    
-    comment = Comment.objects.get(pk=comment_id)
-
-    action = request.POST.get('type')
-
-    try:
-        if action == 'hide':
-            comment.is_hidden = True
-        elif action == 'unhide':
-            comment.is_hidden = False
-        else:
-            raise ValueError('Invalid argument for action.')
-
-        comment.save()
     except ValueError:
         messages.error(request, 'An error occurred. Please try again.')
 

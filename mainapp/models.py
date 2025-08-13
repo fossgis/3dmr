@@ -114,14 +114,6 @@ class Change(models.Model):
     def typeof_text(self):
         return CHANGES[self.typeof]
 
-class Comment(models.Model):
-    author = models.ForeignKey(User, models.CASCADE)
-    model = models.ForeignKey(Model, models.CASCADE)
-    comment = models.CharField(max_length=1024)
-    rendered_comment = models.CharField(max_length=2048)
-    datetime = models.DateTimeField(auto_now_add=True)
-    is_hidden = models.BooleanField(default=False)
-
 class Ban(models.Model):
     # note: the models.PROTECT means that admin accounts who
     # have banned other users cannot be removed from the database.

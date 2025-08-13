@@ -18,10 +18,8 @@ urlpatterns = [
     re_path(r'^user/(?P<uid>[0-9]+)?$', views.user, name='user'),
     re_path(r'^map$', views.modelmap, name='map'),
     re_path(r'^action/editprofile$', views.editprofile, name='editprofile'),
-    re_path(r'^action/addcomment$', views.addcomment, name='addcomment'),
     re_path(r'^action/ban$', views.ban, name='ban'),
     re_path(r'^action/hide_model$', views.hide_model, name='hide_model'),
-    re_path(r'^action/hide_comment$', views.hide_comment, name='hide_comment'),
 
     re_path(r'^api/info/(?P<model_id>[0-9]+)$', api.get_info, name='get_info'),
 

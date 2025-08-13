@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from mainapp.forms import UploadFileForm, UploadFileMetadataForm
-from mainapp.models import Comment, Model
+from mainapp.models import Model
 from mainapp.tests.mixins import BaseViewTestMixin
 from mainapp.utils import LICENSES_DISPLAY
 
@@ -130,7 +130,7 @@ class UploadModelViewTest(BaseViewTestMixin, TestCase):
 
 class ModelViewTests(BaseViewTestMixin, TestCase):
     """
-    Tests for the model detail view, including visibility of comments and handling of revisions.
+    Tests for the model detail view and handling of revisions.
     """
 
     def setUp(self):
@@ -139,29 +139,12 @@ class ModelViewTests(BaseViewTestMixin, TestCase):
         self.visible_model = self.model1
         self.hidden_model = self.model2
 
-        self.comment1 = Comment.objects.create(
-            model=self.visible_model,
-            author=self.user,
-            comment="Visible comment",
-            rendered_comment="Visible comment",
-            is_hidden=False,
-        )
-        self.comment2 = Comment.objects.create(
-            model=self.visible_model,
-            author=self.admin_user,
-            comment="Hidden comment",
-            rendered_comment="Hidden comment",
-            is_hidden=True,
-        )
-
     def test_model_view_latest_revision(self):
         response = self.client.get(reverse("model", args=[self.visible_model.model_id]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "mainapp/model.html")
         self.assertEqual(response.context["model"].pk, self.visible_model.pk)
         self.assertContains(response, self.visible_model.title)
-        self.assertContains(response, self.comment1.comment)
-        self.assertNotContains(response, self.comment2.comment)
         self.assertEqual(
             response.context["license"], LICENSES_DISPLAY[self.visible_model.license]
         )
@@ -190,13 +173,6 @@ class ModelViewTests(BaseViewTestMixin, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.hidden_model.title)
 
-    def test_model_view_comments_admin(self):
-        self.login_user(user_type="admin")
-        response = self.client.get(reverse("model", args=[self.visible_model.model_id]))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.comment1.comment)
-        self.assertContains(response, self.comment2.comment)
-
     def test_model_view_non_existent_model(self):
         response = self.client.get(reverse("model", args=[9999]))
         self.assertEqual(response.status_code, 404)
@@ -206,14 +182,6 @@ class ModelViewTests(BaseViewTestMixin, TestCase):
             reverse("model", args=[self.visible_model.model_id, 999])
         )
         self.assertEqual(response.status_code, 404)
-
-    def test_model_view_old_comment_in_session(self):
-        session = self.client.session
-        session["comment"] = "Previous unfinished comment"
-        session.save()
-        response = self.client.get(reverse("model", args=[self.visible_model.model_id]))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["old_comment"], "Previous unfinished comment")
 
 
 class EditModelViewTest(BaseViewTestMixin, TestCase):

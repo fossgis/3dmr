@@ -21,7 +21,6 @@
 {% load static %}
 {% load compress %}
 {% compress js %}
-<script src="{% static 'mainapp/comment.js' %}"></script>
 <script src="{% static 'mainapp/map.js' %}"></script>
 {% endcompress %}
 {% endblock %}
@@ -140,65 +139,6 @@
 				</div>
 			</div>
 		</div>
-		</div>
-	</div>
-	<br>
-	<div class="row">
-		<div class="col-md-12 col-xs-12">
-			<div class="panel panel-primary">
-				<div class="panel-heading">
-					<h3 class="panel-title">Comments</h3>
-				</div>
-				<div class="panel-body">
-					{% if user.is_authenticated and not user.profile.is_banned %}
-					<form action="{% url 'addcomment' %}" method="post" onsubmit="return addComment();" id="comment_form">
-						{% csrf_token %}
-						<label for="comment">Add your comment:</label><br>
-						<textarea cols="80" rows="6" id="comment" name="comment">{{ old_comment }}</textarea><br>
-						<input type="hidden" name="model_id" value="{{ model.model_id }}">
-						<input type="hidden" name="revision" value="{{ model.revision }}">
-						<input type="hidden" name="ajax" value="false">
-						<button type="submit" class="btn">Submit</button>
-					</form>
-					<br>
-					{% endif %}
-					{% for comment in comments %}
-					<div class="panel panel-default">
-						{% if user.is_authenticated and user.profile.is_admin and comment.is_hidden %}
-						<div class="panel-body panel-hidden">
-						{% else %}
-						<div class="panel-body">
-						{% endif %}
-							{{ comment.rendered_comment|safe }}
-						</div>
-						<div class="panel-footer">
-							<a href="{% url 'user' comment.author.profile.uid %}">
-								<span class="label label-default">{{ comment.author.profile.uid }}</span>
-							</a>
-							on {{ comment.datetime|date:"Y-m-d H:i" }}
-							{% if model.revision != comment.model.revision %}
-							(revision {{ comment.model.revision }})
-							{% endif %}
-							{% if user.is_authenticated and user.profile.is_admin %}
-							<form action="{% url 'hide_comment' %}" method="post" style="float: right; clear: both;">
-								{% csrf_token %}
-								<input type="hidden" name="model_id" value="{{ model.model_id }}">
-								<input type="hidden" name="revision" value="{{ model.revision }}">
-								<input type="hidden" name="comment_id" value="{{ comment.pk}}">
-								{% if comment.is_hidden %}
-								<input type="hidden" name="type" value="unhide">
-								<button type="submit" class="btn btn-danger">Unhide</button>
-								{% else %}
-								<input type="hidden" name="type" value="hide">
-								<button type="submit" class="btn btn-danger">Hide</button>
-								{% endif %}
-							</form>
-							{% endif %}
-						</div>
-					</div>
-					{% endfor %}
-				</div>
-			</div>
 		</div>
 	</div>
 </div>

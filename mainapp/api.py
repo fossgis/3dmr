@@ -5,7 +5,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, FileResponse, Http404, HttpResponseBadRequest
 from django.core.paginator import Paginator, EmptyPage
-from .models import Comment, Model
+from .models import Model
 from .utils import get_kv, admin
 from django.views.decorators.csrf import csrf_exempt
 from social_django.models import UserSocialAuth
@@ -48,10 +48,6 @@ def get_info(request, model_id):
         latitude = None
         longitude = None
 
-    comments = Comment.objects.filter(model__model_id=model.model_id)
-    if not admin(request):
-        comments = comments.filter(is_hidden=False)
-
     result = {
         'id': model.model_id,
         'revision': model.revision,
@@ -69,10 +65,6 @@ def get_info(request, model_id):
 
         # Note: the [::1] evaluates the query set to a list
         'categories': model.categories.all().values_list('name', flat=True)[::1],
-        'comments': [
-            (comment.author.profile.uid, comment.comment, comment.datetime)
-            for comment in comments
-        ],
     }
 
     return JsonResponse(result)
