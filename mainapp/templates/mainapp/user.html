@@ -36,7 +36,7 @@ function enableEdit() {
 		</div>
 		{% endif %}
 		<div class="col-md-8">
-			<h1><a target="_blank" href="https://www.openstreetmap.org/user/{{ owner.display_name }}/">{{ owner.display_name }}</a></h1>
+			<h1><a target="_blank" href="https://www.openstreetmap.org/user/{{ owner.display_name }}">{{ owner.display_name }}</a></h1>
 			<div id="description">
 				{{ owner.profile.rendered_description|safe }}
 				{% if user.profile.uid == owner.profile.uid and not user.profile.is_banned %}
