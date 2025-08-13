@@ -203,3 +203,10 @@ class UploadFileMetadataForm(MetadataForm):
     def __init__(self, *args, **kwargs):
         super(UploadFileMetadataForm, self).__init__(*args, **kwargs)
         init_bootstrap_form(self.fields, ['model_source', 'license', 'model_file'])
+
+
+class UserDescriptionForm(forms.Form):
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={'cols': '100', 'rows': '6'}),
+        max_length=2048
+    )
