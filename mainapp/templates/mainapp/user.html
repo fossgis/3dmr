@@ -28,27 +28,36 @@ function enableEdit() {
 {% endblock %}
 {% block body %}
 <div class="container">
-	<div class="col-12">
-		<h1>{{ owner.profile.display_name }}'s user page</h1>
+	<div class="row">
+	<div class="col-lg-12">
+		{% if owner.avatar %}
+		<div class="col-md-2">
+			<h1 style="margin-left:32px;"><img src="{{ owner.avatar }}" alt=""></h1>
+		</div>
+		{% endif %}
+		<div class="col-md-10">
+			<h1><a target="_blank" href="https://www.openstreetmap.org/user/{{ owner.display_name }}">{{ owner.display_name }}</a></h1>
+			<div id="description">
+				{{ owner.profile.rendered_description|safe }}
+				{% if user.profile.uid == owner.profile.uid and not user.profile.is_banned %}
+				<form action="{% url 'editprofile' %}" method="post" id="editForm">
+					{% csrf_token %}
+					<label for="desc">Description:</label><br>
+					<textarea cols="80" rows="6" id="desc" name="desc">{{ owner.profile.description }}</textarea><br>
+					<button type="submit" class="btn">Submit</button>
+				</form>
+				<button type="button" class="btn" style="display: none;" id="editButton">Edit Description</button>
+				<script>
+					document.getElementById("editForm").style.display = "none";
+					document.getElementById("editButton").style.display = "block";
+					document.getElementById("editButton").onclick = enableEdit;
+				</script>
+				{% endif %}
+			</div>
+		</div>
+	</div>
 	</div>
 	<div class="col-lg-8 col-12">
-		<div id="description">
-			{{ owner.profile.rendered_description|safe }}
-			{% if user.profile.uid == owner.profile.uid and not user.profile.is_banned %}
-			<form action="{% url 'editprofile' %}" method="post" id="editForm">
-				{% csrf_token %}
-				<label for="desc">Description:</label><br>
-				<textarea cols="80" rows="6" id="desc" name="desc">{{ owner.profile.description }}</textarea><br>
-				<button type="submit" class="btn">Submit</button>
-			</form>
-			<button type="button" class="btn" style="display: none;" id="editButton">Edit Description</button>
-			<script>
-				document.getElementById("editForm").style.display = "none";
-				document.getElementById("editButton").style.display = "block";
-				document.getElementById("editButton").onclick = enableEdit;
-			</script>
-			{% endif %}
-		</div>
 		{% if user.profile.is_admin %}
 		<div style="margin-top: 20px">
 			{% if owner.ban %}
@@ -92,9 +101,6 @@ function enableEdit() {
 		</div>
 	</div>
 	<div class="col-lg-4 col-12">
-		{% if owner.avatar %}
-		<img src="{{ owner.avatar }}" alt="">
-		{% endif %}
 		<h2>Latest Changes</h2>
 		<table>
 			<tr>

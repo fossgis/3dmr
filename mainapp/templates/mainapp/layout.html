@@ -36,16 +36,17 @@
 				<a class="navbar-brand" href="{% url 'index' %}">3D Model Repository</a>
 				<a class="navbar-brand navbar-short" href="{% url 'index' %}">3DMR</a>
 			</div>
-			<div id="navbar" class="navbar-collapse collapse in" aria-expanded="true" style role="menu">
+			<div id="navbar" class="navbar-collapse-lg collapse in" aria-expanded="true" style role="menu">
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="https://wiki.openstreetmap.org/wiki/3D_Model_Repository">Documentation</a></li>
+					<li><a target="_blank" href="https://wiki.openstreetmap.org/wiki/3D_Model_Repository">Documentation</a></li>
 					<li><a href="{% url 'docs' %}">API Docs</a></li>
 					<li><a href="{% url 'downloads' %}">Downloads</a></li>
 					<li><a href="{% url 'map' %}">Map</a></li>
 					{% if user.is_authenticated %}
 					<li><a href="{% url 'upload' %}">Upload Model</a></li>
 					<li><a href="{% url 'logout' %}">Log out</a></li>
-					<li><a href="{% url 'user' uid=''%}"><img src="{{ user.profile.avatar }}" alt=""> {{ user.profile.display_name }}</a></li>
+					<li class="navbar-display-name"><a href="{% url 'user' uid=''%}"><img src="{{ user.profile.avatar }}" alt=""> {{ user.profile.display_name }}</a></li>
+					<!-- <li class="navbar-display-name navbar-short"><a href="{% url 'user' uid=''%}"><img src="{{ user.profile.avatar }}" alt=""></a></li> -->
 					{% else %}
 					<li><a href="{% url 'social:begin' 'openstreetmap-oauth2' %}">Login</a></li>
 					{% endif %}
