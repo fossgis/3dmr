@@ -178,10 +178,6 @@
 
 	function checkNumbers() {
 		var data = {
-			{% comment %}
-			each array consists of:
-			[elementName, min_value, max_value]
-			{% endcomment %}
 			latitude: ['{{ form.latitude.id_for_label }}', -90, 90],
 			longitude: ['{{ form.longitude.id_for_label }}',-180, 180],
 			rotation: ['{{ form.rotation.id_for_label }}', 0, 360],
@@ -202,19 +198,6 @@
 			console.log(value);
 			if(isNaN(value)) {
 				displayError(k, "Must be a number.");
-				ok = false;
-				continue;
-			}
-
-			{% comment %}value below minimum{% endcomment %}
-			if(value < arr[1]) {
-				displayError(k, 'Number is too low.');
-				ok = false;
-				continue;
-			}
-			{% comment %}value above maximum{% endcomment %}
-			if(value > arr[2]) {
-				displayError(k, 'Number is too high.');
 				ok = false;
 				continue;
 			}
