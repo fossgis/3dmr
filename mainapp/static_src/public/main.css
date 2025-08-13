@@ -42,7 +42,7 @@ nav img {
 	display: none;
 }
 
-@media (max-width: 1010px) and (min-width: 768px) {
+@media (max-width: 1180px) and (min-width: 948px) {
 	.navbar-brand {
 		display: none;
 	}
@@ -52,9 +52,15 @@ nav img {
 	}
 }
 
-@media (max-width: 884px) and (min-width: 768px) {
+@media (max-width: 1080px) and (min-width: 948px) {
 	#search {
 		width: 85px;
+	}
+}
+
+@media (max-width: 947px) and (min-width: 768px) {
+	#search {
+		width:700px;
 	}
 }
 
