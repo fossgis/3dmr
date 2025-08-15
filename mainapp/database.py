@@ -1,6 +1,6 @@
 import os
 import logging
-import mistune
+import shutil
 
 from django.db import transaction
 from django.conf import settings
@@ -166,4 +166,23 @@ def edit(options):
     except:
         logger.exception('Fatal server error when editing metadata.')
 
+        return False
+
+def delete(model_id):
+    try:
+        with transaction.atomic():
+            models = Model.objects.filter(model_id=model_id)
+            if not models.exists():
+                logger.exception(None, 'Model does not exist.')
+                return False
+            for m in models:
+                path = '{}/{}'.format(settings.MODEL_DIR, m.model_id)
+                if os.path.exists(path):
+                    shutil.rmtree(path)
+            
+            models.delete()
+            logger.info('Model deleted successfully.')
+            return True
+    except Exception as e:
+        logger.exception('Fatal server error when deleting model.')
         return False
