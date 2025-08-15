@@ -109,18 +109,27 @@
 					{% if model.is_hidden %}
 					<strong>This model is hidden</strong>
 					{% endif %}
-					<form action="{% url 'hide_model' %}" method="post">
-						{% csrf_token %}
-						<input type="hidden" name="model_id" value="{{ model.model_id }}">
-						<input type="hidden" name="revision" value="{{ model.revision }}">
-						{% if model.is_hidden %}
-						<input type="hidden" name="type" value="unhide">
-						<button type="submit" class="btn btn-danger">Unhide Model</button>
-						{% else %}
-						<input type="hidden" name="type" value="hide">
-						<button type="submit" class="btn btn-danger">Hide Model</button>
-						{% endif %}
-					</form>
+					<p>
+						<form action="{% url 'hide_model' %}" method="post">
+							{% csrf_token %}
+							<input type="hidden" name="model_id" value="{{ model.model_id }}">
+							<input type="hidden" name="revision" value="{{ model.revision }}">
+							{% if model.is_hidden %}
+							<input type="hidden" name="type" value="unhide">
+							<button type="submit" class="btn btn-danger">Unhide Model</button>
+							{% else %}
+							<input type="hidden" name="type" value="hide">
+							<button type="submit" class="btn btn-danger">Hide Model</button>
+							{% endif %}
+						</form>
+					</p>
+					<p>
+						<form action="{% url 'delete_model' %}" method="post">
+							{% csrf_token %}
+							<input type="hidden" name="model_id" value="{{ model.model_id }}">
+							<button type="submit" class="btn btn-danger">Delete Model</button>
+						</form>
+					</p>
 					{% endif %}
 				</div>
 			</div>

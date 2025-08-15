@@ -1,7 +1,7 @@
 import logging
 
 from django.conf import settings
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage
 from social_django.models import UserSocialAuth
@@ -468,3 +468,26 @@ def hide_model(request):
         messages.error(request, 'An error occurred. Please try again.')
 
     return redirect(model, model_id=model_id, revision=revision)
+
+def delete_model(request):
+    if not request.user.is_authenticated:
+        messages.error(request, 'You must be logged in to use this feature.')
+        return redirect(index)
+
+    model_id = request.POST.get('model_id')
+
+    if not model_id:
+        return HttpResponseBadRequest('Model ID is required.')
+
+    if not admin(request):
+        messages.error(request, 'You must be admin to use this feature.')
+        return redirect(model, model_id=model_id)
+    
+    m = get_object_or_404(Model, model_id=model_id, latest=True)
+
+    if database.delete(m.model_id):
+        messages.info(request, f'Model {m.title} deleted successfully.')
+        return redirect(index)
+    else:
+        messages.error(request, 'An error occurred while deleting the model. Please try again later.')
+        return redirect(model, model_id=m.model_id)
