@@ -70,11 +70,6 @@ class Model(models.Model):
     license = models.IntegerField()
     categories = models.ManyToManyField(Category)
     tags = models.JSONField(default=dict)
-    rotation = models.FloatField(default=0.0)
-    scale = models.FloatField(default=1.0)
-    translation_x = models.FloatField(default=0.0)
-    translation_y = models.FloatField(default=0.0)
-    translation_z = models.FloatField(default=0.0)
     is_hidden = models.BooleanField(default=False)
     latest = models.BooleanField(default=False)
 

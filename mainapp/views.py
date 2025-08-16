@@ -161,9 +161,6 @@ def edit(request, model_id, revision):
                 'longitude': form.cleaned_data['longitude'],
                 'categories': form.cleaned_data['categories'],
                 'tags': form.cleaned_data['tags'],
-                'translation': form.cleaned_data['translation'],
-                'rotation': form.cleaned_data['rotation'],
-                'scale': form.cleaned_data['scale'],
                 'source': form.cleaned_data['source'],
                 'license': form.cleaned_data['license'],
                 'model_id': model_id,
@@ -191,10 +188,6 @@ def edit(request, model_id, revision):
             'description': m.description,
             'tags': ', '.join(tags),
             'categories': ', '.join(m.categories.all().values_list('name', flat=True)[::1]),
-            # "+ 0" fixes negative zero float (-0.0)
-            'translation': '{} {} {}'.format(-m.translation_x + 0, -m.translation_y + 0, -m.translation_z + 0),
-            'rotation': m.rotation,
-            'scale': m.scale,
             'model_source': 'other_source' if m.source else 'self_created',
             'source': m.source,
             'license': m.license
@@ -283,9 +276,6 @@ def upload(request):
                 'longitude': form.cleaned_data['longitude'],
                 'categories': form.cleaned_data['categories'],
                 'tags': form.cleaned_data['tags'],
-                'translation': form.cleaned_data['translation'],
-                'rotation': form.cleaned_data['rotation'],
-                'scale': form.cleaned_data['scale'],
                 'source': form.cleaned_data['source'],
                 'license': form.cleaned_data['license'],
                 'author': request.user

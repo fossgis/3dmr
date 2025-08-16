@@ -45,13 +45,6 @@ class Command(BaseCommand):
                 'license': model.license,
                 'categories': model.categories.all().values_list('name', flat=True)[::1],
                 'tags': model.tags,
-                'rotation': model.rotation,
-                'scale': model.scale,
-                'translation': [
-                    model.translation_x,
-                    model.translation_y,
-                    model.translation_z
-                ]
             })
 
             info_file.write('"{}": {}\n'.format(model_id, output))
