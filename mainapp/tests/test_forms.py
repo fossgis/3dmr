@@ -128,9 +128,6 @@ class FormIntegrationTests(SimpleTestCase):
             "longitude": "48.858370",
             "categories": "monuments, tall",
             "tags": "shape=cube",
-            "translation": "1 2 3",
-            "rotation": "45",
-            "scale": "1.2",
             "model_source": "self_created",
             "source": None,
             "license": "0",
@@ -140,7 +137,6 @@ class FormIntegrationTests(SimpleTestCase):
         cleaned = form.clean()
         self.assertEqual(cleaned["categories"], ["monuments", "tall"])
         self.assertEqual(cleaned["tags"], {"shape": "cube"})
-        self.assertEqual(cleaned["translation"], [-1.0, -2.0, -3.0])
 
     def test_metadata_form_other_source(self):
         form_data = {
@@ -169,9 +165,6 @@ class FormIntegrationTests(SimpleTestCase):
             "longitude": "",
             "categories": "",
             "tags": "",
-            "translation": "",
-            "rotation": "",
-            "scale": "",
             "model_source": "self_created",
             "license": "0",
         }

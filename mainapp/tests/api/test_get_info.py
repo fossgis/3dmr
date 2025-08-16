@@ -31,16 +31,6 @@ class GetInfoAPIViewTest(BaseViewTestMixin, TestCase):
         self.assertEqual(data["desc"], self.model1.description)
         self.assertEqual(data["author"], self.model1.author.profile.uid)
         self.assertIsInstance(data["author"], str)
-        self.assertEqual(data["rotation"], self.model1.rotation)
-        self.assertEqual(data["scale"], self.model1.scale)
-        self.assertEqual(
-            data["translation"],
-            [
-                self.model1.translation_x,
-                self.model1.translation_y,
-                self.model1.translation_z,
-            ],
-        )
         self.assertEqual(data["tags"], self.model1.tags)
         self.assertIn(self.cat1.name, data["categories"])
 

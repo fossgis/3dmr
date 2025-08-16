@@ -39,13 +39,6 @@ class NightlyDumpCommandTest(BaseTestMixin, TestCase):
                         'license': model.license,
                         'categories': model.categories.all().values_list('name', flat=True)[::1],
                         'tags': model.tags,
-                        'rotation': model.rotation,
-                        'scale': model.scale,
-                        'translation': [
-                            model.translation_x,
-                            model.translation_y,
-                            model.translation_z
-                        ]
                     })}\n'''
             )
             mock_open().write.assert_any_call(',')
