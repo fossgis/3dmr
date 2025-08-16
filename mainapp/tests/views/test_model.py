@@ -470,3 +470,57 @@ class HideModelViewTest(BaseViewTestMixin, TestCase):
             response,
             reverse("model", args=[self.model3.model_id, self.model3.revision]),
         )
+
+class DeleteModelViewTest(BaseViewTestMixin, TestCase):
+    """
+    Tests for the delete model view.
+    This includes POST requests validation, user priviledge tests and database interactions.
+    """
+
+    def test_delete_model_view_unauthenticated(self):
+        self.client.logout()
+        response = self.client.post(
+            reverse("delete_model"),
+            {
+                "model_id": self.model1.model_id
+            },
+        )
+        self.assertRedirects(response, reverse("index"))
+        self.assertTrue(Model.objects.filter(model_id=self.model1.model_id).exists())
+
+    def test_delete_model_view_admin(self):
+        self.login_user(user_type="admin")
+        response = self.client.post(
+            reverse("delete_model"),
+            {
+                "model_id": self.model1.model_id
+            },
+        )
+        self.assertRedirects(
+            response, reverse("index")
+        )
+        self.assertFalse(Model.objects.filter(model_id=self.model1.model_id).exists())
+    
+    def test_delete_model_view_non_existent_model(self):
+        self.login_user(user_type="admin")
+        response = self.client.post(
+            reverse("delete_model"),
+            {
+                "model_id": 9999  # Non-existent model ID
+            },
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_model_view_non_admin(self):
+        self.login_user(user_type="user")
+        response = self.client.post(
+            reverse("delete_model"),
+            {
+                "model_id": self.model1.model_id
+            },
+        )
+        # Needs to be changes as part of #10
+        self.assertRedirects(
+            response, reverse("model", args=[self.model1.model_id])
+        )
+        self.assertTrue(Model.objects.filter(model_id=self.model1.model_id).exists())
