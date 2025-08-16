@@ -172,15 +172,20 @@ def delete(model_id):
     try:
         with transaction.atomic():
             models = Model.objects.filter(model_id=model_id)
+            changes = Change.objects.filter(model__model_id=model_id)
+
             if not models.exists():
                 logger.exception(None, 'Model does not exist.')
                 return False
+            
             for m in models:
                 path = '{}/{}'.format(settings.MODEL_DIR, m.model_id)
                 if os.path.exists(path):
                     shutil.rmtree(path)
             
+            changes.delete()
             models.delete()
+            
             logger.info('Model deleted successfully.')
             return True
     except Exception as e:
