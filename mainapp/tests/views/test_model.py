@@ -2,6 +2,8 @@ import tempfile
 from unittest.mock import patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.contrib.auth import get_user_model
+from social_django.models import UserSocialAuth
 from django.test import TestCase
 from django.urls import reverse
 
@@ -10,6 +12,7 @@ from mainapp.models import Model
 from mainapp.tests.mixins import BaseViewTestMixin
 from mainapp.utils import LICENSES_DISPLAY
 
+User = get_user_model()
 
 class UploadModelViewTest(BaseViewTestMixin, TestCase):
     """
@@ -190,7 +193,40 @@ class EditModelViewTest(BaseViewTestMixin, TestCase):
     This includes both GET and POST requests, form validation, and database interactions.
     """
 
-    def test_edit_view_get(self):
+    def setUp(self):
+        super().setUp()
+        self.user1 = User.objects.create_user(
+            username="testuser1", email="test@user.com", password="userpassword"
+        )
+        UserSocialAuth.objects.create(
+            user=self.user1,
+            provider="test-provider",
+            uid="1234567891",
+            extra_data={"avatar": "http://example.com/avatar.jpg"},
+        )
+        self.user1.save()
+
+    def test_edit_view_get_author(self):
+        response = self.client.get(
+            reverse("edit", args=[self.model3.model_id, self.model3.revision])
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "mainapp/edit.html")
+        form = response.context["form"]
+        self.assertEqual(form.initial["title"], self.model3.title)
+        self.assertEqual(form.initial["description"], self.model3.description)
+    
+    def test_edit_view_get_non_author(self):
+        self.client.force_login(self.user1)
+        response = self.client.get(
+            reverse("edit", args=[self.model3.model_id, self.model3.revision])
+        )
+        # needs to be changes as part of #10
+        self.assertRedirects(
+                    response, reverse("model", args=[self.model3.model_id, self.model3.revision])
+                )    
+    def test_edit_view_get_admin(self):
+        self.login_user(user_type="admin")
         response = self.client.get(
             reverse("edit", args=[self.model3.model_id, self.model3.revision])
         )
@@ -201,7 +237,7 @@ class EditModelViewTest(BaseViewTestMixin, TestCase):
         self.assertEqual(form.initial["description"], self.model3.description)
 
     @patch("mainapp.views.database.edit")
-    def test_edit_view_post(self, mock_db_edit):
+    def test_edit_view_post_author(self, mock_db_edit):
         mock_db_edit.return_value = True
 
         edit_data = {
@@ -229,6 +265,41 @@ class EditModelViewTest(BaseViewTestMixin, TestCase):
         called_args = mock_db_edit.call_args[0][0]
         self.assertEqual(called_args["title"], "Updated Title")
         self.assertEqual(called_args["license"], "1")
+    
+    @patch("mainapp.views.database.edit")
+    def test_edit_view_post_non_author(self, mock_db_edit):
+        self.client.force_login(self.user1)
+        response = self.client.post(
+            reverse("edit", args=[self.model3.model_id, self.model3.revision]),
+            data={"title": "New Title"},
+        )
+        self.assertRedirects(
+            response, reverse("model", args=[self.model3.model_id, self.model3.revision])
+        )
+        mock_db_edit.assert_not_called()
+    
+    @patch("mainapp.views.database.edit")
+    def test_edit_view_post_admin(self, mock_db_edit):
+        self.login_user(user_type="admin")
+        mock_db_edit.return_value = True
+
+        edit_data = {
+            "title": "Admin Updated Title",
+            "description": "Admin Updated Description",
+            "model_source": "self_created",
+            "license": "0",
+        }
+        response = self.client.post(
+            reverse("edit", args=[self.model3.model_id, self.model3.revision]),
+            data=edit_data,
+        )
+        self.assertRedirects(
+            response, reverse("model", args=[self.model3.model_id, self.model3.revision])
+        )
+        mock_db_edit.assert_called_once()
+        called_args = mock_db_edit.call_args[0][0]
+        self.assertEqual(called_args["title"], "Admin Updated Title")
+        self.assertEqual(called_args["license"], "0")
 
     @patch("mainapp.views.database.edit")
     def test_edit_view_post_db_error(self, mock_db_edit):
