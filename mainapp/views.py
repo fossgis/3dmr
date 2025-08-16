@@ -150,8 +150,8 @@ def edit(request, model_id, revision):
         if not request.user.is_authenticated:
             messages.error(request, 'You must be logged in to use this feature.')
             return redirect(index)
-        elif request.user != m.author:
-            messages.error(request, 'You must be the author of the model to edit it.')
+        elif request.user != m.author and not admin(request):
+            messages.error(request, 'You must be the author of the model or an admin user to edit the model.')
             return redirect(model, model_id=m.model_id, revision=m.revision)
         elif form.is_valid():
             status = database.edit({
@@ -178,8 +178,8 @@ def edit(request, model_id, revision):
     else:
         if not request.user.is_authenticated:
             return redirect(index)
-        elif request.user != m.author:
-            messages.error(request, 'You must be the author of the model to edit it.')
+        elif request.user != m.author and not admin(request):
+            messages.error(request, 'You must be the author of the model or an admin user to edit the model.')
             return redirect(model, model_id=m.model_id, revision=m.revision)
 
         tags = []
