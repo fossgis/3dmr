@@ -389,3 +389,37 @@ class DatabaseTests(TestCase):
         edited_model = Model.objects.get(pk=model_to_edit.pk)
         self.assertIsNone(edited_model.location, "Location should have been removed")
         self.assertEqual(Location.objects.count(), 0, "Location record should be deleted")
+
+    def test_delete_model(self):
+        model_file = self._create_dummy_file()
+        options = {
+            "title": "Model to Delete",
+            "description": "This model will be deleted.",
+            "tags": {"delete": "yes"},
+            "categories": ["DeleteCat"],
+            "latitude": 20.0,
+            "longitude": 30.0,
+            "source": None,
+            "license": 8,
+            "author": self.user,
+            "translation": [0, 0, 0],
+            "rotation": 0,
+            "scale": 1,
+            "revision": False,
+        }
+
+        created_model = database.upload(model_file, options)
+        self.assertIsNotNone(created_model)
+
+        delete_result = database.delete(created_model.model_id)
+        self.assertTrue(delete_result, "Delete should return True on success")
+
+        with self.assertRaises(Model.DoesNotExist):
+            Model.objects.get(pk=created_model.pk)
+
+        expected_path = os.path.join(
+            settings.MODEL_DIR, str(created_model.model_id)
+        )
+        self.assertFalse(os.path.exists(expected_path), "Model file should be deleted")
+
+        self.assertEqual(Change.objects.filter(model=created_model).count(), 0)
