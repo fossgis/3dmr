@@ -47,6 +47,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
+    instance.profile.full_clean()
     instance.profile.save()
 
 class Category(models.Model):
