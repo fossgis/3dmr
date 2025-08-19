@@ -126,7 +126,7 @@
 						</form>
 					</p>
 					<p>
-						<form action="{% url 'delete_model' %}" method="post">
+						<form action="{% url 'delete_model' %}" method="post" onsubmit="return confirmDeleteModel()">
 							{% csrf_token %}
 							<input type="hidden" name="model_id" value="{{ model.model_id }}">
 							<button type="submit" class="btn btn-danger">Delete Model</button>
@@ -166,5 +166,9 @@ initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }},
 		setUpRenderPane();
 		setUpStats();
 	});
+
+	confirmDeleteModel = function() {
+		return confirm("Are you sure you want to delete this model? This action cannot be undone.");
+	};
 </script>
 {% endblock %}
