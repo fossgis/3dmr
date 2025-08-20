@@ -77,17 +77,17 @@ function calculateModelStats(model, animations) {
                     'roughnessMap',
                     'normalMap',
                     'aoMap',
-                    'map',
                     'emissiveMap',
+                    'clearcoatMap',
+                    'clearcoatRoughnessMap',
+                    'clearcoatNormalMap',
                 ];
                 const otherTextures = [
+                    'map',
                     'bumpMap',
                     'displacementMap',
                     'alphaMap',
                     'envMap',
-                    'clearcoatMap',
-                    'clearcoatRoughnessMap',
-                    'clearcoatNormalMap',
                     'sheenColorMap',
                     'specularMap'
                 ];
