@@ -101,26 +101,37 @@
 					{% endif %}
 					<p>{{ license }}</p>
 					<a href="{% url 'get_model' model.model_id model.revision %}" class="btn btn-default" role="button">Download</a>
-					{% if user.is_authenticated and model.author == user %}
+					{% if user.is_authenticated and model.author == user or user.profile.is_admin %}
 					<a href="{% url 'edit' model.model_id model.revision %}" class="btn btn-default" role="button">Edit Metadata</a>
+					{% endif %}
+					{% if user.is_authenticated and model.author == user %}
 					<a href="{% url 'revise' model.model_id %}" class="btn btn-default" role="button">Revise</a>
 					{% endif %}
 					{% if user.is_authenticated and user.profile.is_admin %}
 					{% if model.is_hidden %}
 					<strong>This model is hidden</strong>
 					{% endif %}
-					<form action="{% url 'hide_model' %}" method="post">
-						{% csrf_token %}
-						<input type="hidden" name="model_id" value="{{ model.model_id }}">
-						<input type="hidden" name="revision" value="{{ model.revision }}">
-						{% if model.is_hidden %}
-						<input type="hidden" name="type" value="unhide">
-						<button type="submit" class="btn btn-danger">Unhide Model</button>
-						{% else %}
-						<input type="hidden" name="type" value="hide">
-						<button type="submit" class="btn btn-danger">Hide Model</button>
-						{% endif %}
-					</form>
+					<p>
+						<form action="{% url 'hide_model' %}" method="post">
+							{% csrf_token %}
+							<input type="hidden" name="model_id" value="{{ model.model_id }}">
+							<input type="hidden" name="revision" value="{{ model.revision }}">
+							{% if model.is_hidden %}
+							<input type="hidden" name="type" value="unhide">
+							<button type="submit" class="btn btn-danger">Unhide Model</button>
+							{% else %}
+							<input type="hidden" name="type" value="hide">
+							<button type="submit" class="btn btn-danger">Hide Model</button>
+							{% endif %}
+						</form>
+					</p>
+					<p>
+						<form action="{% url 'delete_model' %}" method="post" onsubmit="return confirmDeleteModel()">
+							{% csrf_token %}
+							<input type="hidden" name="model_id" value="{{ model.model_id }}">
+							<button type="submit" class="btn btn-danger">Delete Model</button>
+						</form>
+					</p>
 					{% endif %}
 				</div>
 			</div>
@@ -155,5 +166,9 @@ initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }},
 		setUpRenderPane();
 		setUpStats();
 	});
+
+	confirmDeleteModel = function() {
+		return confirm("Are you sure you want to delete this model? This action cannot be undone.");
+	};
 </script>
 {% endblock %}
