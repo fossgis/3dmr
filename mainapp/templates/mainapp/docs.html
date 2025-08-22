@@ -74,46 +74,13 @@
 					<h3 class="panel-title">Model Get</h3>
 				</div>
 				<div class="panel-body">
-					<p>Returns a zip with the model of the specified model id.</p>
+					<p>Returns a glb model corresponding to the specified model id.</p>
 					<span class="label label-success">GET</span>
 					<span class="label label-default">/api/model/&lt;int:modelid&gt;</span>
 					<br>
 					<span class="label label-success">GET</span>
 					<span class="label label-default">/api/model/&lt;int:modelid&gt;/&lt;int:revision&gt;</span>
-					<p class="response">Sample Response: a zip file.</p>
-				</div>
-			</div>
-			<div class="panel panel-primary" id="filelist">
-				<div class="panel-heading">
-					<h3 class="panel-title">File List</h3>
-				</div>
-				<div class="panel-body">
-					<p>Returns a listing of all the files present in the model zip.</p>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/filelist/&lt;int:modelid&gt;</span>
-					<br>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/filelist/&lt;int:modelid&gt;/&lt;int:revision&gt;</span>
-					<p class="response">Sample Response:</p>
-<pre><code>EiffelTowerLarge_copy.png
-EiffelTowerLarge_copy_0.png
-eiffel.mtl
-eiffel.obj
-et.jpg</code></pre>
-				</div>
-			</div>
-			<div class="panel panel-primary" id="file">
-				<div class="panel-heading">
-					<h3 class="panel-title">File</h3>
-				</div>
-				<div class="panel-body">
-					<p>Returns a file from the model zip.</p>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/filelatest/&lt;int:modelid&gt;/&lt;string:filename&gt;</span>
-					<br>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/file/&lt;int:modelid&gt;/&lt;int:revision&gt;/&lt;string:filename&gt;</span>
-					<p class="response">Sample Response: a file.</p>
+					<p class="response">Sample Response: a gltf-binary file.</p>
 				</div>
 			</div>
 			<h2>Lookups</h2>
