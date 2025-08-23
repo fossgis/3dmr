@@ -151,6 +151,24 @@ Follow these steps to get the project running locally:
 
 Access your development server at: http://127.0.0.1:8000/
 
+User Administration Management Command
+======================================
+
+A Django management command to grant or remove administrator privileges for users. Target users by their 3dmr username or OSM user_id (uid), with optional ``--dismiss`` flag to remove admin access.
+
+Usage
+-----
+
+.. code-block:: bash
+
+  # Grant admin privileges
+  python manage.py make_admin --username AyushDharDubey
+  python manage.py make_admin --uid 22632699
+
+  # Remove admin privileges  
+  python manage.py make_admin --username AyushDharDubey --dismiss
+  python manage.py make_admin --uid 22632699 --dismiss
+
 Deployment Instructions
 =======================
 
