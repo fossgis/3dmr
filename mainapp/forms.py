@@ -156,17 +156,6 @@ class MetadataForm(forms.Form):
     tags = TagField(
         label='Tags', max_length=1024, required=False)
 
-    translation = OriginField(
-        label='Origin', max_length=100, required=False)
-
-    rotation = CompatibleFloatField(
-        label='Rotation', required=False, 
-        attrs={'placeholder': '45.5', 'value': '0.0', 'aria-describedby': 'rotation-help'})
-
-    scale = CompatibleFloatField(
-        label='Scale', required=False,
-        attrs={'placeholder': '1.2', 'value': '1.0', 'aria-describedby': 'scaling-help'})
-
     model_source = forms.ChoiceField(
         label='Where does the model come from?',
         choices=[
