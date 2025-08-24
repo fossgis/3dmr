@@ -68,12 +68,7 @@ def upload(model_file, options={}):
                     location=location,
                     license=options['license'],
                     author=options['author'],
-                    translation_x=-options['translation'][0],
-                    translation_y=-options['translation'][1],
-                    translation_z=-options['translation'][2],
-                    rotation=options['rotation'],
                     source=options['source'],
-                    scale=options['scale'],
                     latest=True
                 )
 
@@ -123,11 +118,6 @@ def edit(options):
             m.title = options['title']
             m.description = options['description']
             m.tags = options['tags']
-            m.translation_x = options['translation'][0]
-            m.translation_y = options['translation'][1]
-            m.translation_z = options['translation'][2]
-            m.rotation = options['rotation']
-            m.scale = options['scale']
             m.source = options['source']
             m.license = options['license']
 
