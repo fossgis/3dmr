@@ -47,9 +47,6 @@ class DatabaseTests(TestCase):
             "source": None,
             "license": 1,
             "author": self.user,
-            "translation": [1.0, 2.0, 3.0],
-            "rotation": 90.0,
-            "scale": 1.5,
             "revision": False,
         }
 
@@ -61,9 +58,6 @@ class DatabaseTests(TestCase):
         self.assertEqual(
             created_model.rendered_description, markdown(options["description"])
         )
-        self.assertEqual(created_model.translation_x, -options["translation"][0])
-        self.assertEqual(created_model.translation_y, -options["translation"][1])
-        self.assertEqual(created_model.translation_z, -options["translation"][2])
         self.assertEqual(created_model.license, options["license"])
         self.assertEqual(created_model.revision, 1)
 
@@ -102,9 +96,6 @@ class DatabaseTests(TestCase):
             "source": None,
             "license": 8,
             "author": self.user,
-            "translation": [0, 0, 0],
-            "rotation": 0,
-            "scale": 1,
             "revision": False,
         }
         m1 = database.upload(self._create_dummy_file(name="a.glb"), opts1)
@@ -120,9 +111,6 @@ class DatabaseTests(TestCase):
             "source": None,
             "license": 9,
             "author": self.user,
-            "translation": [0, 0, 0],
-            "rotation": 0,
-            "scale": 1,
             "revision": False,
         }
         m2 = database.upload(self._create_dummy_file(name="b.glb"), opts2)
@@ -145,9 +133,6 @@ class DatabaseTests(TestCase):
             "source": None,
             "license": 2,
             "author": self.user,
-            "translation": [0, 0, 0],
-            "rotation": 0,
-            "scale": 1.0,
             "revision": False,
         }
 
@@ -170,10 +155,7 @@ class DatabaseTests(TestCase):
             "longitude": 40.0,
             "license": 3,
             "author": initial_user,
-            "translation": [1, 1, 1],
-            "rotation": 0,
             "source": None,
-            "scale": 1,
             "revision": False,
         }
         initial_file = self._create_dummy_file(name="initial.glb")
@@ -250,9 +232,6 @@ class DatabaseTests(TestCase):
             "source": None,
             "license": 4,
             "author": uploader,
-            "translation": [1, 2, 3],
-            "rotation": 45,
-            "scale": 2.0,
             "revision": False,
         }
         model_to_edit = database.upload(self._create_dummy_file(), initial_options)
@@ -271,9 +250,6 @@ class DatabaseTests(TestCase):
             "longitude": 66.6,
             "source": "https://3dmr.eu/",
             "license": 5,
-            "translation": [-5.0, -6.0, -7.0],
-            "rotation": 180.0,
-            "scale": 0.5,
         }
 
         result = database.edit(edit_options)
@@ -287,11 +263,6 @@ class DatabaseTests(TestCase):
         )
         self.assertEqual(edited_model.tags, edit_options["tags"])
         self.assertEqual(edited_model.license, edit_options["license"])
-        self.assertEqual(edited_model.translation_x, edit_options["translation"][0])
-        self.assertEqual(edited_model.translation_y, edit_options["translation"][1])
-        self.assertEqual(edited_model.translation_z, edit_options["translation"][2])
-        self.assertEqual(edited_model.rotation, edit_options["rotation"])
-        self.assertEqual(edited_model.scale, edit_options["scale"])
 
         self.assertEqual(edited_model.categories.count(), 3)
         self.assertTrue(edited_model.categories.filter(name="NewCat1").exists())
@@ -330,9 +301,6 @@ class DatabaseTests(TestCase):
             "source": None,
             "license": 6,
             "author": self.user,
-            "translation": [0, 0, 0],
-            "rotation": 0,
-            "scale": 1,
             "revision": False,
         }
         model_to_edit = database.upload(self._create_dummy_file(), model_options)
@@ -350,9 +318,6 @@ class DatabaseTests(TestCase):
             "longitude": 80.0,
             "source": None,
             "license": model_to_edit.license,
-            "translation": [0, 0, 0],
-            "rotation": 0,
-            "scale": 1,
         }
         result = database.edit(edit_options)
         self.assertTrue(result)
@@ -367,8 +332,7 @@ class DatabaseTests(TestCase):
         model_options = {
             'title': 'Loses Location', 'description': 'Has loc.', 'tags': {'loc': 'remove'},
             'categories': ['LocRemoveCat'], 'latitude': '90.0', 'longitude': '100.0',
-            'source': None, 'license': 7, 'author': self.user, 'translation': [0,0,0],
-            'rotation': 0, 'scale': 1, 'revision': False
+            'source': None, 'license': 7, 'author': self.user, 'revision': False
         }
         model_to_edit = database.upload(self._create_dummy_file(), model_options)
         self.assertIsNotNone(model_to_edit.location)
@@ -379,8 +343,7 @@ class DatabaseTests(TestCase):
             'title': model_to_edit.title, 'description': model_to_edit.description,
             'tags': model_to_edit.tags, 'categories': ['LocRemoveCat'],
             'latitude': None, 'longitude': None, 'source': None,
-            'license': model_to_edit.license, 'translation': [0,0,0],
-            'rotation': 0, 'scale': 1
+            'license': model_to_edit.license
         }
         result = database.edit(edit_options)
 
