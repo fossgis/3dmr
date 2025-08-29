@@ -386,3 +386,45 @@ class DatabaseTests(TestCase):
         self.assertFalse(os.path.exists(expected_path), "Model file should be deleted")
 
         self.assertEqual(Change.objects.filter(model=created_model).count(), 0)
+
+    def test_delete_model_revision(self):
+        model_file = self._create_dummy_file()
+        options = {
+            "title": "Model to Delete",
+            "description": "This model will be deleted.",
+            "tags": {"delete": "yes"},
+            "categories": ["DeleteCat"],
+            "latitude": 20.0,
+            "longitude": 30.0,
+            "source": None,
+            "license": 8,
+            "author": self.user,
+            "translation": [0, 0, 0],
+            "rotation": 0,
+            "scale": 1,
+            "revision": False,
+        }
+
+        created_model = database.upload(model_file, options)
+        self.assertIsNotNone(created_model)
+
+        revision_options = {
+            "model_id": created_model.model_id,
+            "author": self.user,
+            "revision": True,
+        }
+        revised_model = database.upload(model_file, revision_options)
+        self.assertIsNotNone(created_model)
+
+        delete_result = database.delete(revised_model.model_id, revised_model.revision)
+        self.assertTrue(delete_result, "Delete should return True on success")
+
+        with self.assertRaises(Model.DoesNotExist):
+            Model.objects.get(pk=revised_model.pk)
+
+        expected_path = os.path.join(
+            settings.MODEL_DIR, str(revised_model.model_id), str(revised_model.revision)
+        )
+        self.assertFalse(os.path.exists(expected_path), "Model file should be deleted")
+
+        self.assertEqual(Change.objects.filter(model=revised_model).count(), 0)
