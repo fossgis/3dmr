@@ -169,13 +169,12 @@ def delete(model_id, revision=None):
             if not models.exists():
                 logger.exception(None, 'Model does not exist.')
                 return False
-            
+
             for m in models:
-                path = '{}/{}'.format(settings.MODEL_DIR, m.model_id)
-                if os.path.exists(path):
-                    shutil.rmtree(path)
-            
-            models.delete()
+                path = '{}/{}/{}.glb'.format(settings.MODEL_DIR, m.model_id, revision)
+                if os.path.isfile(path):
+                    os.remove(path)
+                m.delete()
             
             logger.info('Model deleted successfully.')
             return True
