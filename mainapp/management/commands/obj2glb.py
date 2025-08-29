@@ -46,7 +46,7 @@ class Command(BaseCommand):
                 logger.error(f"Bad zip file: {zip_path}")
                 continue
 
-            obj_files = list(workdir.glob("*.obj"))
+            obj_files = list(workdir.rglob("*.obj"))
             if not obj_files:
                 logger.warning(f"No OBJ file found in {zip_path} — skipping.")
                 continue
