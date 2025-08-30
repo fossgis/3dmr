@@ -74,14 +74,14 @@ class Command(BaseCommand):
                 if dismiss:
                     if user.profile.is_admin:
                         user.profile.is_admin = False
-                        updated_fields.append('profile__is_admin')
+                        updated_fields.append('is_admin')
                 else:
                     if not user.profile.is_admin:
                         user.profile.is_admin = True
-                        updated_fields.append('profile__is_admin')
+                        updated_fields.append('is_admin')
                 
                 if updated_fields:
-                    user.save(update_fields=updated_fields)
+                    user.profile.save(update_fields=updated_fields)
                     action = "dismissed from admin" if dismiss else "made admin"
                     logger.info(
                         f"Successfully {action} for user '{user.username}'. "
