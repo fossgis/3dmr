@@ -64,6 +64,7 @@ def model(request, model_id, revision=None):
 
     context = {
         'model': model,
+        'latest_page': revision is None,
         'license': LICENSES_DISPLAY[model.license]
     }
 
@@ -465,6 +466,7 @@ def delete_model(request):
         return redirect(index)
 
     model_id = request.POST.get('model_id')
+    revision = request.POST.get('revision')
 
     if not model_id:
         return HttpResponseBadRequest('Model ID is required.')
@@ -473,10 +475,16 @@ def delete_model(request):
         messages.error(request, 'You must be admin to use this feature.')
         return redirect(model, model_id=model_id)
     
-    m = get_object_or_404(Model, model_id=model_id, latest=True)
+    if not revision:
+        m = get_object_or_404(Model, model_id=model_id, latest=True)
+    else:
+        m = get_object_or_404(Model, model_id=model_id, revision=revision)
 
-    if database.delete(m.model_id):
-        messages.info(request, f'Model {m.title} deleted successfully.')
+    if database.delete(model_id, revision):
+        if revision:
+            messages.info(request, f'Model {m.title} ({m.revision}) deleted successfully.')
+        else:
+            messages.info(request, f'Model {m.title} deleted successfully.')
         return redirect(index)
     else:
         messages.error(request, 'An error occurred while deleting the model. Please try again later.')

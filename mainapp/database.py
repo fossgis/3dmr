@@ -158,23 +158,23 @@ def edit(options):
 
         return False
 
-def delete(model_id):
+def delete(model_id, revision=None):
     try:
         with transaction.atomic():
-            models = Model.objects.filter(model_id=model_id)
-            changes = Change.objects.filter(model__model_id=model_id)
+            if not revision:
+                models = Model.objects.filter(model_id=model_id)
+            else:
+                models = Model.objects.filter(model_id=model_id, revision=revision)
 
             if not models.exists():
                 logger.exception(None, 'Model does not exist.')
                 return False
-            
+
             for m in models:
-                path = '{}/{}'.format(settings.MODEL_DIR, m.model_id)
-                if os.path.exists(path):
-                    shutil.rmtree(path)
-            
-            changes.delete()
-            models.delete()
+                path = '{}/{}/{}.glb'.format(settings.MODEL_DIR, m.model_id, revision)
+                if os.path.isfile(path):
+                    os.remove(path)
+                m.delete()
             
             logger.info('Model deleted successfully.')
             return True
