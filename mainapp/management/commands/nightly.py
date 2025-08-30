@@ -1,9 +1,14 @@
+import os
+import logging
+
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.dateformat import format
 from mainapp.models import Model
 from json import dumps
 from zipfile import ZipFile
+
+logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     help = 'Updates the nightly dump'
@@ -54,8 +59,14 @@ class Command(BaseCommand):
                 ]
             })
 
+            model_path = '{}/{}/{}.glb'.format(settings.MODEL_DIR, model_id, model.revision)
+
+            if not os.path.isfile(model_path):
+                logging.error(f"model_id: {model_id}, {model.title}'s model file not found at: {model_path}.")
+                continue
+
             info_file.write('"{}": {}\n'.format(model_id, output))
-            zip_file.write('{}/{}/{}.glb'.format(settings.MODEL_DIR, model_id, model.revision), 'models/{}.glb'.format(model_id))
+            zip_file.write(model_path, 'models/{}.glb'.format(model_id))
 
         info_file.write('}')
         info_file.close()

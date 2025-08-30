@@ -1,9 +1,10 @@
 import math
 import json
+import os
 
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from django.http import JsonResponse, FileResponse, Http404, HttpResponseBadRequest
+from django.http import JsonResponse, FileResponse, Http404, HttpResponseBadRequest, HttpResponseServerError
 from django.core.paginator import Paginator, EmptyPage
 from .models import Model
 from .utils import get_kv, admin
@@ -80,8 +81,12 @@ def get_model(request, model_id, revision=None):
     if model.is_hidden and not admin(request):
         raise Http404('Model does not exist.')
 
+    model_path = '{}/{}/{}.glb'.format(settings.MODEL_DIR, model_id, revision)
 
-    response = FileResponse(open('{}/{}/{}.glb'.format(settings.MODEL_DIR, model_id, revision), 'rb'))
+    if not os.path.isfile(model_path):
+        return HttpResponseServerError('Model file not found on the server')
+    
+    response = FileResponse(open(model_path, 'rb'))
     response['Content-Disposition'] = 'attachment; filename={}_{}.glb'.format(model_id, revision)
     response['Content-Type'] = 'model/gltf-binary'
     response['Cache-Control'] = 'public, max-age=86400'
