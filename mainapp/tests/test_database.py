@@ -381,7 +381,7 @@ class DatabaseTests(TestCase):
             Model.objects.get(pk=created_model.pk)
 
         expected_path = os.path.join(
-            settings.MODEL_DIR, str(created_model.model_id)
+            settings.MODEL_DIR, str(created_model.model_id), str(created_model.revision)
         )
         self.assertFalse(os.path.exists(expected_path), "Model file should be deleted")
 
@@ -413,18 +413,55 @@ class DatabaseTests(TestCase):
             "author": self.user,
             "revision": True,
         }
-        revised_model = database.upload(model_file, revision_options)
-        self.assertIsNotNone(created_model)
+        model_rev1 = database.upload(model_file, revision_options)
+        self.assertIsNotNone(model_rev1)
+        model_rev2 = database.upload(model_file, revision_options)
+        self.assertIsNotNone(model_rev2)
 
-        delete_result = database.delete(revised_model.model_id, revised_model.revision)
+        delete_result = database.delete(model_rev2.model_id, model_rev2.revision)
         self.assertTrue(delete_result, "Delete should return True on success")
 
         with self.assertRaises(Model.DoesNotExist):
-            Model.objects.get(pk=revised_model.pk)
+            Model.objects.get(pk=model_rev2.pk)
 
         expected_path = os.path.join(
-            settings.MODEL_DIR, str(revised_model.model_id), str(revised_model.revision)
+            settings.MODEL_DIR, str(model_rev2.model_id), str(model_rev2.revision)
         )
-        self.assertFalse(os.path.exists(expected_path), "Model file should be deleted")
+        self.assertFalse(os.path.exists(expected_path), "Model file for revision 2 should be deleted")
+        
+        self.assertEqual(Change.objects.filter(model=model_rev2).count(), 0)
 
-        self.assertEqual(Change.objects.filter(model=revised_model).count(), 0)
+        model_rev1.refresh_from_db()
+        self.assertTrue(model_rev1.latest)
+        created_model.refresh_from_db()
+        self.assertFalse(created_model.latest)
+
+        delete_result = database.delete(model_rev1.model_id, model_rev1.revision)
+        self.assertTrue(delete_result, "Delete should return True on success")
+
+        with self.assertRaises(Model.DoesNotExist):
+            Model.objects.get(pk=model_rev1.pk)
+
+        expected_path = os.path.join(
+            settings.MODEL_DIR, str(model_rev1.model_id), str(model_rev1.revision)
+        )
+        self.assertFalse(os.path.exists(expected_path), "Model file for revision 1 should be deleted")
+
+        self.assertEqual(Change.objects.filter(model=model_rev1).count(), 0)
+
+        created_model.refresh_from_db()
+        self.assertTrue(created_model.latest)
+
+        delete_result = database.delete(created_model.model_id, created_model.revision)
+        self.assertTrue(delete_result, "Delete should return True on success")
+
+        with self.assertRaises(Model.DoesNotExist):
+            Model.objects.get(pk=created_model.pk)
+
+        expected_path = os.path.join(
+            settings.MODEL_DIR, str(created_model.model_id), str(created_model.revision)
+        )
+        self.assertFalse(os.path.exists(expected_path), "Model file for revision 1 should be deleted")
+
+        self.assertEqual(Change.objects.filter(model=created_model).count(), 0)
+        self.assertEqual(Model.objects.filter(model_id=created_model.model_id).count(), 0)
