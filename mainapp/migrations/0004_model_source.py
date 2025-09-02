@@ -6,6 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('social_django', '0001_initial'),
         ('mainapp', '0003_populate_latest_field'),
     ]
 
