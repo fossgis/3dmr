@@ -105,6 +105,20 @@ class Model(models.Model):
 
             super().save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        with transaction.atomic():
+            if self.latest:
+                latest_model = Model.objects.filter(
+                    model_id=self.model_id
+                ).exclude(pk=self.pk).order_by('-revision').first()
+
+                # if self is not the last standing revision of the model
+                # assign the next revision as latest
+                if latest_model:
+                    latest_model.latest=True
+                    latest_model.save()
+            return super().delete(*args, **kwargs)
+
 class Change(models.Model):
     author = models.ForeignKey(User, models.CASCADE)
     model = models.ForeignKey(Model, models.CASCADE)
