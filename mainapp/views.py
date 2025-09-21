@@ -22,13 +22,35 @@ def index(request):
     update_last_page(request)
 
     MODELS_IN_INDEX_PAGE = 6
+    try:
+        page_id = int(request.GET.get('page', 1))
+    except ValueError:
+        page_id = 1
+
     models = Model.objects.filter(latest=True).order_by('-pk')
 
     if not admin(request):
         models = models.filter(is_hidden=False)
 
+
+    if not models:
+        models = None
+        paginator = None
+    else:
+        paginator = Paginator(models, MODELS_IN_INDEX_PAGE)
+
+        try:
+            models = paginator.page(page_id)
+        except EmptyPage:
+            models = []
+
+        paginator = paginator
+    
     context = {
-            'models': models[:MODELS_IN_INDEX_PAGE],
+        'models': models,
+        'paginator': paginator,
+        'page_id': page_id,
+
     }
 
     return render(request, 'mainapp/index.html', context)
