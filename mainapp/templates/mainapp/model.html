@@ -69,93 +69,26 @@
 				<div class="panel-heading">
 					<h3 class="panel-title">{{ model.title }}</h3>
 				</div>
-				<div class="panel-body">
-					<p>3DMR tag: <a target="_blank" href="https://overpass-turbo.eu/?w=%223dmr%22%3D%22{{ model.model_id }}%22+global&R#"><strong>3dmr={{ model.model_id }}</strong></a></p>
-					{% if model.categories.all %}
-					<p>Categories:
-						{% for category in model.categories.all %}
-						<a href="{% url 'search' %}?category={{ category.name }}"><span class="label label-default">{{ category.name }}</span></a>
-						{% endfor %}
-					</p>
-					{% endif %}
-					{% if model.tags.items %}
-					<p>Tags:
-						{% for k, v in model.tags.items %}
-						<a href="{% url 'search' %}?tag={{ k }}={{ v }}"><span class="label label-default">{{ k }}={{ v }}</span></a>
-						{% endfor %}
-					</p>
-					{% endif %}
-					{% if model.rendered_description %}
-					<p>Description:</p>
-					<p>{{ model.rendered_description|safe }}</p>
-					{% endif %}
-					<p>Uploaded by <a href="{% url 'user' model.author.profile.uid %}"><span class="label label-default">{{ model.author.profile.display_name }}</span></a> on {{ model.upload_date|date:"c" }}</p>
-					{% if model.source %}
-					<p>From: 
-						{% if model.source_is_url %}
-						<a href="{{ model.source }}">Original Source</a>
-						{% else %}
-						{{ model.source }}
-						{% endif %}
-					</p>
-					{% endif %}
-					<p>{{ license }}</p>
-					<a href="{% url 'get_model' model.model_id model.revision %}" class="btn btn-default" role="button">Download</a>
-					{% if user.is_authenticated and model.author == user or user.profile.is_admin %}
-					<a href="{% url 'edit' model.model_id model.revision %}" class="btn btn-default" role="button">Edit Metadata</a>
-					{% endif %}
-					{% if user.is_authenticated and model.author == user %}
-					<a href="{% url 'revise' model.model_id %}" class="btn btn-default" role="button">Revise</a>
-					{% endif %}
-					{% if user.is_authenticated and user.profile.is_admin %}
-					{% if model.is_hidden %}
-					<strong>This model is hidden</strong>
-					{% endif %}
-					<p>
-						<form action="{% url 'hide_model' %}" method="post">
-							{% csrf_token %}
-							<input type="hidden" name="model_id" value="{{ model.model_id }}">
-							<input type="hidden" name="revision" value="{{ model.revision }}">
-							{% if model.is_hidden %}
-							<input type="hidden" name="type" value="unhide">
-							<button type="submit" class="btn btn-danger">Unhide Model</button>
-							{% else %}
-							<input type="hidden" name="type" value="hide">
-							<button type="submit" class="btn btn-danger">Hide Model</button>
-							{% endif %}
-						</form>
-					</p>
-					<p>
-						<form action="{% url 'delete_model' %}" method="post" onsubmit="return confirmDeleteModel()">
-							{% csrf_token %}
-							<input type="hidden" name="model_id" value="{{ model.model_id }}">
-							{% if not latest_page %}
-							<input type="hidden" name="revision" value="{{ model.revision }}">
-							<button type="submit" class="btn btn-danger">Delete Revision</button>
-							{% else %}
-							<button type="submit" class="btn btn-danger">Delete Model</button>
-							{% endif %}
-						</form>
-					</p>
-					{% endif %}
+					<div class="panel-body panel-body-with-tabs">
+						<ul class="nav nav-tabs" role="tablist">
+							<li role="presentation" class="active"><a href="#overview" aria-controls="overview" role="tab" data-toggle="tab">Overview</a></li>
+							<li role="presentation"><a href="#stats" aria-controls="stats" role="tab" data-toggle="tab">Stats</a></li>
+							<li role="presentation"><a href="#history" aria-controls="history" role="tab" data-toggle="tab">History</a></li>
+						</ul>
+						<div class="tab-content">
+							<div role="tabpanel" class="tab-pane active" id="overview">
+								{% include 'mainapp/model_overview.html' %}
+							</div>
+							<div role="tabpanel" class="tab-pane" id="stats">
+								{% include 'mainapp/model_stats.html' %}
+							</div>
+							<div role="tabpanel" class="tab-pane" id="history">
+								{% include 'mainapp/model_history.html' %}
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
-		</div>
-		<div class="col-md-4">
-			{% if model.is_hidden %}
-			<div class="panel panel-danger">
-			{% else %}
-			<div class="panel panel-primary">
-			{% endif %}
-				<div class="panel-heading">
-					<h3 class="panel-title">Model Stats</h3>
-				</div>
-				<div class="panel-body">
-					{% include 'mainapp/model_stats.html' %}
-				</div>
-			</div>
-		</div>
-		</div>
 	</div>
 </div>
 <script>
