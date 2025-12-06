@@ -14,7 +14,16 @@
 	{% if form_file %}
 	<div class="form-group required">
 		<label for="{{ form.model_file.id_for_label }}">{{ form.model_file.label }}</label>
-		{% for error in form.model_file.errors %}<div class="alert alert-danger" role="alert">{{ error }}</div>{% endfor %}
+		{% for error in form.model_file.errors.as_data %}
+            <div class="alert alert-danger" role="alert">
+                {{ error.message }}
+                {% if error.code == 'glb_validation_failed' and form.model_file.field.glb_errors %}
+                    <button type="button" class="btn btn-danger btn-sm" onclick="showGlbErrors()">
+                        View Details
+                    </button>
+                {% endif %}
+            </div>
+        {% endfor %}
 		{{ form.model_file }}
 	</div>
 	<div id="model-preview" style="margin-bottom: 15px; display: none;">
@@ -242,3 +251,56 @@
 	});
 </script>
 {% endif %}
+
+{% if form.model_file.field.glb_errors %}
+{{ form.model_file.field.glb_errors|json_script:"glb-errors-data" }}
+{% endif %}
+
+<script>
+function showGlbErrors() {
+    const errorsDataElement = document.getElementById('glb-errors-data');
+    if (!errorsDataElement) return;
+
+    const errors = JSON.parse(errorsDataElement.textContent);
+    
+    const popup = window.open('', 'GLB Validation Errors', 'popup');
+    
+    let tableContent = '';
+    errors.forEach((error, index) => {
+        tableContent += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${error.message}</td>
+                <td><code>${error.pointer}</code></td>
+            </tr>
+        `;
+    });
+
+    popup.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>GLB Validation Errors</title>
+			<link rel="stylesheet" href="{% static 'mainapp/lib/bootstrap.min.css' %}">
+        </head>
+        <body>
+            <h2>GLB Validation Errors</h2>
+            <p>The following errors were found in the uploaded GLB file:</p>
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Error Message</th>
+                        <th>Node Pointer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableContent}
+                </tbody>
+            </table>
+        </body>
+        </html>
+    `);
+    popup.document.close();
+}
+</script>
