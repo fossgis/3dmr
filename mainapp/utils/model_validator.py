@@ -12,8 +12,14 @@ logger = logging.getLogger(__name__)
 def validate_glb_file(file_field):
     """
     Validates a GLB file using the Khronos Group's gltf-validator CLI.
+
     Raises:
-        ValidationError: if the file is not a valid GLB or fails validation.
+        ValidationError: for file type errors or internal server errors.
+
+    Returns:
+        list: A list of error dictionaries if GLB validation fails. Each dictionary
+              contains 'message' and 'pointer' keys.
+        None: if the file is valid.
     """
 
     if not file_field.name.lower().endswith(".glb"):
@@ -58,21 +64,15 @@ def validate_glb_file(file_field):
                 )
 
             if output["issues"]["numErrors"] > 0:
-                if output["issues"]["numErrors"] > 5:
-                    raise ValidationError(
-                        f"GLB validation failed with {output['issues']['numErrors']} errors. \
-                        Please check your model with khronos gltf-validator and reupload model after processing all the errors."
-                    )
-                else:
-                    messages = []
-                    for message in output["issues"]["messages"]:
-                        if message["severity"] == 0: # 0 is error in khronos validator
-                            messages.append(message)
-                    raise ValidationError(
-                        f"GLB validation failed with {output['issues']['numErrors']} errors: {messages}"
-                    )
+                messages = []
+                for message in output["issues"]["messages"]:
+                    if message["severity"] == 0:  # 0 is error in khronos validator
+                        messages.append({
+                            "message": message["message"],
+                            "pointer": message.get("pointer", "N/A")
+                        })
+                return messages
         except KeyError:
             logger.exception("Invalid gltf_validator output!\
                             It seems gltf_validator's 'validation.schema.json' file has been modified.")
             raise ValidationError("Internal server error.")
-
