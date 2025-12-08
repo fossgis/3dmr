@@ -67,7 +67,15 @@
 			<div class="panel panel-primary">
 			{% endif %}
 				<div class="panel-heading">
-					<h3 class="panel-title">{{ model.title }}</h3>
+					<h3 class="panel-title">
+						{{ model.title }} 
+						{% if not latest_page %}
+							<small style="cursor:help;" title="This is {% if model.latest %}the latest version{% else %}an older version{% endif %}">
+							(Revision {{ model.revision }})
+							</small>
+						{% endif %}
+						
+					</h3>
 				</div>
 					<div class="panel-body">
 						<ul class="nav nav-tabs" role="tablist">

@@ -2,7 +2,7 @@
     <ul id="revisions-list" class="list-group">
         {% for rev in model.revisions %}
         <a href="{% url 'model' model_id=rev.model_id revision=rev.revision %}" class="list-group-item revision-item {% if rev.revision == model.revision %}active{% endif %}">
-            <strong>Version {{ rev.revision }}</strong>
+            <strong>Revision {{ rev.revision }}</strong>
             <small>by {{ rev.author.profile.display_name }} on {{ rev.upload_date|date:"c" }}</small>
         </a>
         {% endfor %}
