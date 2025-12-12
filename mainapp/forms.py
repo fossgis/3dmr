@@ -112,7 +112,13 @@ class ModelField(forms.FileField):
                 code='file_too_large'
             )
 
-        validate_glb_file(model)
+        errors = validate_glb_file(model)
+        if errors:
+            self.glb_errors = errors
+            raise forms.ValidationError(
+                f"GLB validation failed with {len(errors)} errors.",
+                code='glb_validation_failed'
+            )
 
 
 # This function adds the 'form-control' class to all fields, with possible exceptions
