@@ -84,6 +84,9 @@ def model(request, model_id, revision=None):
     if model.is_hidden and not admin(request):
         raise Http404('Model does not exist.')
 
+    model.revisions = Model.objects.filter(model_id=model_id) \
+    .select_related('author__profile').order_by('-revision')
+
     context = {
         'model': model,
         'latest_page': revision is None,

@@ -170,3 +170,42 @@ form > #map-descriptor {
     padding-top: 4px;
     border-top: 1px solid rgba(255,255,255,0.1);
 }
+
+.panel-body {
+    padding: 0;
+}
+.panel-body .tab-content {
+    padding: 15px;
+    border-top: 1px solid #ddd;
+}
+
+.revision-item.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-bottom: none;
+}
+
+.revision-item.list-group-item:last-child {
+    border-bottom: 1px solid #ddd;
+}
+
+.revision-item.list-group-item.active,
+.revision-item.list-group-item.active:focus {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+    z-index: 2;
+}
+
+.revision-item.list-group-item:not(.active):hover {
+    background-color: #e9ecef;
+}
+
+.revision-item.list-group-item.active div {
+    color: rgba(255, 255, 255, 0.75);
+}
