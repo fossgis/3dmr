@@ -9,7 +9,9 @@ export default defineConfig({
     manifest: 'mainapp/manifest.json',
     emptyOutDir: true,
     rollupOptions: {
-      input: resolve(__dirname, 'src/main.js'),
+      input: {
+        main: resolve(__dirname, 'src/main.js'),
+      },
       output: {
         entryFileNames: 'mainapp/[name].bundle.js',
       },
