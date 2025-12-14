@@ -2,7 +2,8 @@
   "name": "3dmr",
   "type": "module",
   "scripts": {
-    "build": "vite build"
+    "build": "vite build",
+    "dev": "vite"
   },
   "devDependencies": {
     "vite": "^7.2.7"
