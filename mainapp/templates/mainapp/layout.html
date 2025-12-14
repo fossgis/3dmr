@@ -14,6 +14,8 @@
 	<link rel="stylesheet" href="{% static 'mainapp/lib/bootstrap-theme.min.css' %}">
 	<link rel="stylesheet" href="{% static 'mainapp/main.css' %}">
 	{% endcompress %}
+	{% load django_vite %}
+	{% vite_hmr_client %}
 	{% block headadditions %}
 	{% endblock %}
 	{% endblock %}

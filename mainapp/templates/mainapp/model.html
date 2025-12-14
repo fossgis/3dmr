@@ -2,6 +2,7 @@
 {% block pagename %}{{ model.title }}{% endblock %}
 {% block headadditions %}
 {% load static %}
+{% load django_vite %}
 <link rel="stylesheet" href="{% static 'mainapp/lib/leaflet.css' %}">
 <script src="{% static 'mainapp/lib/leaflet.js' %}"></script>
 <style>
@@ -106,7 +107,7 @@ initMap("mapdiv", {{ model.location.latitude }}, {{ model.location.longitude }},
 </script>
 {% endblock %}
 {% block footeradditions %}
-<script type="module" src="{% static 'mainapp/main.bundle.js' %}"></script>
+{% vite_asset 'src/main.js' %}
 <script>
 	window.addEventListener("load", function() {
 		setUpRenderPane();
