@@ -1,6 +1,6 @@
 {% extends "mainapp/layout.html" %}
 {% block pagename %}Userpage{% endblock %}
-{% load static %}
+{% load django_vite %}
 {% block headadditions %}
 <style>
 	.col-md-4 > img {
@@ -118,7 +118,7 @@ function enableEdit() {
 </div>
 {% endblock %}
 {% block footeradditions %}
-<script type="module" src="{% static 'mainapp/main.bundle.js' %}"></script>
+{% vite_asset 'src/main.js' %}
 <script>
 	window.addEventListener("load", function() {
 		setUpRenderPane();

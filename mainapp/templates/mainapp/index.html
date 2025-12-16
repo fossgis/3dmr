@@ -1,5 +1,5 @@
 {% extends "mainapp/layout.html" %}
-{% load static %}
+{% load django_vite %}
 {% block pagename %}Homepage{% endblock %}
 {% block headadditions %}
 <style>
@@ -42,7 +42,7 @@
 </div>
 {% endblock %}
 {% block footeradditions %}
-<script type="module" src="{% static 'mainapp/main.bundle.js' %}"></script>
+{% vite_asset 'src/main.js' %}
 <script>
 	window.addEventListener("load", function() {
 		setUpRenderPane();

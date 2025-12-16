@@ -2,14 +2,18 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig({
+  base: '/static/',
   build: {
     publicDir: 'public',
-    outDir: '../static/mainapp',
+    outDir: resolve(__dirname, '../static/'),
+    manifest: 'mainapp/manifest.json',
     emptyOutDir: true,
     rollupOptions: {
-      input: resolve(__dirname, './src/main.js'),
+      input: {
+        main: resolve(__dirname, 'src/main.js'),
+      },
       output: {
-        entryFileNames: '[name].bundle.js',
+        entryFileNames: 'mainapp/[name].bundle.js',
       },
     },
   },

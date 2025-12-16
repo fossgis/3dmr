@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'mainapp',
     'social_django',
     'compressor',
+    'django_vite',
 ]
 
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
@@ -159,6 +160,10 @@ STATICFILES_FINDERS = (
         'django.contrib.staticfiles.finders.AppDirectoriesFinder',
         'compressor.finders.CompressorFinder',
 )
+
+DJANGO_VITE_ASSETS_PATH = os.path.join(BASE_DIR, 'mainapp/static')
+DJANGO_VITE_MANIFEST_PATH = Path(STATIC_ROOT) / "mainapp/manifest.json"
+DJANGO_VITE_DEV_MODE = DEBUG
 
 MODEL_DIR = os.environ.get('MODEL_DIR', BASE_DIR / "models")
 

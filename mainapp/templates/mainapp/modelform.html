@@ -1,4 +1,5 @@
 {% load static %}
+{% load django_vite %}
 {% if form_file %}
 {% endif %}
 
@@ -223,7 +224,7 @@
 {% endif %}
 
 {% if form_file %}
-<script type="module" src="{% static 'mainapp/main.bundle.js' %}"></script>
+{% vite_asset 'src/main.js' %}
 <script type="module">
 	document.getElementById('{{ form.model_file.id_for_label }}')
 	.addEventListener("change", function (event) {
