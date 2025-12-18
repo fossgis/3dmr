@@ -100,7 +100,7 @@ class BaseViewTestMixin(TestCase):
                 destination.write(self.model_file)
 
     def tearDown(self) -> None:
-        shutil.rmtree(settings.MODEL_DIR)
+        shutil.rmtree(settings.MODEL_DIR, ignore_errors=True)
 
     def login_user(self, user_type="user"):
         """

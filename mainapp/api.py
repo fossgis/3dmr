@@ -94,7 +94,10 @@ def get_model(request, model_id, revision=None):
 
 @any_origin
 def lookup_tag(request, tag, page_id=1):
-    key, value = get_kv(tag)
+    try:
+        key, value = get_kv(tag)
+    except ValueError:
+        return HttpResponseBadRequest('Invalid tag format.')
     models = Model.objects.filter(latest=True, tags__contains={key: value}).order_by('model_id')
 
     if not admin(request):
@@ -168,9 +171,12 @@ def range_filter(models, latitude, longitude, distance):
 @any_origin
 def search_range(request, latitude, longitude, distance, page_id=1):
     # convert parameters to floats
-    latitude = float(latitude)
-    longitude = float(longitude)
-    distance = float(distance)
+    try:
+        latitude = float(latitude)
+        longitude = float(longitude)
+        distance = float(distance)
+    except ValueError:
+        return HttpResponseBadRequest('Invalid format')
 
     models = Model.objects.filter(latest=True)
 
@@ -194,7 +200,10 @@ def search_title(request, title, page_id=1):
 @any_origin
 def search_full(request):
     body = request.body.decode('UTF-8')
-    data = json.loads(body)
+    try:
+        data = json.loads(body)
+    except (ValueError, json.JSONDecodeError):
+        return HttpResponseBadRequest('Invalid JSON')
 
     models = Model.objects.filter(latest=True)
 

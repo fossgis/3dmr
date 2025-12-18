@@ -112,7 +112,9 @@ class FormIntegrationTests(SimpleTestCase):
         form = UploadFileForm(data={})
         self.assertFalse(form.is_valid())
 
-    def test_upload_file_form_valid(self):
+    @patch("mainapp.forms.validate_glb_file")
+    def test_upload_file_form_valid(self, mock_validate):
+        mock_validate.return_value = []
         with open("mainapp/tests/test_files/test_model.glb", "rb") as f:
             data = f.read()
         uploaded = SimpleUploadedFile("model.glb", data, content_type="model/gltf-binary")
@@ -154,7 +156,9 @@ class FormIntegrationTests(SimpleTestCase):
         form = UploadFileMetadataForm(data={})
         self.assertFalse(form.is_valid())
 
-    def test_upload_file_metadata_form_valid(self):
+    @patch("mainapp.forms.validate_glb_file")
+    def test_upload_file_metadata_form_valid(self, mock_validate):
+        mock_validate.return_value = []
         with open("mainapp/tests/test_files/test_model.glb", "rb") as f:
             data = f.read()
         uploaded = SimpleUploadedFile("model.glb", data, content_type="model/gltf-binary")

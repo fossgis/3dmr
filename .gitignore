@@ -5,3 +5,7 @@ staticfiles
 models
 mainapp/static/mainapp
 node_modules
+.venv/
+venv/
+__pycache__/
+*.pyc

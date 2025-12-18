@@ -49,7 +49,7 @@ class NightlyDumpCommandTest(BaseTestMixin, TestCase):
                     })}\n'''
             )
             mock_open().write.assert_any_call(',')
-            model_path = os.path.join(settings.MODEL_DIR, str(model.model_id), str(model.revision))
+            model_path = '{}/{}/{}'.format(settings.MODEL_DIR, model.model_id, model.revision)
             mock_zip.write.assert_any_call(f"{model_path}.glb", f"models/{model.model_id}.glb")
 
         mock_open().write.assert_any_call('}')

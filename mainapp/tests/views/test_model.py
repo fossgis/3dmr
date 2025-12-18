@@ -70,7 +70,9 @@ class UploadModelViewTest(BaseViewTestMixin, TestCase):
         self.assertEqual(self.client.session["post_data"]["title"], "Attempted Upload")
 
     @patch("mainapp.views.database.upload")
-    def test_upload_post_authenticated_success(self, mock_db_upload):
+    @patch("mainapp.forms.validate_glb_file")
+    def test_upload_post_authenticated_success(self, mock_validate, mock_db_upload):
+        mock_validate.return_value = []
         mock_model = Model(model_id=1, revision=1)
         mock_db_upload.return_value = mock_model
         self.login_user()
@@ -337,7 +339,9 @@ class ReviseModelViewTest(BaseViewTestMixin, TestCase):
         self.assertEqual(response.context["model"].pk, self.model3.pk)
 
     @patch("mainapp.views.database.upload")
-    def test_revise_view_post_success(self, mock_db_upload):
+    @patch("mainapp.forms.validate_glb_file")
+    def test_revise_view_post_success(self, mock_validate, mock_db_upload):
+        mock_validate.return_value = []
         mock_new_revision_model = Model(
             model_id=self.model3.model_id, revision=2, author=self.user
         )
@@ -370,7 +374,9 @@ class ReviseModelViewTest(BaseViewTestMixin, TestCase):
         self.assertEqual(call_args[1]["author"], self.user)
 
     @patch("mainapp.views.database.upload")
-    def test_revise_view_post_db_error(self, mock_db_upload):
+    @patch("mainapp.forms.validate_glb_file")
+    def test_revise_view_post_db_error(self, mock_validate, mock_db_upload):
+        mock_validate.return_value = []
         mock_db_upload.return_value = None
         dummy_file = SimpleUploadedFile(
             "test_rev_fail.glb", self.model_file, content_type="model/gltf-binary"
