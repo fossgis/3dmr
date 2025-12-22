@@ -21,44 +21,59 @@
 	{% endblock %}
 </head>
 <body>
-	<nav class="navbar navbar-inverse navbar-static-top" style="margin-bottom:0">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="true" aria-controls="navbar">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					{% if user.is_authenticated %}
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					{% endif %}
-				</button>
-				<a class="navbar-brand" href="{% url 'index' %}">3D Model Repository</a>
-				<a class="navbar-brand navbar-short" href="{% url 'index' %}">3DMR</a>
-			</div>
-			<div id="navbar" class="navbar-collapse-lg collapse in" aria-expanded="true" style role="menu">
-				<ul class="nav navbar-nav navbar-right">
-					<li><a target="_blank" href="https://wiki.openstreetmap.org/wiki/3D_Model_Repository">Documentation</a></li>
-					<li><a href="{% url 'docs' %}">API Docs</a></li>
-					<li><a href="{% url 'downloads' %}">Downloads</a></li>
-					<li><a href="{% url 'map' %}">Map</a></li>
-					{% if user.is_authenticated %}
-					<li><a href="{% url 'upload' %}">Upload Model</a></li>
-					<li><a href="{% url 'logout' %}">Log out</a></li>
-					<li class="navbar-display-name"><a href="{% url 'user' uid=''%}"><img src="{{ user.profile.avatar }}" alt=""> {{ user.profile.display_name }}</a></li>
-					<!-- <li class="navbar-display-name navbar-short"><a href="{% url 'user' uid=''%}"><img src="{{ user.profile.avatar }}" alt=""></a></li> -->
-					{% else %}
-					<li><a href="{% url 'social:begin' 'openstreetmap-oauth2' %}">Login</a></li>
-					{% endif %}
-				</ul>
-				<form class="navbar-form navbar-left" action="{% url 'search' %}" method="GET">
-					<input type="text" class="form-control" id="search" placeholder="Search..." title="Search" name="query" {% if query %}value="{{ query }}"{% endif %}>
-				</form>
-			</div>
-		</div>
-	</nav>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="margin-bottom:0;">
+    <div class="container-fluid">
+        <!-- Brand name - full on desktop, short on mobile -->
+        <a class="navbar-brand d-none d-lg-block" href="{% url 'index' %}">3D Model Repository</a>
+        <a class="navbar-brand d-block d-lg-none" href="{% url 'index' %}">3DMR</a>
+        
+        <!-- Hamburger toggle button for mobile -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <!-- Collapsible navbar content -->
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://wiki.openstreetmap.org/wiki/3D_Model_Repository">Documentation</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'docs' %}">API Docs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'downloads' %}">Downloads</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'map' %}">Map</a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'upload' %}">Upload Model</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Log out</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'user' uid=''%}">
+                        <img src="{{ user.profile.avatar }}" alt="" style="height:20px; width:20px; border-radius:50%; vertical-align:middle; margin-right:5px;">
+                        {{ user.profile.display_name }}
+                    </a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'social:begin' 'openstreetmap-oauth2' %}">Login</a>
+                </li>
+                {% endif %}
+            </ul>
+            
+            <!-- Search form -->
+            <form class="d-flex ms-2" action="{% url 'search' %}" method="GET" role="search">
+                <input type="search" class="form-control" placeholder="Search..." name="query" {% if query %}value="{{ query }}"{% endif %}>
+            </form>
+        </div>
+    </div>
+</nav>
 	{% if messages %}
 	<div class="container">
 		<br>
@@ -78,7 +93,7 @@
 	{% block body %}
 	{% endblock %}
 
-	<nav class="navbar-fixed-bottom">
+	<nav class="fixed-bottom">
 		<div class="container-fluid text-right">
 			<a class="item" target="_blank" href="https://community.openstreetmap.org/tag/3d">3D Forum</a>
 			<span class="separator" aria-hidden="true">|</span>
