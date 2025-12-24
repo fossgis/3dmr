@@ -170,13 +170,9 @@ def range_filter(models, latitude, longitude, distance):
 
 @any_origin
 def search_range(request, latitude, longitude, distance, page_id=1):
-    # convert parameters to floats
-    try:
-        latitude = float(latitude)
-        longitude = float(longitude)
-        distance = float(distance)
-    except ValueError:
-        return HttpResponseBadRequest('Invalid format')
+    latitude = float(latitude)
+    longitude = float(longitude)
+    distance = float(distance)
 
     models = Model.objects.filter(latest=True)
 

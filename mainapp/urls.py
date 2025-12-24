@@ -3,6 +3,9 @@ from django.urls import re_path
 from . import views
 from . import api
 
+FLOAT = r'-?\d+(?:\.\d+)?'
+POS_FLOAT = r'\d+(?:\.\d+)?'
+
 urlpatterns = [
     re_path(r'^$', views.index, name='index'),
     re_path(r'^login$', views.login, name='login'),
@@ -33,11 +36,27 @@ urlpatterns = [
     re_path(r'^api/category/(?P<category>.*)$', api.lookup_category, name='lookup_category'),
     re_path(r'^api/author/(?P<uid>[0-9]+)/(?P<page_id>[0-9]+)$', api.lookup_author, name='lookup_author'),
     re_path(r'^api/author/(?P<uid>[0-9]+)$', api.lookup_author, name='lookup_author'),
+    re_path(r'^api/search/?(?P<latitude>-?[0-9]+(\.[0-9]+)?)/(?P<longitude>-?[0-9]+(\.[0-9]+)?)/(?P<distance>[0-9]+(\.[0-9]+)?)/(?P<page_id>[0-9]+)$', api.search_range, name='lookup_range'),
+    re_path(r'^api/search/(?P<latitude>-?[0-9]+(\.[0-9]+)?)/(?P<longitude>-?[0-9]+(\.[0-9]+)?)/(?P<distance>[0-9]+(\.[0-9]+)?)$', api.search_range, name='lookup_range'),
+    
+#     re_path(
+#     r'^api/search/(?P<latitude>-?\d+(?:\.\d+)?)/(?P<longitude>-?\d+(?:\.\d+)?)/(?P<distance>\d+(?:\.\d+)?)/(?P<page_id>\d+)$',
+#     api.search_range,
+#     name='lookup_range_paginated',
+#     ),
+
+# re_path(
+#     r'^api/search/(?P<latitude>-?\d+(?:\.\d+)?)/(?P<longitude>-?\d+(?:\.\d+)?)/(?P<distance>\d+(?:\.\d+)?)$',
+#     api.search_range,
+#     name='lookup_range',
+#     ),
+
+
 
     re_path(r'^api/search/title/(?P<title>.*)/(?P<page_id>[0-9]+)$', api.search_title, name='search_title'),
     re_path(r'^api/search/title/(?P<title>.*)$', api.search_title, name='search_title'),
     re_path(r'^api/search/full$', api.search_full, name='search_full'),
 
-    re_path(r'^api/search/?(?P<latitude>[^/]+)/(?P<longitude>[^/]+)/(?P<distance>[^/]+)/(?P<page_id>[0-9]+)$', api.search_range, name='lookup_range'),
-    re_path(r'^api/search/(?P<latitude>[^/]+)/(?P<longitude>[^/]+)/(?P<distance>[^/]+)$', api.search_range, name='lookup_range'),
+    # re_path(r'^api/search/?(?P<latitude>[^/]+)/(?P<longitude>[^/]+)/(?P<distance>[^/]+)/(?P<page_id>[0-9]+)$', api.search_range, name='lookup_range'),
+    # re_path(r'^api/search/(?P<latitude>[^/]+)/(?P<longitude>[^/]+)/(?P<distance>[^/]+)$', api.search_range, name='lookup_range'),
 ]
