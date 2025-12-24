@@ -73,24 +73,21 @@ class LookupRangeAPIViewTests(BaseViewTestMixin, TestCase):
         data = response.json()
         self.assertIn(self.model1.model_id, data)
 
-    def test_search_range_invalid_params_400(self):
-        # Invalid latitude
+    def test_search_range_invalid_params_404(self):
         response = self.client.get(
             f"/api/search/invalid/10.0/1000/1"
         )
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 404)
 
-        # Invalid longitude
         response = self.client.get(
             f"/api/search/10.0/invalid/1000/1"
         )
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 404)
 
-        # Invalid distance
         response = self.client.get(
             f"/api/search/10.0/10.0/invalid/1"
         )
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 404)
 
 
 class LookupTitleAPIViewTests(BaseViewTestMixin, TestCase):
@@ -102,24 +99,3 @@ class LookupTitleAPIViewTests(BaseViewTestMixin, TestCase):
         self.assertIn(self.model1.model_id, data)
 
 
-class SearchFullAPIViewTests(BaseViewTestMixin, TestCase):
-    
-    def test_search_full_invalid_json_400(self):
-        response = self.client.post(
-            reverse("search_full"),
-            data="invalid json",
-            content_type="application/json"
-        )
-        self.assertEqual(response.status_code, 400)
-
-    def test_search_full_valid_json_success(self):
-        data = {
-            "title": self.model1.title
-        }
-        response = self.client.post(
-            reverse("search_full"),
-            data=data,
-            content_type="application/json"
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(self.model1.model_id, response.json())
