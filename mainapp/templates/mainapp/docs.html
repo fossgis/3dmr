@@ -5,32 +5,44 @@
 	.response {
 		padding-top: 10px;
 	}
-	.panel:target h3 {
+	.card:target .card-title {
 		text-decoration: underline;
+	}
+	pre {
+		background-color: #f8f9fa;
+		border: 1px solid #dee2e6;
+		border-radius: 0.25rem;
+		padding: 1rem;
+		overflow-x: auto;
+	}
+	pre code {
+		background-color: transparent;
+		padding: 0;
 	}
 </style>
 {% endblock %}
 {% block body %}
 <div class="container">
 	<div class="col-12">
-	<h1>API Documentation</h1>
+		<h1>API Documentation</h1>
 	</div>
+	<hr>
 	<div class="row">
 		<div class="col-md-2">
-			<h2>Model</h2>
+			<h2 class="h4">Model</h2>
 			<ul>
 				<li><a href="#info">Info Get</a></li>
 				<li><a href="#model">Model Get</a></li>
 				<li><a href="#filelist">File List</a></li>
 				<li><a href="#file">File</a></li>
 			</ul>
-			<h2>Lookups</h2>
+			<h2 class="h4">Lookups</h2>
 			<ul>
 				<li><a href="#tag">Tag Lookup</a></li>
 				<li><a href="#category">Category Lookup</a></li>
 				<li><a href="#author">Author Lookup</a></li>
 			</ul>
-			<h2>Searches</h2>
+			<h2 class="h4">Searches</h2>
 			<ul>
 				<li><a href="#title">Title Search</a></li>
 				<li><a href="#latlon">Coordinate Search</a></li>
@@ -39,17 +51,17 @@
 		</div>
 		<div class="col-md-10">
 			<h2>Model</h2>
-			<div class="panel panel-primary" id="info">
-				<div class="panel-heading">
-					<h3 class="panel-title">Info Get</h3>
+			<div class="card border-primary mb-4" id="info">
+				<div class="card-header bg-primary text-white">
+					<h3 class="card-title h5 mb-0">Info Get</h3>
 				</div>
-				<div class="panel-body">
+				<div class="card-body">
 					<p>Returns the model information for the specified model id.</p>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/info/&lt;int:modelid&gt;</span>
+					<span class="badge bg-success">GET</span>
+					<span class="badge bg-secondary">/api/info/&lt;int:modelid&gt;</span>
 					<br>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/info/&lt;int:modelid&gt;/&lt;int:revision&gt;</span>
+					<span class="badge bg-success">GET</span>
+					<span class="badge bg-secondary">/api/info/&lt;int:modelid&gt;/&lt;int:revision&gt;</span>
 					<p class="response">Sample (prettified) Response:</p>
 <pre><code>{
 	"id": 423,
@@ -69,102 +81,102 @@
 }</code></pre>
 				</div>
 			</div>
-			<div class="panel panel-primary" id="model">
-				<div class="panel-heading">
-					<h3 class="panel-title">Model Get</h3>
+			<div class="card border-primary mb-4" id="model">
+				<div class="card-header bg-primary text-white">
+					<h3 class="card-title h5 mb-0">Model Get</h3>
 				</div>
-				<div class="panel-body">
+				<div class="card-body">
 					<p>Returns a glb model corresponding to the specified model id.</p>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/model/&lt;int:modelid&gt;</span>
+					<span class="badge bg-success">GET</span>
+					<span class="badge bg-secondary">/api/model/&lt;int:modelid&gt;</span>
 					<br>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/model/&lt;int:modelid&gt;/&lt;int:revision&gt;</span>
+					<span class="badge bg-success">GET</span>
+					<span class="badge bg-secondary">/api/model/&lt;int:modelid&gt;/&lt;int:revision&gt;</span>
 					<p class="response">Sample Response: a gltf-binary file.</p>
 				</div>
 			</div>
 			<h2>Lookups</h2>
-			<div class="panel panel-primary" id="tag">
-				<div class="panel-heading">
-					<h3 class="panel-title">Tag Lookup</h3>
+			<div class="card border-primary mb-4" id="tag">
+				<div class="card-header bg-primary text-white">
+					<h3 class="card-title h5 mb-0">Tag Lookup</h3>
 				</div>
-				<div class="panel-body">
+				<div class="card-body">
 					<p>Returns model ids that have the specified tag as one of their tags.</p>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/tag/&lt;string:tag&gt;</span>
+					<span class="badge bg-success">GET</span>
+					<span class="badge bg-secondary">/api/tag/&lt;string:tag&gt;</span>
 					<br>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/tag/&lt;string:tag&gt;/&lt;int:pageid&gt;</span>
+					<span class="badge bg-success">GET</span>
+					<span class="badge bg-secondary">/api/tag/&lt;string:tag&gt;/&lt;int:pageid&gt;</span>
 					<p class="response">Sample Response:</p>
 					<pre><code>[3, 5]</code></pre>
 				</div>
 			</div>
-			<div class="panel panel-primary" id="category">
-				<div class="panel-heading">
-					<h3 class="panel-title">Category Lookup</h3>
+			<div class="card border-primary mb-4" id="category">
+				<div class="card-header bg-primary text-white">
+					<h3 class="card-title h5 mb-0">Category Lookup</h3>
 				</div>
-				<div class="panel-body">
+				<div class="card-body">
 					<p>Returns model ids that have the specified category as one of their categories.</p>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/category/&lt;string:tag&gt;</span>
+					<span class="badge bg-success">GET</span>
+					<span class="badge bg-secondary">/api/category/&lt;string:tag&gt;</span>
 					<br>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/category/&lt;string:tag&gt;/&lt;int:pageid&gt;</span>
+					<span class="badge bg-success">GET</span>
+					<span class="badge bg-secondary">/api/category/&lt;string:tag&gt;/&lt;int:pageid&gt;</span>
 					<p class="response">Sample Response:</p>
 					<pre><code>[6, 8]</code></pre>
 				</div>
 			</div>
-			<div class="panel panel-primary" id="author">
-				<div class="panel-heading">
-					<h3 class="panel-title">Author Lookup</h3>
+			<div class="card border-primary mb-4" id="author">
+				<div class="card-header bg-primary text-white">
+					<h3 class="card-title h5 mb-0">Author Lookup</h3>
 				</div>
-				<div class="panel-body">
+				<div class="card-body">
 					<p>Returns model ids that have the specified author as one of their categories. Here uid refers to the OSM user id.</p>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/author/&lt;string:uid&gt;</span>
+					<span class="badge bg-success">GET</span>
+					<span class="badge bg-secondary">/api/author/&lt;string:uid&gt;</span>
 					<br>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/author/&lt;string:uid&gt;/&lt;int:pageid&gt;</span>
+					<span class="badge bg-success">GET</span>
+					<span class="badge bg-secondary">/api/author/&lt;string:uid&gt;/&lt;int:pageid&gt;</span>
 					<p class="response">Sample Response:</p>
 					<pre><code>[6, 8]</code></pre>
 				</div>
 			</div>
 			<h2>Searches</h2>
-			<div class="panel panel-primary" id="title">
-				<div class="panel-heading">
-					<h3 class="panel-title">Title Search</h3>
+			<div class="card border-primary mb-4" id="title">
+				<div class="card-header bg-primary text-white">
+					<h3 class="card-title h5 mb-0">Title Search</h3>
 				</div>
-				<div class="panel-body">
+				<div class="card-body">
 					<p>Returns model ids that contain the specified string in their title.</p>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/search/title/&lt;string:title&gt;</span>
+					<span class="badge bg-success">GET</span>
+					<span class="badge bg-secondary">/api/search/title/&lt;string:title&gt;</span>
 					<br>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/search/title/&lt;string:title&gt;/&lt;int:pageid&gt;</span>
+					<span class="badge bg-success">GET</span>
+					<span class="badge bg-secondary">/api/search/title/&lt;string:title&gt;/&lt;int:pageid&gt;</span>
 					<p class="response">Sample Response:</p>
 					<pre><code>[2, 10, 17]</code></pre>
 				</div>
 			</div>
-			<div class="panel panel-primary" id="latlon">
-				<div class="panel-heading">
-					<h3 class="panel-title">Latitude and Longitude Search</h3>
+			<div class="card border-primary mb-4" id="latlon">
+				<div class="card-header bg-primary text-white">
+					<h3 class="card-title h5 mb-0">Latitude and Longitude Search</h3>
 				</div>
-				<div class="panel-body">
+				<div class="card-body">
 					<p>Returns model ids that have the specified category as one of their categories.</p>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/search/&lt;float:lat&gt;/&lt;float:lon&gt;/&lt;float:range&gt;</span>
+					<span class="badge bg-success">GET</span>
+					<span class="badge bg-secondary">/api/search/&lt;float:lat&gt;/&lt;float:lon&gt;/&lt;float:range&gt;</span>
 					<br>
-					<span class="label label-success">GET</span>
-					<span class="label label-default">/api/search/&lt;float:lat&gt;/&lt;float:lon&gt;/&lt;float:range&gt;/&lt;int:pageid&gt;</span>
+					<span class="badge bg-success">GET</span>
+					<span class="badge bg-secondary">/api/search/&lt;float:lat&gt;/&lt;float:lon&gt;/&lt;float:range&gt;/&lt;int:pageid&gt;</span>
 					<p class="response">Sample Response:</p>
 					<pre><code>[2, 10, 17]</code></pre>
 				</div>
 			</div>
-			<div class="panel panel-primary" id="full">
-				<div class="panel-heading">
-					<h3 class="panel-title">Full Search</h3>
+			<div class="card border-primary mb-4" id="full">
+				<div class="card-header bg-primary text-white">
+					<h3 class="card-title h5 mb-0">Full Search</h3>
 				</div>
-				<div class="panel-body">
+				<div class="card-body">
 					<p>Permits combining various criteria to find the exact kinds of models we need. Search query is sent in the request body. If any parameter is not specified, it's ignored and won't be filtered from the results.</p>
 					<p>Notes:</p>
 					<ul>
@@ -176,8 +188,8 @@
 						<li>Only models that match all attributes are returned</li>
 						<li>The "format" attribute allows you to retrieve more than the model id, allowing quick access to the location and title of many models around a point, for example.</li>
 					</ul>
-					<span class="label label-danger">POST</span>
-					<span class="label label-default">/api/search/full</span>
+					<span class="badge bg-danger">POST</span>
+					<span class="badge bg-secondary">/api/search/full</span>
 					<p class="response">Live request body (try pressing Submit!):</p>
 					<script>
 						function send() {
@@ -201,7 +213,7 @@
 						}
 					</script>
 					<form>
-						<textarea id="json" rows="20" cols="80">{
+						<textarea id="json" rows="20" cols="80" class="form-control">{
 	"lat": 48.8583,
 	"lon": 2.2945,
 	"range": 1000,
@@ -217,7 +229,7 @@
 	"page": 1,
 	"author": "22633299"
 }</textarea><br>
-						<input type="submit" onclick="return send()">
+						<input type="submit" onclick="return send()" class="btn btn-primary">
 					</form>
 					<p class="response">Response:</p>
 					<pre><code id="response">(None yet)</code></pre>
@@ -248,7 +260,7 @@
 "format": ["id", "latitude", "longitude", "title"]
 }</code></pre>
 					<p class="response">Sample Response:</p>
-					<pre><code>[[1, 48.8583, 2.2945, "Eiffel Tower"], [64, 48.85831, 2.2945, "Near Eiffel Tower"]]</code></pre>
+<pre><code>[[1, 48.8583, 2.2945, "Eiffel Tower"], [64, 48.85831, 2.2945, "Near Eiffel Tower"]]</code></pre>
 				</div>
 			</div>
 		</div>
