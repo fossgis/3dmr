@@ -1,29 +1,48 @@
-<div class="col-md-4 col-sm-6 col-xs-12">
+<div class="col-md-4 col-sm-6 col-12">
 	{% if model.is_hidden %}
-	<div class="panel panel-danger">
+	<div class="card border-danger mb-4">
+		<div class="card-header bg-danger text-white">
 	{% else %}
-	<div class="panel panel-primary">
+	<div class="card border-primary mb-4">
+		<div class="card-header bg-primary bg-gradient text-white">
 	{% endif %}
-		<div class="panel-heading">
-			<h3 class="panel-title"><a href="{% url 'model' model_id=model.model_id %}">{{ model.title }}</a></h3>
+			<h3 class="card-title h5 mb-0">
+				<a href="{% url 'model' model_id=model.model_id %}" class="text-white text-decoration-none">
+					{{ model.title }}
+				</a>
+			</h3>
 		</div>
 		<div class="render-pane" data-model="{{ model.model_id }}" data-revision="{{ model.revision }}" id="render-pane{{ model.model_id }}.{{ model.revision }}">
 		</div>
-		<div class="panel-body">
-			<p>Categories:
+		<div class="card-body bg-light">
+			<p class="mb-2 small">
+				Categories:
 				{% for category in model.categories.all %}
-				<a href="{% url 'search' %}?category={{ category.name }}"><span class="label label-default">{{ category.name }}</span></a>
+				<a href="{% url 'search' %}?category={{ category.name }}" class="text-decoration-none">
+					<span class="badge bg-secondary text-uppercase">{{ category.name }}</span>
+				</a>
 				{% endfor %}
 			</p>
-			<p>Tags:
+			<p class="mb-2 small">
+				Tags:
 				{% for k, v in model.tags.items %}
-				<a href="{% url 'search' %}?tag={{ k }}={{ v }}"><span class="label label-default">{{ k }}={{ v }}</span></a>
+				<a href="{% url 'search' %}?tag={{ k }}={{ v }}" class="text-decoration-none">
+					<span class="badge bg-secondary">{{ k }}={{ v }}</span>
+				</a>
 				{% endfor %}
 			</p>
 			{% if hide_user %}
-			<p>Upload date: {{ model.upload_date|date:"c" }}</p>
+			<p class="mb-0 small text-muted">
+				Uploaded on {{ model.upload_date|date:"Y-m-d" }}
+			</p>
 			{% else %}
-			<p>Uploaded by <a href="{% url 'user' uid=model.author.profile.uid %}"><span class="label label-default">{{ model.author.profile.display_name }}</span></a> on {{ model.upload_date|date:"c" }}</p>
+			<p class="mb-0 small text-muted">
+				Uploaded by 
+				<a href="{% url 'user' uid=model.author.profile.uid %}" class="text-decoration-none">
+					<span class="badge bg-secondary">{{ model.author.profile.display_name }}</span>
+				</a> 
+				on {{ model.upload_date|date:"Y-m-d" }}
+			</p>
 			{% endif %}
 		</div>
 	</div>

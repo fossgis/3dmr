@@ -25,17 +25,21 @@
 	</div>
 	{% endif %}
 	{% if paginator %}
-	<div class="row" style="margin-bottom:30px;text-align:center;">
-		<div class="btn-group" role="group" aria-label="...">
+	<nav aria-label="Page navigation" style="margin-bottom:30px;">
+		<ul class="pagination justify-content-center">
 			{% for page in paginator.page_range %}
 			{% if page == page_id %}
-			<a class="btn btn-primary disabled">{{ page }}</a>
+			<li class="page-item active">
+				<span class="page-link">{{ page }}</span>
+			</li>
 			{% else %}
-			<a href="{% url 'index' %}?page={{ page }}" class="btn btn-default">{{ page }}</a>
+			<li class="page-item">
+				<a href="{% url 'index' %}?page={{ page }}" class="page-link">{{ page }}</a>
+			</li>
 			{% endif %}
 			{% endfor %}
-		</div>
-	</div>
+		</ul>
+	</nav>
 	{% else %}
 	<p>No models exist.</p>
 	{% endif %}
