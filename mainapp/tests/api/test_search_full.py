@@ -185,3 +185,23 @@ class SearchFullAPIViewTest(BaseViewTestMixin, TestCase):
         self.assertEqual(first_result[1], self.model_no_loc.title)
         self.assertIsNone(first_result[2])
         self.assertIsNone(first_result[3])
+
+    def test_search_full_invalid_json_400(self):
+        response = self.client.post(
+            reverse("search_full"),
+            data="invalid json",
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_search_full_valid_json_success(self):
+        data = {
+            "title": self.model1.title
+        }
+        response = self.client.post(
+            reverse("search_full"),
+            data=data,
+            content_type="application/json"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.model1.model_id, response.json())

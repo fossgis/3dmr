@@ -1,3 +1,4 @@
+import json
 from django.test import TestCase
 from django.urls import reverse
 
@@ -15,9 +16,9 @@ class LookupTagAPIViewTests(BaseViewTestMixin, TestCase):
         data = response.json()
         self.assertIn(self.model1.model_id, data)
 
-    def test_lookup_tag_invalid_format_500(self):
-        with self.assertRaises(ValueError):
-            self.client.get(reverse("lookup_tag", args=["invalidtag", 1]))
+    def test_lookup_tag_invalid_format_400(self):
+        response = self.client.get(reverse("lookup_tag", args=["invalidtag"]))
+        self.assertEqual(response.status_code, 400)
 
     def test_lookup_tag_hidden_admin(self):
         self.login_user(user_type="admin")
@@ -72,6 +73,22 @@ class LookupRangeAPIViewTests(BaseViewTestMixin, TestCase):
         data = response.json()
         self.assertIn(self.model1.model_id, data)
 
+    def test_search_range_invalid_params_404(self):
+        response = self.client.get(
+            f"/api/search/invalid/10.0/1000/1"
+        )
+        self.assertEqual(response.status_code, 404)
+
+        response = self.client.get(
+            f"/api/search/10.0/invalid/1000/1"
+        )
+        self.assertEqual(response.status_code, 404)
+
+        response = self.client.get(
+            f"/api/search/10.0/10.0/invalid/1"
+        )
+        self.assertEqual(response.status_code, 404)
+
 
 class LookupTitleAPIViewTests(BaseViewTestMixin, TestCase):
 
@@ -80,3 +97,5 @@ class LookupTitleAPIViewTests(BaseViewTestMixin, TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIn(self.model1.model_id, data)
+
+
