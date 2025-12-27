@@ -99,17 +99,8 @@ class BaseViewTestMixin(TestCase):
             with open(filepath, "wb+") as destination:
                 destination.write(self.model_file)
 
-    # def tearDown(self) -> None:
-    #     shutil.rmtree(settings.MODEL_DIR)
-    #     # shutil.rmtree(settings.MODEL_DIR, ignore_errors=True)
-        
     def tearDown(self) -> None:
-        try:
-            shutil.rmtree(settings.MODEL_DIR)
-        except PermissionError:
-            # Windows sometimes keeps file handles open
-            pass
-
+        shutil.rmtree(settings.MODEL_DIR)
 
     def login_user(self, user_type="user"):
         """
