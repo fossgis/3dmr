@@ -31,9 +31,13 @@
 		<br>
 		<div class="col-md-12">
 			<ul class="nav nav-tabs" role="tablist">
-				<li class="nav-item active"><a class="nav-link active" data-toggle="tab" href="#view" role="tab">3D View</a></li>
+				<li class="nav-item">
+					<a class="nav-link active" data-bs-toggle="tab" href="#view" role="tab">3D View</a>
+				</li>
 				{% if model.location %}
-				<li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#map" role="tab">Map</a></li>
+				<li class="nav-item">
+					<a class="nav-link" data-bs-toggle="tab" href="#map" role="tab">Map</a>
+				</li>
 				{% endif %}
 			</ul>
 		</div>
@@ -60,44 +64,49 @@
 				</div>
 			</div>
 		</div>
-		<div>
 		<div class="col-md-4">
 			{% if model.is_hidden %}
-			<div class="panel panel-danger">
+			<div class="card border-danger mb-4">
+				<div class="card-header bg-danger text-white">
 			{% else %}
-			<div class="panel panel-primary">
+			<div class="card border-primary mb-4">
+				<div class="card-header bg-primary text-white">
 			{% endif %}
-				<div class="panel-heading">
-					<h3 class="panel-title">
+					<h3 class="card-title h5 mb-0">
 						{{ model.title }} 
 						{% if not latest_page %}
-							<small style="cursor:help;" title="This is {% if model.latest %}the latest version{% else %}an older version{% endif %}">
+							<small class="text-white-50" style="cursor:help;" title="This is {% if model.latest %}the latest version{% else %}an older version{% endif %}">
 							(Revision {{ model.revision }})
 							</small>
 						{% endif %}
-						
 					</h3>
 				</div>
-					<div class="panel-body">
-						<ul class="nav nav-tabs" role="tablist">
-							<li role="presentation" class="active"><a href="#overview" aria-controls="overview" role="tab" data-toggle="tab">Overview</a></li>
-							<li role="presentation"><a href="#stats" aria-controls="stats" role="tab" data-toggle="tab">Stats</a></li>
-							<li role="presentation"><a href="#history" aria-controls="history" role="tab" data-toggle="tab">History</a></li>
-						</ul>
-						<div class="tab-content">
-							<div role="tabpanel" class="tab-pane active" id="overview">
-								{% include 'mainapp/model_overview.html' %}
-							</div>
-							<div role="tabpanel" class="tab-pane" id="stats">
-								{% include 'mainapp/model_stats.html' %}
-							</div>
-							<div role="tabpanel" class="tab-pane" id="history">
-								{% include 'mainapp/model_history.html' %}
-							</div>
+				<div class="card-body">
+					<ul class="nav nav-tabs" role="tablist">
+						<li class="nav-item">
+							<a class="nav-link active" href="#overview" role="tab" data-bs-toggle="tab">Overview</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#stats" role="tab" data-bs-toggle="tab">Stats</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#history" role="tab" data-bs-toggle="tab">History</a>
+						</li>
+					</ul>
+					<div class="tab-content mt-3">
+						<div role="tabpanel" class="tab-pane active" id="overview">
+							{% include 'mainapp/model_overview.html' %}
+						</div>
+						<div role="tabpanel" class="tab-pane" id="stats">
+							{% include 'mainapp/model_stats.html' %}
+						</div>
+						<div role="tabpanel" class="tab-pane" id="history">
+							{% include 'mainapp/model_history.html' %}
 						</div>
 					</div>
 				</div>
 			</div>
+		</div>
 	</div>
 </div>
 <script>

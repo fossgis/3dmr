@@ -1,15 +1,19 @@
-<p>3DMR tag: <a target="_blank" href="https://overpass-turbo.eu/?w=%223dmr%22%3D%22{{ model.model_id }}%22+global&R#"><strong>3dmr={{ model.model_id }}</strong></a></p>
+<p>3DMR tag: <a target="_blank" href="https://overpass-turbo.eu/?w=%223dmr%22%3D%22{{ model.model_id }}%22+global&R#" class="text-decoration-none"><strong>3dmr={{ model.model_id }}</strong></a></p>
 {% if model.categories.all %}
 <p>Categories:
     {% for category in model.categories.all %}
-    <a href="{% url 'search' %}?category={{ category.name }}"><span class="label label-default">{{ category.name }}</span></a>
+    <a href="{% url 'search' %}?category={{ category.name }}" class="text-decoration-none">
+        <span class="badge bg-secondary text-uppercase">{{ category.name }}</span>
+    </a>
     {% endfor %}
 </p>
 {% endif %}
 {% if model.tags.items %}
 <p>Tags:
     {% for k, v in model.tags.items %}
-    <a href="{% url 'search' %}?tag={{ k }}={{ v }}"><span class="label label-default">{{ k }}={{ v }}</span></a>
+    <a href="{% url 'search' %}?tag={{ k }}={{ v }}" class="text-decoration-none">
+        <span class="badge bg-secondary">{{ k }}={{ v }}</span>
+    </a>
     {% endfor %}
 </p>
 {% endif %}
@@ -17,7 +21,7 @@
 <p>Description:</p>
 <p>{{ model.rendered_description|safe }}</p>
 {% endif %}
-<p>Uploaded by <a href="{% url 'user' model.author.profile.uid %}"><span class="label label-default">{{ model.author.profile.display_name }}</span></a> on {{ model.upload_date|date:"c" }}</p>
+<p>Uploaded by <a href="{% url 'user' model.author.profile.uid %}" class="text-decoration-none"><span class="badge bg-secondary">{{ model.author.profile.display_name }}</span></a> on {{ model.upload_date|date:"Y-m-d" }}</p>
 {% if model.source %}
 <p>From: 
     {% if model.source_is_url %}
@@ -28,12 +32,12 @@
 </p>
 {% endif %}
 <p>{{ license }}</p>
-<a href="{% url 'get_model' model.model_id model.revision %}" class="btn btn-default" role="button">Download</a>
+<a href="{% url 'get_model' model.model_id model.revision %}" class="btn btn-secondary bg-gradient" role="button">Download</a>
 {% if user.is_authenticated and model.author == user or user.profile.is_admin %}
-<a href="{% url 'edit' model.model_id model.revision %}" class="btn btn-default" role="button">Edit Metadata</a>
+<a href="{% url 'edit' model.model_id model.revision %}" class="btn btn-secondary bg-gradient" role="button">Edit Metadata</a>
 {% endif %}
 {% if user.is_authenticated and model.author == user %}
-<a href="{% url 'revise' model.model_id %}" class="btn btn-default" role="button">Revise</a>
+<a href="{% url 'revise' model.model_id %}" class="btn btn-secondary" role="button">Revise</a>
 {% endif %}
 {% if user.is_authenticated and user.profile.is_admin %}
 {% if model.is_hidden %}
