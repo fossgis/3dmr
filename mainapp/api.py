@@ -59,9 +59,6 @@ def get_info(request, model_id):
         'desc': model.description,
         'author': model.author.profile.uid,
         'date': model.upload_date,
-        'rotation': model.rotation,
-        'scale': model.scale,
-        'translation': [model.translation_x, model.translation_y, model.translation_z],
         'tags': model.tags,
 
         # Note: the [::1] evaluates the query set to a list
