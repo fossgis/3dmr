@@ -113,6 +113,7 @@ class ModelField(forms.FileField):
             )
 
         errors = validate_glb_file(model)
+
         if errors:
             self.glb_errors = errors
             raise forms.ValidationError(
