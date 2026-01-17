@@ -161,7 +161,32 @@ class MetadataForm(forms.Form):
     
     tags = TagField(
         label='Tags', max_length=1024, required=False)
+    
+    rotation = forms.FloatField(
+        label='Rotation (degrees)' , required=False , initial=0.0,
+        widget=forms.NumberInput(attrs={'placeholder': '0.0' , 'step':'0.1'})
+    )
 
+    translation_x = forms.FloatField(
+        label='Translation X' , required= False , initial=0.0,
+        widget=forms.NumberInput(attrs={'placeholder': '0.0' , 'step':'0.1'})
+    )
+
+    translation_y = forms.FloatField(
+        label='Translation Y' , required= False , initial=0.0,
+        widget=forms.NumberInput(attrs={'placeholder': '0.0' , 'step':'0.1'})
+    )
+
+    translation_z = forms.FloatField(
+        label='Translation Z' , required= False , initial=0.0,
+        widget=forms.NumberInput(attrs={'placeholder': '0.0' , 'step':'0.1'})
+    )
+
+    scale = forms.FloatField(
+        label ='Scale' , required=False , initial=1.0,
+        widget=forms.NumberInput(attrs={'placeholder': '1.0' , 'step':'0.01' , 'min':'0.01'})
+    )
+    
     model_source = forms.ChoiceField(
         label='Where does the model come from?',
         choices=[
@@ -189,6 +214,12 @@ class MetadataForm(forms.Form):
         if self.cleaned_data.get('model_source') == 'other_source' and not self.cleaned_data['source']:
             raise forms.ValidationError('Please specify the other source.', code='required')
         return self.cleaned_data['source']
+    
+    def clean_scale(self):
+        scale = self.cleaned_data.get('scale')
+        if scale is not None and scale <=0:
+            raise forms.ValidationError('Scale must be greater than 0.' , code='invalid')
+        return scale
 
 # This class represents a mix of the UploadFileForm and the MetadataForm
 class UploadFileMetadataForm(MetadataForm):
