@@ -194,6 +194,7 @@ sudo journalctl -u 3dmr.service
         location / {
             include proxy_params;
             proxy_pass http://unix:/run/3dmr.sock;
+            client_max_body_size 20M;
         }
     }
     ```
