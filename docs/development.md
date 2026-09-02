@@ -104,7 +104,7 @@ Follow these steps to get the project running locally:
     ```bash
     npm install
     npm run build
-    npm start dev
+    npm run dev
     ```
 
     This will compile the static files needed for the web application, store them in `mainapp/static` directory and, start the static dev server.
