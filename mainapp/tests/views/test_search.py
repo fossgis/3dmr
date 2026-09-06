@@ -85,3 +85,23 @@ class SearchViewTest(BaseViewTestMixin, TestCase):
         self.assertTrue(
             self.client.session.get("last_page").startswith(reverse("search"))
         )
+
+    def test_filters_combine(self):
+        # matches query but not tag -> nothing
+        response = self.client.get(reverse("search"), {"query": "Model 1", "tag": "color=blue"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "No models were found with those parameters.")
+        self.assertIsNone(response.context["models"])
+
+        # matches both
+        response = self.client.get(reverse("search"), {"query": "Model 3", "tag": "color=blue"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Model 3")
+        self.assertNotContains(response, "Model 1")
+        self.assertEqual(len(response.context["models"]), 1)
+
+    def test_url_params_encoded(self):
+        response = self.client.get(reverse("search"), {"query": "Model", "category": "category1"})
+        self.assertEqual(response.context["url_params"], "?query=Model&category=category1")
+        response = self.client.get(reverse("search"), {"query": "a b", "tag": "color=red"})
+        self.assertEqual(response.context["url_params"], "?query=a+b&tag=color%3Dred")

@@ -1,4 +1,5 @@
 import logging
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.http import JsonResponse, Http404, HttpResponseBadRequest
@@ -14,6 +15,7 @@ from .forms import UploadFileForm, UploadFileMetadataForm, MetadataForm, UserDes
 from .utils import get_kv, update_last_page, get_last_page, CHANGES, admin, LICENSES_DISPLAY
 import mainapp.database as database
 from mainapp.markdown import markdown
+from django.db.models import Q
 
 logger = logging.getLogger(__name__)
 
@@ -108,38 +110,37 @@ def search(request):
     except ValueError:
         page_id = 1
 
-    url_params = '?'
+    if not (query or tag or category):
+        return redirect(index)
 
+    params = {}
     if query:
-        url_params += 'query=' + query
+        params['query'] = query
     if tag:
-        url_params += 'tag=' + tag
+        params['tag'] = tag
     if category:
-        url_params += 'category=' + category
+        params['category'] = category
+    url_params = '?' + urlencode(params)
 
     models = Model.objects.filter(latest=True)
 
+    if query:
+        models = models.filter(Q(title__icontains=query) | Q(description__icontains=query))
     if tag:
         try:
             key, value = get_kv(tag)
         except ValueError:
             return redirect(index)
-        filtered_models = models.filter(tags__contains={key: value})
-    elif category:
-        filtered_models = models.filter(categories__name=category)
-    elif query:
-        filtered_models = \
-            models.filter(title__icontains=query) | \
-            models.filter(description__icontains=query)
+        models = models.filter(tags__contains={key: value})
+    if category:
+        models = models.filter(categories__name=category)
 
-    try:
-        if not admin(request):
-            filtered_models = filtered_models.filter(is_hidden=False)
+    
+    if not admin(request):
+        models = models.filter(is_hidden=False)
 
-        ordered_models = filtered_models.order_by('-pk')
-    except UnboundLocalError:
-        # filtered_models isn't set, redirect to homepage
-        return redirect(index)
+    ordered_models = models.distinct().order_by('-pk')
+    
 
     if not ordered_models:
         results = None
