@@ -28,9 +28,6 @@
 				<span class="navbar-toggler-icon"></span>
 			</button>
 			<div id="navbar" class="collapse navbar-collapse">
-				<form class="d-flex me-auto my-2 my-lg-0" role="search" action="{% url 'search' %}" method="GET">
-					<input type="search" class="form-control" id="search" placeholder="Search..." title="Search" aria-label="Search" name="query" {% if query %}value="{{ query }}"{% endif %}>
-				</form>
 				<ul class="navbar-nav ms-auto">
 					<li class="nav-item"><a class="nav-link" target="_blank" href="https://wiki.openstreetmap.org/wiki/3D_Model_Repository">Documentation</a></li>
 					<li class="nav-item"><a class="nav-link" href="{% url 'docs' %}">API Docs</a></li>
@@ -52,6 +49,29 @@
 			</div>
 		</div>
 	</nav>
+
+	<div class="bg-body-tertiary border-bottom">
+		<div class="container py-2">
+			<form class="row g-2 align-items-center" role="search" action="{% url 'search' %}" method="GET">
+				<div class="col-12 col-md-5">
+					<input type="search" class="form-control" id="search" placeholder="Search..." title="Search" aria-label="Search" name="query" {% if query %}value="{{ query }}"{% endif %}>
+				</div>
+				<div class="col-6 col-md-2">
+					<input type="text" class="form-control" id="search-category" placeholder="Category" title="Category" aria-label="Category" name="category" {% if category %}value="{{ category }}"{% endif %}>
+				</div>
+				<div class="col-6 col-md-3">
+					<input type="text" class="form-control" id="search-tag" placeholder="Tag (key=value)" title="Tag in key=value format" aria-label="Tag" name="tag" pattern="^[^=]+=.+$" {% if tag %}value="{{ tag }}"{% endif %}>
+				</div>
+				<div class="col-12 col-md-2 d-flex gap-2">
+					<button type="submit" class="btn btn-primary flex-fill">Search</button>
+					{% if tag or category %}
+					<a class="btn btn-outline-secondary" href="{% url 'search' %}{% if query %}?query={{ query|urlencode }}{% endif %}" title="Clear filters">Clear</a>
+					{% endif %}
+				</div>
+			</form>
+		</div>
+	</div>
+
 	{% if messages %}
 	<div class="container mt-3">
 		{% for message in messages %}
