@@ -103,39 +103,44 @@ def search(request):
     RESULTS_PER_PAGE = 6
 
     query = request.GET.get('query', None)
-    tag = request.GET.get('tag', None)
-    category = request.GET.get('category', None)
+    tags = []
+    for tag in request.GET.getlist('tag'):
+        try:
+            key, value = get_kv(tag)
+        except ValueError:
+            continue
+        tags.append(tag)
+    categories = [c for c in request.GET.getlist('category') if c]
     try:
         page_id = int(request.GET.get('page', 1))
     except ValueError:
         page_id = 1
 
-    if not (query or tag or category):
+    if not (query or tags or categories):
         return redirect(index)
 
-    params = {}
+    params = []
     if query:
-        params['query'] = query
-    if tag:
-        params['tag'] = tag
-    if category:
-        params['category'] = category
+        params.append(('query', query))
+    params += [('tag', t) for t in tags]
+    params += [('category', c) for c in categories]
     url_params = '?' + urlencode(params)
 
     models = Model.objects.filter(latest=True)
 
     if query:
         models = models.filter(Q(title__icontains=query) | Q(description__icontains=query))
-    if tag:
-        try:
-            key, value = get_kv(tag)
-        except ValueError:
-            return redirect(index)
-        models = models.filter(tags__contains={key: value})
-    if category:
-        models = models.filter(categories__name=category)
 
-    
+    if tags:
+        tag_q = Q()
+        for tag in tags:
+            key, value = get_kv(tag)
+            tag_q |= Q(tags__contains={key: value})
+        models = models.filter(tag_q)
+
+    if categories:
+        models = models.filter(categories__name__in=categories)
+
     if not admin(request):
         models = models.filter(is_hidden=False)
 
@@ -154,8 +159,8 @@ def search(request):
 
     context = {
         'query': query,
-        'tag': tag,
-        'category': category,
+        'tags': tags,
+        'categories': categories,
         'models': results,
         'paginator': paginator,
         'page_id': page_id,

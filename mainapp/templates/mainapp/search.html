@@ -16,13 +16,13 @@
 	<div class="col-12">
 		<h1 class="pb-2 mb-4 border-bottom">Search Results
 		{% if query %}
-		<small class="text-body-secondary">'{{ query }}'{% if tag or category %},{% endif %}</small>
+		<small class="text-body-secondary">'{{ query }}'{% if tags or categories%},{% endif %}</small>
 		{% endif %}
-		{% if category %}
-		<small class="text-body-secondary">category '{{ category }}'{% if tag %},{% endif %}</small>
+		{% if categories %}
+		<small class="text-body-secondary">category '{{ categories|join:", " }}'{% if tags %},{% endif %}</small>
 		{% endif %}
-		{% if tag %}
-		<small class="text-body-secondary">tag '{{ tag }}'</small>
+		{% if tags %}
+		<small class="text-body-secondary">tag '{{ tags|join:", " }}'</small>
 		{% endif %}
 		</h1>
 	</div>

@@ -27,10 +27,7 @@
 			<button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar" aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
 			</button>
-			<div id="navbar" class="collapse navbar-collapse">
-				<form class="d-flex me-auto my-2 my-lg-0" role="search" action="{% url 'search' %}" method="GET">
-					<input type="search" class="form-control" id="search" placeholder="Search..." title="Search" aria-label="Search" name="query" {% if query %}value="{{ query }}"{% endif %}>
-				</form>
+			<div id="navbar" class="collapse navbar-collapse order-lg-2">
 				<ul class="navbar-nav ms-auto">
 					<li class="nav-item"><a class="nav-link" target="_blank" href="https://wiki.openstreetmap.org/wiki/3D_Model_Repository">Documentation</a></li>
 					<li class="nav-item"><a class="nav-link" href="{% url 'docs' %}">API Docs</a></li>
@@ -50,8 +47,60 @@
 					{% endif %}
 				</ul>
 			</div>
+			<form id="searchForm" class="col-12 col-lg-auto px-0 d-flex my-2 my-lg-0 order-lg-1" role="search" action="{% url 'search' %}" method="GET">
+				<input type="search" class="form-control" id="search" placeholder="Search..." title="Search" aria-label="Search" name="query" {% if query %}value="{{ query }}"{% endif %}>
+				<button class="btn btn-outline-light ms-2 text-nowrap" type="button" data-bs-toggle="collapse" data-bs-target="#advSearch" aria-expanded="false" aria-controls="advSearch">
+					Advanced <span aria-hidden="true">&#9662;</span>
+				</button>
+			</form>
 		</div>
 	</nav>
+
+	<div class="collapse bg-dark border-top border-secondary" id="advSearch">
+		<div class="container-fluid py-3">
+			<div class="row g-3">
+				<div class="col-12 col-md-4">
+					<div class="filter-dropdown" data-filter="category" data-label="Categories">
+						<div class="d-flex align-items-start gap-2">
+							<label class="form-label text-white fw-bold mb-0 pt-2 text-nowrap" for="filter-category">Categories</label>
+							<div class="position-relative flex-grow-1">
+								<input type="search" id="filter-category" class="form-control filter-search" placeholder="Type to search categories..." autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="filter-category-list">
+								<div class="dropdown-menu dropdown-menu-dark w-100 top-100 start-0 mt-1 p-2 filter-menu" id="filter-category-list">
+									<div class="filter-list overflow-y-auto" role="group"></div>
+									<small class="text-secondary filter-status d-block mt-1"></small>
+								</div>
+								<div class="filter-chips d-flex flex-wrap column-gap-2"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-12 col-md-4">
+					<div class="filter-dropdown" data-filter="tag" data-label="Tags">
+						<div class="d-flex align-items-start gap-2">
+							<label class="form-label text-white fw-bold mb-0 pt-2 text-nowrap" for="filter-tag">Tags</label>
+							<div class="position-relative flex-grow-1">
+								<input type="search" id="filter-tag" class="form-control filter-search" placeholder="Type to search tags (key=value)..." autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="filter-tag-list">
+								<div class="dropdown-menu dropdown-menu-dark w-100 top-100 start-0 mt-1 p-2 filter-menu" id="filter-tag-list">
+									<div class="filter-list overflow-y-auto" role="group"></div>
+									<small class="text-secondary filter-status d-block mt-1"></small>
+								</div>
+								<div class="filter-chips d-flex flex-wrap column-gap-2"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-12 col-md-auto ms-md-auto d-flex gap-2 align-items-start">
+					<button type="submit" form="searchForm" class="btn btn-primary">Apply filters</button>
+					<button type="button" class="btn btn-outline-secondary" id="clearFilters">Clear filters</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	{{ all_categories|json_script:"all-categories" }}
+	{{ all_tags|json_script:"all-tags" }}
+	{{ categories|json_script:"selected-categories" }}
+	{{ tags|json_script:"selected-tags" }}
+
 	{% if messages %}
 	<div class="container mt-3">
 		{% for message in messages %}
@@ -78,6 +127,7 @@
 
 	{% compress js %}
 	<script src="{% static 'mainapp/lib/bootstrap.bundle.min.js' %}"></script>
+	<script src="{% static 'mainapp/search_filters.js' %}"></script>
 	{% endcompress %}
 	{% block footeradditions %}
 	{% endblock %}
