@@ -63,19 +63,26 @@ def validate_glb_file(file_field):
                 "GLB file must have some valid shape."
             )
 
+        messages = []
         if output["issues"]["numErrors"] > 0:
-            messages = []
             for message in output["issues"]["messages"]:
                 if message["severity"] == 0:  # 0 is error in khronos validator
                     messages.append({
                         "message": message["message"],
                         "pointer": message.get("pointer", "N/A")
                     })
-            return messages 
+
+        for index, extension in enumerate(output["info"].get("extensionsRequired", [])):
+            messages.append({
+                "message": (
+                    f"Model requires unsupported glTF extension {extension}. "
+                ),
+                "pointer": f"/extensionsRequired/{index}"
+            })
     except KeyError:
         logger.exception("Invalid gltf_validator output!\
                         It seems gltf_validator's 'validation.schema.json' file has been modified.")
         raise ValidationError("Internal server error.")
 
-    if os.path.exists(temp_file.name):
-        os.remove(temp_file.name)
+    if messages:
+        return messages
