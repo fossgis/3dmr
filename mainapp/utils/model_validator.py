@@ -38,16 +38,21 @@ def validate_glb_file(file_field):
         temp_file.flush()
 
     try:
-        result = subprocess.run(
-            [settings.GLTF_VALIDATOR, temp_file.name, "-o"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-    except FileNotFoundError:
-        logger.exception(
-            f"gltf-validator CLI not found at {settings.GLTF_VALIDATOR}."
-        )
-        raise ValidationError("Internal server error.")
+        try:
+            result = subprocess.run(
+                [settings.GLTF_VALIDATOR, temp_file.name, "-o"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                timeout=5
+            )
+        except FileNotFoundError:
+            logger.exception(
+                f"gltf-validator CLI not found at {settings.GLTF_VALIDATOR}."
+            )
+            raise ValidationError("Internal server error.")
+    finally:
+        if os.path.exists(temp_file.name):
+            os.remove(temp_file.name)
 
     try:
         output = json.loads(result.stdout.decode("utf-8"))
