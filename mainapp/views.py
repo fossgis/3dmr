@@ -245,7 +245,7 @@ def revise(request, model_id):
     m = Model.objects.get(model_id=model_id, latest=True)
 
     if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
+        form = UploadFileForm(request.POST, request.FILES, is_admin=admin(request))
 
         if not request.user.is_authenticated:
             messages.error(request, 'You must be logged in to use this feature.')
@@ -279,7 +279,7 @@ def revise(request, model_id):
     return render(request, 'mainapp/revise.html', {
         'form': form,
         'model': m,
-        'max_model_size': settings.MAX_MODEL_SIZE / (1024 * 1024)
+        'max_model_size': None if admin(request) else settings.MAX_MODEL_SIZE / (1024 * 1024)
     })
 
 def upload(request):
@@ -290,7 +290,7 @@ def upload(request):
         return redirect(index)
 
     if request.method == 'POST':
-        form = UploadFileMetadataForm(request.POST, request.FILES)
+        form = UploadFileMetadataForm(request.POST, request.FILES, is_admin=admin(request))
 
         if not request.user.is_authenticated:
             # Show error in form, but don't redirect anywhere
@@ -338,7 +338,7 @@ def upload(request):
 
     return render(request, 'mainapp/upload.html', {
         'form': form,
-        'max_model_size': settings.MAX_MODEL_SIZE / (1024 * 1024)
+        'max_model_size': None if admin(request) else settings.MAX_MODEL_SIZE / (1024 * 1024)
     })
 
 def user(request, uid='', form=None):
