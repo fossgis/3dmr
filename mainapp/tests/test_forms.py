@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.forms import ValidationError
-from django.test import SimpleTestCase, TestCase
+from django.test import SimpleTestCase, TestCase, override_settings
 
 from mainapp.forms import (
     CategoriesField,
@@ -108,19 +108,39 @@ class ModelFieldTests(TestCase):
 
 
 class FormIntegrationTests(SimpleTestCase):
+    def _uploaded(self):
+        with open("mainapp/tests/test_files/test_model.glb", "rb") as f:
+            data = f.read()
+        return SimpleUploadedFile("model.glb", data, content_type="model/gltf-binary")
+
     def test_upload_file_form_missing(self):
         form = UploadFileForm(data={})
         self.assertFalse(form.is_valid())
 
-    @patch("mainapp.forms.validate_glb_file")
+    @patch("mainapp.forms.validate_glb_file", return_value=[])
     def test_upload_file_form_valid(self, mock_validate):
-        mock_validate.return_value = []
-        with open("mainapp/tests/test_files/test_model.glb", "rb") as f:
-            data = f.read()
-        uploaded = SimpleUploadedFile("model.glb", data, content_type="model/gltf-binary")
-
-        form = UploadFileForm(files={"model_file": uploaded})
+        form = UploadFileForm(files={"model_file": self._uploaded()})
         self.assertTrue(form.is_valid())
+
+    @override_settings(MAX_MODEL_SIZE=10)
+    @patch("mainapp.forms.validate_glb_file", return_value=[])
+    def test_upload_file_form_regular_user_file_too_large(self, mock_validate):
+        form = UploadFileForm(files={"model_file": self._uploaded()})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors["model_file"].as_data()[0].code, "file_too_large")
+
+    @override_settings(MAX_MODEL_SIZE=10)
+    @patch("mainapp.forms.validate_glb_file", return_value=[])
+    def test_upload_file_form_size_bypass_for_admin(self, mock_validate):
+        form = UploadFileForm(files={"model_file": self._uploaded()}, is_admin=True)
+        self.assertTrue(form.is_valid())
+
+    @override_settings(MAX_MODEL_SIZE=10)
+    @patch("mainapp.forms.validate_glb_file", return_value=["bad"])
+    def test_upload_file_form_size_bypassed_but_glb_validation_failed(self, mock_validate):
+        form = UploadFileForm(files={"model_file": self._uploaded()}, is_admin=True)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors["model_file"].as_data()[0].code, "glb_validation_failed")
 
     def test_metadata_form_valid(self):
         form_data = {
@@ -156,12 +176,8 @@ class FormIntegrationTests(SimpleTestCase):
         form = UploadFileMetadataForm(data={})
         self.assertFalse(form.is_valid())
 
-    @patch("mainapp.forms.validate_glb_file")
+    @patch("mainapp.forms.validate_glb_file", return_value=[])
     def test_upload_file_metadata_form_valid(self, mock_validate):
-        mock_validate.return_value = []
-        with open("mainapp/tests/test_files/test_model.glb", "rb") as f:
-            data = f.read()
-        uploaded = SimpleUploadedFile("model.glb", data, content_type="model/gltf-binary")
         form_data = {
             "title": "Test",
             "description": "",
@@ -173,5 +189,5 @@ class FormIntegrationTests(SimpleTestCase):
             "license": "0",
         }
 
-        form = UploadFileMetadataForm(data=form_data, files={"model_file": uploaded})
+        form = UploadFileMetadataForm(data=form_data, files={"model_file": self._uploaded()})
         self.assertTrue(form.is_valid())

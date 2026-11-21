@@ -101,10 +101,12 @@ class CompatibleFloatField(forms.CharField):
         return number
 
 class ModelField(forms.FileField):
+    skip_size_limit = False
+
     def validate(self, model):
         super().validate(model)
 
-        if (model.size > settings.MAX_MODEL_SIZE):
+        if not self.skip_size_limit and model.size > settings.MAX_MODEL_SIZE:
             raise forms.ValidationError(
                 'File size exceeds the maximum allowed size of {} MB.'.format(
                     settings.MAX_MODEL_SIZE / (1024 * 1024)
@@ -137,8 +139,9 @@ class UploadFileForm(forms.Form):
     model_file = ModelField(
         label='Model File', required=True, allow_empty_file=False)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, is_admin=False, **kwargs):
         super(UploadFileForm, self).__init__(*args, **kwargs)
+        self.fields['model_file'].skip_size_limit = is_admin
         init_bootstrap_form(self.fields)
 
 class MetadataForm(forms.Form):
@@ -197,8 +200,9 @@ class UploadFileMetadataForm(MetadataForm):
     model_file = ModelField(
         label='Model File', required=True, allow_empty_file=False)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, is_admin=False, **kwargs):
         super(UploadFileMetadataForm, self).__init__(*args, **kwargs)
+        self.fields['model_file'].skip_size_limit = is_admin
         init_bootstrap_form(self.fields)
 
 
